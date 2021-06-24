@@ -353,4 +353,5 @@ MigrationBackup/
 src/BotService/Properties/launchSettings.json
 src/ManagementApi/Properties/launchSettings.json
 src/BotService/cache
-src/ManagementApi/appsettings.Production.json
+src/ManagementApi/appsettings.**.json
+**/local.settings.json
