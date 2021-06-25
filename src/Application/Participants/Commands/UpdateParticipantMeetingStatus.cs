@@ -11,9 +11,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Participant.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class UpdateParticipantMeetingStatus
     {
         public class UpdateParticipantMeetingStatusCommand : IRequest<UpdateParticipantMeetingStatusCommandResponse>
@@ -31,41 +28,26 @@ namespace Application.Participant.Commands
             public bool IsSharingScreen { get; set; }
         }
 
-        /// <summary>
-        ///     Command Response
-        /// </summary>
         public class UpdateParticipantMeetingStatusCommandResponse
         {
-            /// <summary>
-            ///     Item Id
-            /// </summary>
             public string Id { get; set; }
         }
 
-        //Should add validator???
-
-        /// <summary>
-        /// /
-        /// </summary>
+        // Should add validator???
         public class UpdateParticipantMeetingStatusCommandHandler : IRequestHandler<UpdateParticipantMeetingStatusCommand, UpdateParticipantMeetingStatusCommandResponse>
         {
-            private readonly IParticipantStreamRepository participantStreamRepository;
-            private readonly IMapper mapper;
-            private readonly ILogger<UpdateParticipantMeetingStatusCommandHandler> logger;
+            private readonly IParticipantStreamRepository _participantStreamRepository;
+            private readonly IMapper _mapper;
+            private readonly ILogger<UpdateParticipantMeetingStatusCommandHandler> _logger;
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="participantStreamRepository"></param>
-            /// <param name="mapper"></param>
-            /// <param name="logger"></param>
-            public UpdateParticipantMeetingStatusCommandHandler(IParticipantStreamRepository participantStreamRepository,
+            public UpdateParticipantMeetingStatusCommandHandler(
+                IParticipantStreamRepository participantStreamRepository,
                 IMapper mapper,
                 ILogger<UpdateParticipantMeetingStatusCommandHandler> logger)
             {
-                this.participantStreamRepository = participantStreamRepository;
-                this.mapper = mapper;
-                this.logger = logger;
+                _participantStreamRepository = participantStreamRepository;
+                _mapper = mapper;
+                _logger = logger;
             }
 
             public async Task<UpdateParticipantMeetingStatusCommandResponse> Handle(UpdateParticipantMeetingStatusCommand command, CancellationToken cancellationToken)
@@ -73,19 +55,19 @@ namespace Application.Participant.Commands
                 UpdateParticipantMeetingStatusCommandResponse response = new UpdateParticipantMeetingStatusCommandResponse();
                 var specification = new ParticipantStreamGetFromCallSpecification(command.CallId, command.ParticipantGraphId);
 
-                //TODO: Analyze if we should change our cosmos db repository
-                var participants = await this.participantStreamRepository.GetItemsAsync(specification);
-                
+                // TODO: Analyze if we should change our cosmos db repository
+                var participants = await _participantStreamRepository.GetItemsAsync(specification);
+
                 var participant = participants.FirstOrDefault();
                 if (participant == null)
                 {
-                    logger.LogInformation("Participant {participantId} from call {callId} was not found", command.ParticipantGraphId, command.CallId);
+                    _logger.LogInformation("Participant {participantId} from call {callId} was not found", command.ParticipantGraphId, command.CallId);
                     throw new EntityNotFoundException($"Participant {command.ParticipantGraphId} from call {command.CallId} wasn't found");
                 }
 
-                mapper.Map<UpdateParticipantMeetingStatusCommand, ParticipantStream>(command, participant);
+                _mapper.Map<UpdateParticipantMeetingStatusCommand, ParticipantStream>(command, participant);
 
-                await this.participantStreamRepository.UpdateItemAsync(participant.Id, participant);
+                await _participantStreamRepository.UpdateItemAsync(participant.Id, participant);
 
                 return response;
             }

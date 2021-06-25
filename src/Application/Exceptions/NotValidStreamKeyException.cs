@@ -7,14 +7,15 @@ namespace Application.Exceptions
     [Serializable]
     public class NotValidStreamKeyException : CustomBaseException
     {
-
-        public NotValidStreamKeyException(string title, string message): base(message)
+        public NotValidStreamKeyException(string title, string message)
+            : base(message)
         {
             Title = title;
             StatusCode = HttpStatusCode.Unauthorized;
         }
 
-        protected NotValidStreamKeyException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected NotValidStreamKeyException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

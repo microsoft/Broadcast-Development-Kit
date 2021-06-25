@@ -10,12 +10,13 @@ namespace Application.Exceptions
         {
         }
 
-        public BotClientBaseUrlNotSetException(string message) : base(message)
+        public BotClientBaseUrlNotSetException(string message)
+            : base(message)
         {
-
         }
 
-        protected BotClientBaseUrlNotSetException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected BotClientBaseUrlNotSetException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

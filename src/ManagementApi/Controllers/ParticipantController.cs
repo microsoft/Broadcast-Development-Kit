@@ -28,8 +28,8 @@ namespace ManagementApi.Controllers
 
             return new FileStreamResult(response.Photo, "image/jpeg");
         }
-        
-        // This endpoint can be used by people invited to the meeting from outside this tenant, to check the status of their stream (if we are extracting their camera or not) 
+
+        // This endpoint can be used by people invited to the meeting from outside this tenant, to check the status of their stream (if we are extracting their camera or not)
         // and get any public context information that might be added to this call.
         // As this is a public endpoint we should not return any private information of the participant here.
         [AllowAnonymous]
@@ -38,10 +38,10 @@ namespace ManagementApi.Controllers
         public async Task<ActionResult<PublicCallModelForParticipant>> GetByMeetingIdAsync([FromRoute] string meetingId, [FromBody] GetPublicCallForParticipantBody body)
         {
             var query = new GetPublicCallForParticipantByMeetingId.GetPublicCallForParticipantByMeetingIdQuery
-            { 
+            {
                 ParticipantAadId = body.ParticipantAadId,
                 ResourceType = body.Type,
-                MeetingId = meetingId
+                MeetingId = meetingId,
             };
 
             var response = await _mediator.Send(query);

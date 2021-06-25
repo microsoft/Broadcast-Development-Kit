@@ -1,8 +1,7 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Graph.Communications.Common.Telemetry;
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Graph.Communications.Common.Telemetry;
 
 namespace BotService.Infrastructure.Extensions
 {

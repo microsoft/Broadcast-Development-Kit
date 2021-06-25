@@ -1,46 +1,34 @@
-using Application.Interfaces.Common;
-using Application.Interfaces.Persistance;
-using AutoMapper;
-using Domain.Enums;
-using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Models;
-using static Domain.Constants.Constants;
-using Domain.Entities;
-using System.Collections.Generic;
 using Application.Exceptions;
+using Application.Interfaces.Common;
+using Application.Interfaces.Persistance;
+using AutoMapper;
+using Domain.Entities;
+using Domain.Enums;
+using FluentValidation;
+using MediatR;
+using static Domain.Constants.Constants;
 
 namespace Application.Stream.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class StartingInjection
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartingInjectionCommand : IRequest<StartingInjectionCommandResponse>
         {
             public StartStreamInjectionBody Body { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartingInjectionCommandResponse
         {
             public string Id { get; set; }
+
             public StreamModel Resource { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartingInjectionCommandValidator : AbstractValidator<StartingInjectionCommand>
         {
             public StartingInjectionCommandValidator()
@@ -78,9 +66,6 @@ namespace Application.Stream.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartingInjectionCommandHandler : IRequestHandler<StartingInjectionCommand, StartingInjectionCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
@@ -94,8 +79,7 @@ namespace Application.Stream.Commands
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository,
                 IStreamRepository streamRepository,
-                IMapper mapper
-                )
+                IMapper mapper)
             {
                 _botServiceClient = botServiceClient ?? throw new ArgumentNullException(nameof(botServiceClient));
                 _callRepository = callRepository ?? throw new ArgumentNullException(nameof(callRepository));
@@ -121,10 +105,9 @@ namespace Application.Stream.Commands
 
                 var command = new StartInjection.StartInjectionCommand
                 {
-                    Body = request.Body
+                    Body = request.Body,
                 };
 
-                
                 var service = await _serviceRepository.GetItemAsync(call.ServiceId);
 
                 _botServiceClient.SetBaseUrl(service.Infrastructure.Dns);
@@ -158,7 +141,7 @@ namespace Application.Stream.Commands
                 return streamKey;
             }
 
-            private string GetStreamKeyByProtocol(StartStreamInjectionBody startStreamInjectionBody, Dictionary<string, string> privateCallContext)
+            private static string GetStreamKeyByProtocol(StartStreamInjectionBody startStreamInjectionBody, Dictionary<string, string> privateCallContext)
             {
                 if (startStreamInjectionBody.Protocol == Protocol.RTMP)
                 {

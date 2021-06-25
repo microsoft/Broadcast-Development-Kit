@@ -1,11 +1,12 @@
 using System;
-using Domain.Entities.Base;
 using Domain.Enums;
 
-namespace Domain.Entities
+namespace Application.Common.Models
 {
-    public class Service : BaseEntity
+    public class ServiceModel
     {
+        public string Id { get; set; }
+
         public string CallId { get; set; }
 
         public string Name { get; set; }
@@ -14,6 +15,6 @@ namespace Domain.Entities
 
         public DateTime CreatedAt { get; set; }
 
-        public Infrastructure Infrastructure { get; set; }
+        public InfrastructureModel Infrastructure { get; set; }
     }
 }

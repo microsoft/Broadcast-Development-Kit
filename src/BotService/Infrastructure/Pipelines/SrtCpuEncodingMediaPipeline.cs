@@ -1,73 +1,76 @@
+using System.Linq;
 using Application.Exceptions;
 using BotService.Infrastructure.Core;
+using BotService.Infrastructure.Extensions;
 using Domain.Enums;
 using Gst;
 using Gst.App;
-using System;
-using System.Linq;
 
 namespace BotService.Infrastructure.Pipelines
 {
     public class SrtCpuEncodingMediaPipeline : IMediaExtractionPipeline
     {
-        public Bus Bus { get; set; }
-        private const int ENCODER_TUNE = 0x00000004;
-        private const int ENCODER_BITRATE = 2500;
-        private const int ENCODER_SPEED_PRESET = 2;
-        private const int KEY_FRAME_DISTANCE = 60;
-        private const string VIDEO_COLORIMETRY = "bt709";
-        private const int VIDEO_WIDTH = 1920;
-        private const int VIDEO_HEIGHT = 1080;
-        private const string VIDEO_FRAME_RATE = "30000/1001";
-        private readonly Pipeline pipeline;
-        private readonly SrtSettings protocolSettings;
-        private AppSrc videoSrc, audioSrc;
-        private Element muxer, sinkQueue, sink;
-        private Element audioQueue, audioConvert, audioConvertFilter, audioResample, audioResampleFilter, audioEncoder, audioParse;
-        private Element videoOverlay, videoParse;
-        private Element videoQueue, videoDecoder, videoConvert, colorimetryFilter, videoScale, videoScaleFilter, videoRate, videoRateFilter, videoEncoder;
-        private readonly object videoSrcLock = new object();
-        private readonly object audioSrcLock = new object();
+        private const int EncoderTune = 0x00000004;
+        private const int EncoderBitrate = 2500;
+        private const int EncoderSpeedPreset = 2;
+        private const int KeyFrameDistance = 60;
+        private const string VideoColorimetry = "bt709";
+        private const int VideoWidth = 1920;
+        private const int VideoHeight = 1080;
+        private const string VideoFrameRate = "30000/1001";
 
-        //Test Media Platform timestamps
-        private ulong baseTimestamp;
-        private Element audioIdentity, videoIdentity;
+        private readonly object _videoSrcLock = new object();
+        private readonly object _audioSrcLock = new object();
+        private readonly Pipeline _pipeline;
+        private readonly SrtSettings _protocolSettings;
+
+        private AppSrc _videoSrc, _audioSrc;
+        private Element _muxer, _sinkQueue, _sink;
+        private Element _audioQueue, _audioConvert, _audioConvertFilter, _audioResample, _audioResampleFilter, _audioEncoder, _audioParse;
+        private Element _videoOverlay, _videoParse;
+        private Element _videoQueue, _videoDecoder, _videoConvert, _colorimetryFilter, _videoScale, _videoScaleFilter, _videoRate, _videoRateFilter, _videoEncoder;
+
+        // Test Media Platform timestamps
+        private ulong _baseTimestamp;
+        private Element _audioIdentity, _videoIdentity;
 
         public SrtCpuEncodingMediaPipeline(SrtSettings protocolSettings)
         {
-            this.pipeline = new Pipeline();
-            this.protocolSettings = protocolSettings;
+            _pipeline = new Pipeline();
+            _protocolSettings = protocolSettings;
 
-            if (!this.BuildPipeline())
+            if (!BuildPipeline())
             {
                 throw new StartStreamExtractionException("Media pipeline could not be created");
             }
 
-            this.Bus = this.pipeline.Bus;
+            Bus = _pipeline.Bus;
         }
+
+        public Bus Bus { get; set; }
 
         public StateChangeReturn Play()
         {
-            this.baseTimestamp = (ulong)((System.DateTime.UtcNow - new System.DateTime(1900, 1, 1)).Ticks * 100);
-            return this.pipeline.SetState(State.Playing);
+            _baseTimestamp = (ulong)((System.DateTime.UtcNow - new System.DateTime(1900, 1, 1)).Ticks * 100);
+            return _pipeline.SetState(State.Playing);
         }
 
         public StateChangeReturn Stop()
         {
-            return this.pipeline.SetState(State.Null);
+            return _pipeline.SetState(State.Null);
         }
 
         public void PushAudioBuffer(byte[] buffer, long timestamp)
         {
             var gstBuffer = new Gst.Buffer(null, (ulong)buffer.Length, Gst.AllocationParams.Zero);
             gstBuffer.Fill(0, buffer);
-            var referencedTimestamp = ((ulong)(timestamp * 100)) - this.baseTimestamp;
+            var referencedTimestamp = ((ulong)(timestamp * 100)) - _baseTimestamp;
             gstBuffer.Pts = referencedTimestamp;
             gstBuffer.Dts = referencedTimestamp;
 
-            lock (audioSrcLock)
+            lock (_audioSrcLock)
             {
-                audioSrc.PushBuffer(gstBuffer);
+                _audioSrc.PushBuffer(gstBuffer);
             }
 
             gstBuffer.Dispose();
@@ -77,14 +80,14 @@ namespace BotService.Infrastructure.Pipelines
         {
             var gstBuffer = new Gst.Buffer(null, (ulong)buffer.Length, Gst.AllocationParams.Zero);
             gstBuffer.Fill(0, buffer);
-            var referencedTimestamp = ((ulong)(timestamp * 100)) - this.baseTimestamp;
+            var referencedTimestamp = ((ulong)(timestamp * 100)) - _baseTimestamp;
             gstBuffer.Pts = referencedTimestamp;
             gstBuffer.Dts = referencedTimestamp;
             gstBuffer.Duration = referencedTimestamp;
 
-            lock (videoSrcLock)
+            lock (_videoSrcLock)
             {
-                videoSrc.PushBuffer(gstBuffer);
+                _videoSrc.PushBuffer(gstBuffer);
             }
 
             gstBuffer.Dispose();
@@ -92,8 +95,8 @@ namespace BotService.Infrastructure.Pipelines
 
         private bool BuildPipeline()
         {
-            this.CreatePipelineElements();
-            this.AddPipelineElements();
+            CreatePipelineElements();
+            AddPipelineElements();
 
             var linkedElements = LinkPipelineElements();
 
@@ -103,90 +106,90 @@ namespace BotService.Infrastructure.Pipelines
         private void CreatePipelineElements()
         {
             // Streaming elements
-            this.muxer = ElementFactory.Make("mpegtsmux", "muxer");
-            this.sinkQueue = ElementFactory.Make("queue", "sink_queue");
-            this.sink = ElementFactory.Make("srtsink", "srt_output");
+            _muxer = ElementFactory.Make("mpegtsmux", "muxer");
+            _sinkQueue = ElementFactory.Make("queue", "sink_queue");
+            _sink = ElementFactory.Make("srtsink", "srt_output");
 
-            var uri = this.protocolSettings.Mode == SrtMode.Caller ? this.protocolSettings.Url : $"srt://:{this.protocolSettings.Port}";
+            var uri = _protocolSettings.Mode == SrtMode.Caller ? _protocolSettings.Url : $"srt://:{_protocolSettings.Port}";
 
-            this.sink.SetProperty("uri", new GLib.Value(uri));
-            this.sink.SetProperty("mode", new GLib.Value((int)this.protocolSettings.Mode));
-            this.sink.SetProperty("latency", new GLib.Value(this.protocolSettings.Latency));
-            this.sink.SetProperty("passphrase", new GLib.Value(this.protocolSettings.Passphrase));
-            this.sink.SetProperty("wait-for-connection", new GLib.Value(false));
+            _sink.SetProperty("uri", new GLib.Value(uri));
+            _sink.SetProperty("mode", new GLib.Value((int)_protocolSettings.Mode));
+            _sink.SetProperty("latency", new GLib.Value(_protocolSettings.Latency));
+            _sink.SetProperty("passphrase", new GLib.Value(_protocolSettings.Passphrase));
+            _sink.SetProperty("wait-for-connection", new GLib.Value(false));
 
-            // Video processing elements 
-            this.videoSrc = new AppSrc("video_src")
+            // Video processing elements
+            _videoSrc = new AppSrc("video_src")
             {
                 Caps = Caps.FromString("video/x-h264, stream-format=byte-stream, alignment=nal, profile=constrained-high, level=4"),
                 Format = Format.Time,
                 IsLive = true,
-                DoTimestamp = false
+                DoTimestamp = false,
             };
 
-            this.videoQueue = ElementFactory.Make("queue", "video_src_queue");
-            this.videoDecoder = ElementFactory.Make("avdec_h264", "video_decoder");
-            this.videoConvert = ElementFactory.Make("videoconvert", "video_convert");
-            this.colorimetryFilter = ElementFactory.Make("capsfilter", "colorimetry_filter");
-            this.colorimetryFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"video/x-raw, colorimetry={VIDEO_COLORIMETRY}")));
-            this.videoScale = ElementFactory.Make("videoscale", "video_scale");
-            this.videoScaleFilter = ElementFactory.Make("capsfilter", "video_scale_filter");
-            this.videoScaleFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"video/x-raw, width={VIDEO_WIDTH}, height={VIDEO_HEIGHT}, pixel-aspect-ratio=1/1")));
-            this.videoRate = ElementFactory.Make("videorate", "video_rate");
-            this.videoRateFilter = ElementFactory.Make("capsfilter", "video_rate_filter");
-            this.videoRateFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"video/x-raw, framerate={VIDEO_FRAME_RATE}")));
-            this.videoOverlay = this.protocolSettings.TimeOverlay ? ElementFactory.Make("timeoverlay", "time_overlay") : null;
-            this.videoEncoder = ElementFactory.Make("x264enc", "video_encoder");
-            this.videoEncoder.SetProperty("tune", new GLib.Value(ENCODER_TUNE));
-            this.videoEncoder.SetProperty("bitrate", new GLib.Value(ENCODER_BITRATE));
-            this.videoEncoder.SetProperty("speed-preset", new GLib.Value(ENCODER_SPEED_PRESET));
-            this.videoEncoder.SetProperty("key-int-max", new GLib.Value(KEY_FRAME_DISTANCE));
-            this.videoParse = ElementFactory.Make("h264parse", "video_parse");
+            _videoQueue = ElementFactory.Make("queue", "video_src_queue");
+            _videoDecoder = ElementFactory.Make("avdec_h264", "video_decoder");
+            _videoConvert = ElementFactory.Make("videoconvert", "video_convert");
+            _colorimetryFilter = ElementFactory.Make("capsfilter", "colorimetry_filter");
+            _colorimetryFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"video/x-raw, colorimetry={VideoColorimetry}")));
+            _videoScale = ElementFactory.Make("videoscale", "video_scale");
+            _videoScaleFilter = ElementFactory.Make("capsfilter", "video_scale_filter");
+            _videoScaleFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"video/x-raw, width={VideoWidth}, height={VideoHeight}, pixel-aspect-ratio=1/1")));
+            _videoRate = ElementFactory.Make("videorate", "video_rate");
+            _videoRateFilter = ElementFactory.Make("capsfilter", "video_rate_filter");
+            _videoRateFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"video/x-raw, framerate={VideoFrameRate}")));
+            _videoOverlay = _protocolSettings.TimeOverlay ? ElementFactory.Make("timeoverlay", "time_overlay") : null;
+            _videoEncoder = ElementFactory.Make("x264enc", "video_encoder");
+            _videoEncoder.SetProperty("tune", new GLib.Value(EncoderTune));
+            _videoEncoder.SetProperty("bitrate", new GLib.Value(EncoderBitrate));
+            _videoEncoder.SetProperty("speed-preset", new GLib.Value(EncoderSpeedPreset));
+            _videoEncoder.SetProperty("key-int-max", new GLib.Value(KeyFrameDistance));
+            _videoParse = ElementFactory.Make("h264parse", "video_parse");
 
             // Audio stream processing plugins
-            this.audioSrc = new AppSrc("audio_src")
+            _audioSrc = new AppSrc("audio_src")
             {
                 Caps = Caps.FromString("audio/x-raw, format=S16LE, layout=interleaved, rate=16000, channels=1"),
                 Format = Format.Time,
                 IsLive = true,
-                DoTimestamp = false
+                DoTimestamp = false,
             };
 
-            this.audioQueue = ElementFactory.Make("queue", "audio_src_queue");
-            this.audioConvert = ElementFactory.Make("audioconvert", "audio_convert");
-            this.audioConvertFilter = ElementFactory.Make("capsfilter");
-            this.audioConvertFilter.SetProperty("caps", new GLib.Value(Caps.FromString("audio/x-raw, channels=2")));
-            this.audioResample = ElementFactory.Make("audioresample", "audio_resample");
-            this.audioResampleFilter = ElementFactory.Make("capsfilter");
-            this.audioResampleFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"audio/x-raw, rate={this.protocolSettings.AudioFormat.ToAudioRate()}")));
-            this.audioEncoder = ElementFactory.Make("avenc_aac", "audio_encoder");
-            this.audioParse = ElementFactory.Make("aacparse", "audio_parse");
+            _audioQueue = ElementFactory.Make("queue", "audio_src_queue");
+            _audioConvert = ElementFactory.Make("audioconvert", "audio_convert");
+            _audioConvertFilter = ElementFactory.Make("capsfilter");
+            _audioConvertFilter.SetProperty("caps", new GLib.Value(Caps.FromString("audio/x-raw, channels=2")));
+            _audioResample = ElementFactory.Make("audioresample", "audio_resample");
+            _audioResampleFilter = ElementFactory.Make("capsfilter");
+            _audioResampleFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"audio/x-raw, rate={_protocolSettings.AudioFormat.ToAudioRate()}")));
+            _audioEncoder = ElementFactory.Make("avenc_aac", "audio_encoder");
+            _audioParse = ElementFactory.Make("aacparse", "audio_parse");
 
-            //Timestamps test
-            this.videoIdentity = ElementFactory.Make("identity", "video_identity");
-            this.videoIdentity.SetProperty("silent", new GLib.Value(false));
-            this.videoIdentity.SetProperty("check-imperfect-timestamp", new GLib.Value(true));
-            this.audioIdentity = ElementFactory.Make("identity", "audio_identity");
-            this.audioIdentity.SetProperty("silent", new GLib.Value(false));
-            this.audioIdentity.SetProperty("check-imperfect-timestamp", new GLib.Value(true));
+            // Timestamps test
+            _videoIdentity = ElementFactory.Make("identity", "video_identity");
+            _videoIdentity.SetProperty("silent", new GLib.Value(false));
+            _videoIdentity.SetProperty("check-imperfect-timestamp", new GLib.Value(true));
+            _audioIdentity = ElementFactory.Make("identity", "audio_identity");
+            _audioIdentity.SetProperty("silent", new GLib.Value(false));
+            _audioIdentity.SetProperty("check-imperfect-timestamp", new GLib.Value(true));
         }
 
         private void AddPipelineElements()
         {
-            var videoElements = new[] { this.videoSrc, this.videoQueue, this.videoDecoder, this.videoConvert, this.colorimetryFilter, this.videoScale, this.videoScaleFilter, this.videoRate, this.videoRateFilter, this.videoOverlay, this.videoEncoder, this.videoParse, this.videoIdentity };
+            var videoElements = new[] { _videoSrc, _videoQueue, _videoDecoder, _videoConvert, _colorimetryFilter, _videoScale, _videoScaleFilter, _videoRate, _videoRateFilter, _videoOverlay, _videoEncoder, _videoParse, _videoIdentity };
 
-            this.pipeline.Add(this.muxer, this.sinkQueue, this.sink);
-            this.pipeline.Add(this.audioSrc, this.audioQueue, this.audioConvert, this.audioConvertFilter, this.audioResample, this.audioResampleFilter, this.audioEncoder, this.audioParse, this.audioIdentity);
-            this.pipeline.Add(videoElements.Where(e => e != null).ToArray());
+            _pipeline.Add(_muxer, _sinkQueue, _sink);
+            _pipeline.Add(_audioSrc, _audioQueue, _audioConvert, _audioConvertFilter, _audioResample, _audioResampleFilter, _audioEncoder, _audioParse, _audioIdentity);
+            _pipeline.Add(videoElements.Where(e => e != null).ToArray());
         }
 
         private bool LinkPipelineElements()
         {
-            var videoElements = new[] { this.videoSrc, this.videoQueue, this.videoParse, this.videoDecoder, this.videoConvert, this.colorimetryFilter, this.videoScale, this.videoScaleFilter, this.videoRate, this.videoRateFilter, this.videoOverlay, this.videoEncoder, this.videoIdentity, this.muxer };
+            var videoElements = new[] { _videoSrc, _videoQueue, _videoParse, _videoDecoder, _videoConvert, _colorimetryFilter, _videoScale, _videoScaleFilter, _videoRate, _videoRateFilter, _videoOverlay, _videoEncoder, _videoIdentity, _muxer };
 
             return Element.Link(videoElements.Where(e => e != null).ToArray()) &&
-                   Element.Link(this.audioSrc, this.audioQueue, this.audioConvert, this.audioConvertFilter, this.audioResample, this.audioResampleFilter, this.audioEncoder, this.audioParse, this.audioIdentity, this.muxer) &&
-                   Element.Link(this.muxer, this.sinkQueue, this.sink);
+                   Element.Link(_audioSrc, _audioQueue, _audioConvert, _audioConvertFilter, _audioResample, _audioResampleFilter, _audioEncoder, _audioParse, _audioIdentity, _muxer) &&
+                   Element.Link(_muxer, _sinkQueue, _sink);
         }
     }
 }

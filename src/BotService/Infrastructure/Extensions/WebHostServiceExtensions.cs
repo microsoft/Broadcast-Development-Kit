@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Hosting;
 using System.ServiceProcess;
+using Microsoft.AspNetCore.Hosting;
 
 namespace BotService.Infrastructure.Extensions
 {

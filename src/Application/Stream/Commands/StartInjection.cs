@@ -1,43 +1,32 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Config;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
 using AutoMapper;
-using Domain.Constants;
 using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using static Domain.Constants.Constants;
 
 namespace Application.Stream.Commands
 {
     public class StartInjection
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartInjectionCommand : IRequest<StartInjectionCommandResponse>
         {
             public StartStreamInjectionBody Body { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartInjectionCommandResponse
         {
             public string Id { get; set; }
+
             public StreamModel Resource { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartInjectionCommandValidator : AbstractValidator<StartInjectionCommand>
         {
             public StartInjectionCommandValidator()
@@ -77,9 +66,6 @@ namespace Application.Stream.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartInjectionCommandHandler : IRequestHandler<StartInjectionCommand, StartInjectionCommandResponse>
         {
             private readonly IAppConfiguration _configuration;
@@ -93,15 +79,13 @@ namespace Application.Stream.Commands
                 IBot bot,
                 IStreamRepository streamRepository,
                 IInjectionUrlHelper injectionUrlHelper,
-                IMapper mapper
-                )
+                IMapper mapper)
             {
                 _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
                 _bot = bot ?? throw new ArgumentNullException(nameof(bot));
                 _streamRepository = streamRepository ?? throw new ArgumentNullException(nameof(streamRepository));
                 _injectionUrlHelper = injectionUrlHelper ?? throw new ArgumentNullException(nameof(injectionUrlHelper));
                 _mapper = mapper;
-
             }
 
             public async Task<StartInjectionCommandResponse> Handle(StartInjectionCommand request, CancellationToken cancellationToken)
@@ -132,7 +116,7 @@ namespace Application.Stream.Commands
                 StartInjectionCommandResponse response = new StartInjectionCommandResponse
                 {
                     Id = entity.Id,
-                    Resource = _mapper.Map<StreamModel>(entity)
+                    Resource = _mapper.Map<StreamModel>(entity),
                 };
 
                 return response;

@@ -10,11 +10,13 @@ namespace Application.Exceptions
         {
         }
 
-        public CertificateNotFoundException(string message) : base(message)
+        public CertificateNotFoundException(string message)
+            : base(message)
         {
         }
 
-        protected CertificateNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected CertificateNotFoundException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

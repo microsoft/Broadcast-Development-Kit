@@ -7,24 +7,6 @@ namespace BotService.Infrastructure.Extensions
 {
     public static class SerializationExtensions
     {
-        public class ParticipantDataToLog
-        {
-            public string Id { get; set; }
-            public Participant Resource { get; set; }
-            public string ResourcePath { get; set; }
-            public DateTimeOffset CreatedDateTime { get; set; }
-            public DateTimeOffset ModifiedDateTime { get; set; }
-
-            public ParticipantClientDataToLog Client { get; set; }
-        }
-
-        public class ParticipantClientDataToLog
-        {
-            public string AppName { get; set; }
-            public string AppId { get; set; }
-            public string BaseUrl { get; set; }
-        }
-
         public static string ToJson(this IParticipant participant)
         {
             ParticipantDataToLog participantDataToLog = new ParticipantDataToLog
@@ -43,6 +25,30 @@ namespace BotService.Infrastructure.Extensions
             };
 
             return JsonConvert.SerializeObject(participantDataToLog, Formatting.Indented);
+        }
+
+        public class ParticipantDataToLog
+        {
+            public string Id { get; set; }
+
+            public Participant Resource { get; set; }
+
+            public string ResourcePath { get; set; }
+
+            public DateTimeOffset CreatedDateTime { get; set; }
+
+            public DateTimeOffset ModifiedDateTime { get; set; }
+
+            public ParticipantClientDataToLog Client { get; set; }
+        }
+
+        public class ParticipantClientDataToLog
+        {
+            public string AppName { get; set; }
+
+            public string AppId { get; set; }
+
+            public string BaseUrl { get; set; }
         }
     }
 }

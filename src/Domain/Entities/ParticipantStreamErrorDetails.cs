@@ -7,7 +7,6 @@ namespace Domain.Entities
     {
         public ParticipantStreamErrorDetails()
         {
-
         }
 
         public ParticipantStreamErrorDetails(ParticipantStreamErrorType type)
@@ -15,13 +14,17 @@ namespace Domain.Entities
             Type = type;
             Message = GetDefaultMessage();
         }
+
         public ParticipantStreamErrorDetails(ParticipantStreamErrorType type, string message)
         {
             Type = type;
             Message = message;
         }
+
         public ParticipantStreamErrorType Type { get; set; }
+
         public string Message { get; set; }
+
         private string GetDefaultMessage()
         {
             var message = $"Error while trying to {Type}";

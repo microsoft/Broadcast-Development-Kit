@@ -5,13 +5,11 @@ using System.Threading.Tasks;
 using Application.Interfaces.Persistance;
 using Domain.Enums;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Call.Commands
 {
     public class DeleteCallContext
     {
-
         public class DeleteCallContextCommand : IRequest<DeleteCallContextResponse>
         {
             public string CallId { get; set; }
@@ -25,16 +23,16 @@ namespace Application.Call.Commands
 
         public class DeleteCallContextHandler : IRequestHandler<DeleteCallContextCommand, DeleteCallContextResponse>
         {
-            private readonly ICallRepository callRepository;
+            private readonly ICallRepository _callRepository;
 
             public DeleteCallContextHandler(ICallRepository callRepository)
             {
-                this.callRepository = callRepository ?? throw new ArgumentNullException(nameof(callRepository));
+                _callRepository = callRepository ?? throw new ArgumentNullException(nameof(callRepository));
             }
 
             public async Task<DeleteCallContextResponse> Handle(DeleteCallContextCommand request, CancellationToken cancellationToken)
             {
-                var call = await callRepository.GetItemAsync(request.CallId);
+                var call = await _callRepository.GetItemAsync(request.CallId);
 
                 switch (request.PrivacyLevel)
                 {
@@ -46,7 +44,7 @@ namespace Application.Call.Commands
                         break;
                 }
 
-                await callRepository.UpdateItemAsync(call.Id, call);
+                await _callRepository.UpdateItemAsync(call.Id, call);
 
                 return new DeleteCallContextResponse();
             }

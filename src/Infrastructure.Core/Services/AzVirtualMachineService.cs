@@ -1,13 +1,11 @@
-using Application.Interfaces.Common;
-using Application.Interfaces.Persistance;
-using Ardalis.Result;
-using Domain.Entities;
-using Microsoft.Azure.Management.Compute.Fluent;
-using Microsoft.Azure.Management.Fluent;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.Interfaces.Common;
+using Ardalis.Result;
+using Microsoft.Azure.Management.Compute.Fluent;
+using Microsoft.Azure.Management.Fluent;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Core.Services
 {
@@ -15,18 +13,17 @@ namespace Infrastructure.Core.Services
     {
         private readonly IAzure _azure;
         private readonly ILogger<AzVirtualMachineService> _logger;
-        
+
         private readonly List<PowerState> _transitionalStates = new List<PowerState> { PowerState.Deallocating, PowerState.Starting, PowerState.Stopping };
-        
+
         public AzVirtualMachineService(
             IAzure azure,
-            ILogger<AzVirtualMachineService> logger
-            )
+            ILogger<AzVirtualMachineService> logger)
         {
             _azure = azure;
             _logger = logger;
         }
-        
+
         public async Task<IVirtualMachine> GetAsync(string subscriptionId, string resourceGroup, string name)
         {
             var resourceId = GetVirtualMachineResourceId(subscriptionId, resourceGroup, name);
@@ -56,27 +53,29 @@ namespace Infrastructure.Core.Services
                 if (_transitionalStates.Contains(virtualMachine.PowerState))
                 {
                     return Result<IVirtualMachine>.Invalid(
-                        new List<ValidationError> {
+                        new List<ValidationError>
+                        {
                             new ValidationError
                             {
                                 Severity = ValidationSeverity.Info,
                                 Identifier = virtualMachine.PowerState.Value,
-                                ErrorMessage = $"The vm has a transitional state ({virtualMachine.PowerState.Value}), please try again in a few seconds"
-                            }
-                    }) ;
+                                ErrorMessage = $"The vm has a transitional state ({virtualMachine.PowerState.Value}), please try again in a few seconds",
+                            },
+                        });
                 }
 
                 if (virtualMachine.PowerState == PowerState.Unknown)
                 {
                     return Result<IVirtualMachine>.Invalid(
-                        new List<ValidationError> {
+                        new List<ValidationError>
+                        {
                             new ValidationError
                             {
                                 Severity = ValidationSeverity.Info,
                                 Identifier = virtualMachine.PowerState.Value,
-                                ErrorMessage = "The vm has an unknown state"
-                            }
-                    });
+                                ErrorMessage = "The vm has an unknown state",
+                            },
+                        });
                 }
 
                 if (virtualMachine.PowerState == PowerState.Deallocated || virtualMachine.PowerState == PowerState.Stopped)
@@ -100,7 +99,7 @@ namespace Infrastructure.Core.Services
                 return Result<IVirtualMachine>.Error(ex.Message);
             }
         }
-        
+
         public async Task<Result<IVirtualMachine>> StopAsync(string resourceId)
         {
             try
@@ -115,27 +114,28 @@ namespace Infrastructure.Core.Services
 
                 if (_transitionalStates.Contains(virtualMachine.PowerState))
                 {
-
                     return Result<IVirtualMachine>.Invalid(
-                        new List<ValidationError> {
+                        new List<ValidationError>
+                        {
                             new ValidationError
                             {
                                 Identifier = virtualMachine.PowerState.Value,
-                                ErrorMessage = $"The vm has a transitional state ({virtualMachine.PowerState.Value}), please try again in a few seconds"
-                            }
-                    });
+                                ErrorMessage = $"The vm has a transitional state ({virtualMachine.PowerState.Value}), please try again in a few seconds",
+                            },
+                        });
                 }
 
                 if (virtualMachine.PowerState == PowerState.Unknown)
                 {
                     return Result<IVirtualMachine>.Invalid(
-                        new List<ValidationError> {
+                        new List<ValidationError>
+                        {
                             new ValidationError
                             {
                                 Identifier = virtualMachine.PowerState.Value,
-                                ErrorMessage = "The vm has an unknown state"
-                            }
-                    });
+                                ErrorMessage = "The vm has an unknown state",
+                            },
+                        });
                 }
 
                 if (virtualMachine.PowerState == PowerState.Running)

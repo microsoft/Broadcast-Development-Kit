@@ -4,11 +4,11 @@ namespace BotService.Infrastructure.Common.Logging
 {
     public class PipelineBusObserverUnsuscriber : IDisposable
     {
-        private IObserver<BusEventPayload> observer;
+        private IObserver<BusEventPayload> _observer;
 
         public PipelineBusObserverUnsuscriber(IObserver<BusEventPayload> observer)
         {
-            this.observer = observer;
+            _observer = observer;
         }
 
         public void Dispose()
@@ -21,7 +21,7 @@ namespace BotService.Infrastructure.Common.Logging
         {
             if (disposing)
             {
-                observer = null;
+                _observer = null;
             }
         }
     }

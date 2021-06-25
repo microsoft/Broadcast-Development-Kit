@@ -8,67 +8,82 @@ using static Application.Participant.Commands.UpdateParticipantMeetingStatus;
 namespace BotService.Application.Participant
 {
     /// <summary>
-    ///     Mapping Profile for AutoMapper
+    ///     Mapping Profile for AutoMapper.
     /// </summary>
     public class MappingProfile : Profile
     {
         public MappingProfile()
         {
-            //Create
+            // Create
             CreateMap<IParticipant, ParticipantStreamModel>()
                 .ForMember(dest => dest.Id, act => act.Ignore())
-                .ForMember(dest => dest.AadId,
+                .ForMember(
+                    dest => dest.AadId,
                     opts => opts.MapFrom(
                         src => src.GetUserIdentity().Id))
-                .ForMember(dest => dest.ParticipantGraphId,
+                .ForMember(
+                    dest => dest.ParticipantGraphId,
                     opts => opts.MapFrom(
                         src => src.Id))
-                .ForMember(dest => dest.DisplayName,
+                .ForMember(
+                    dest => dest.DisplayName,
                     opts => opts.MapFrom(
                         src => src.GetUserIdentity().DisplayName))
-                 .ForMember(dest => dest.Type,
+                 .ForMember(
+                    dest => dest.Type,
                     opts => opts.MapFrom(
                         src => ResourceType.Participant))
-                 .ForMember(dest => dest.State,
+                 .ForMember(
+                    dest => dest.State,
                     opts => opts.MapFrom(
                         src => StreamState.Disconnected))
-                 .ForMember(dest => dest.IsHealthy,
+                 .ForMember(
+                    dest => dest.IsHealthy,
                     opts => opts.MapFrom(
                         src => true))
-                 .ForMember(dest => dest.HealthMessage,
+                 .ForMember(
+                    dest => dest.HealthMessage,
                     opts => opts.MapFrom(
                         src => string.Empty))
-                 .ForMember(dest => dest.AudioMuted,
+                 .ForMember(
+                    dest => dest.AudioMuted,
                     opts => opts.MapFrom(
                         src => src.Resource.IsMuted.HasValue && src.Resource.IsMuted.Value))
-                .ForMember(dest => dest.IsSharingAudio,
+                .ForMember(
+                    dest => dest.IsSharingAudio,
                     opts => opts.MapFrom(
                         src => src.IsParticipantCapableToSendAudio()))
-                .ForMember(dest => dest.IsSharingScreen,
+                .ForMember(
+                    dest => dest.IsSharingScreen,
                     opts => opts.MapFrom(
                         src => src.IsParticipantSharingScreen()))
-                .ForMember(dest => dest.IsSharingVideo,
+                .ForMember(
+                    dest => dest.IsSharingVideo,
                     opts => opts.MapFrom(
                         src => src.IsParticipantCapableToSendVideo()));
 
-            //Update
+            // Update
             CreateMap<IParticipant, UpdateParticipantMeetingStatusCommand>()
-                .ForMember(dest => dest.ParticipantGraphId,
+                .ForMember(
+                    dest => dest.ParticipantGraphId,
                     opts => opts.MapFrom(
                         src => src.Id))
-                .ForMember(dest => dest.AudioMuted,
+                .ForMember(
+                    dest => dest.AudioMuted,
                     opts => opts.MapFrom(
                         src => src.Resource.IsMuted.HasValue && src.Resource.IsMuted.Value))
-                .ForMember(dest => dest.IsSharingAudio,
+                .ForMember(
+                    dest => dest.IsSharingAudio,
                     opts => opts.MapFrom(
                         src => src.IsParticipantCapableToSendAudio()))
-                .ForMember(dest => dest.IsSharingScreen,
+                .ForMember(
+                    dest => dest.IsSharingScreen,
                     opts => opts.MapFrom(
                         src => src.IsParticipantSharingScreen()))
-                .ForMember(dest => dest.IsSharingVideo,
+                .ForMember(
+                    dest => dest.IsSharingVideo,
                     opts => opts.MapFrom(
                         src => src.IsParticipantCapableToSendVideo()));
-
         }
     }
 }

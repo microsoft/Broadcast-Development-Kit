@@ -6,11 +6,14 @@ namespace Application.Common.Config
     public class BotConfiguration
     {
         public string VirtualMachineName { get; set; } = "localhost";
+
         public string MainApiUrl { get; set; }
+
         /// <summary>
-        /// Gets the DNS name for this service.
+        /// Gets or sets the DNS name for this service.
         /// </summary>
         public string ServiceDnsName { get; set; }
+
         public string ServiceCname { get; set; }
 
         /// <summary>
@@ -20,30 +23,37 @@ namespace Application.Common.Config
         /// </summary>
         public Uri CallControlBaseUrl => new Uri(string.Format(
                 "https://{0}/{1}/{2}",
-                this.ServiceCname,
+                ServiceCname,
                 HttpRouteConstants.CallSignalingRoutePrefix,
                 HttpRouteConstants.OnIncomingRequestRoute));
 
         /// <summary>
-        /// Gets the remote endpoint that any outgoing call targets.
+        /// Gets or sets the remote endpoint that any outgoing call targets.
         /// </summary>
         public Uri PlaceCallEndpointUrl { get; set; }
 
         /// <summary>
-        /// Gets the AadAppId generated at the time of registration of the bot.
+        /// Gets or sets the AadAppId generated at the time of registration of the bot.
         /// </summary>
         public string AadAppId { get; set; }
 
         /// <summary>
-        /// Gets the AadAppSecret generated at the time of registration of the bot.
+        /// Gets or sets the AadAppSecret generated at the time of registration of the bot.
         /// </summary>
         public string AadAppSecret { get; set; }
+
         public string ServiceFqdn { get; set; }
+
         public IPAddress InstancePublicIPAddress { get; set; } = IPAddress.Any;
+
         public int InstancePublicPort { get; set; }
+
         public int InstanceInternalPort { get; set; }
+
         public int NumberOfMultiviewSockets { get; set; }
+
         public string CertificateThumbprint { get; set; }
+
         public string CertificatePassword { get; set; }
     }
 }

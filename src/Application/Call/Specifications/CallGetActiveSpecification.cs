@@ -3,7 +3,7 @@ using Domain.Enums;
 
 namespace Application.Call.Specifications
 {
-    public class CallGetActiveSpecification: Specification<Domain.Entities.Call>
+    public class CallGetActiveSpecification : Specification<Domain.Entities.Call>
     {
         public CallGetActiveSpecification()
         {

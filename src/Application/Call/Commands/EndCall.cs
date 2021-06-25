@@ -1,59 +1,41 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
 using AutoMapper;
-using Domain.Constants;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Call.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class EndCall
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class EndCallCommand : IRequest<EndCallCommandResponse>
         {
             public string CallId { get; set; }
+
             public bool ShouldShutDownService { get; set; }
         }
 
-        /// <summary>
-        ///     Command Response
-        /// </summary>
         public class EndCallCommandResponse
         {
-            /// <summary>
-            ///     Item Id
-            /// </summary>
             public string Id { get; set; }
 
             public CallModel Resource { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class EndCallCommandValidator : AbstractValidator<EndCallCommand>
         {
             public EndCallCommandValidator()
             {
-                //TODO: Check how to do a custom validation for Meeting URL
+                // TODO: Check how to do a custom validation for Meeting URL
                 RuleFor(x => x.CallId)
                     .NotEmpty();
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class EndCallCommandHandler : IRequestHandler<EndCallCommand, EndCallCommandResponse>
         {
             private readonly ICallRepository _callRepository;
@@ -61,8 +43,9 @@ namespace Application.Call.Commands
             private readonly IBotServiceClient _botServiceClient;
             private readonly IMapper _mapper;
 
-            public EndCallCommandHandler(ICallRepository callRepository,
-                IServiceRepository serviceRepository, 
+            public EndCallCommandHandler(
+                ICallRepository callRepository,
+                IServiceRepository serviceRepository,
                 IBotServiceClient botServiceClient,
                 IMapper mapper)
             {
@@ -81,7 +64,7 @@ namespace Application.Call.Commands
 
                 await _callRepository.UpdateItemAsync(entity.Id, entity);
 
-                //Getting service base url
+                // Getting service base url
                 var service = await _serviceRepository.GetItemAsync(entity.ServiceId);
 
                 response.Resource = _mapper.Map<CallModel>(entity);

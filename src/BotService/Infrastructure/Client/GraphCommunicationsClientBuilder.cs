@@ -9,56 +9,55 @@ namespace BotService.Infrastructure.Client
 {
     public class GraphCommunicationsClientBuilder : IGraphCommunicationsClientBuilder
     {
-        private readonly IAppConfiguration configuration;
-        private readonly IGraphLogger graphLogger;
-        private readonly ILogger logger;
+        private readonly IAppConfiguration _configuration;
+        private readonly IGraphLogger _graphLogger;
+        private readonly ILogger _logger;
 
         public GraphCommunicationsClientBuilder(
             IAppConfiguration configuration,
             IGraphLogger graphLogger,
-            ILogger logger
-            )
+            ILogger logger)
         {
-            this.configuration = configuration;
-            this.graphLogger = graphLogger;
-            this.logger = logger;
+            _configuration = configuration;
+            _graphLogger = graphLogger;
+            _logger = logger;
         }
 
         public ICommunicationsClient Build(string name = null)
         {
-            var clientName = name ?? this.GetType().Assembly.GetName().Name;
+            var clientName = name ?? GetType().Assembly.GetName().Name;
 
-            logger.LogInformation("Instantiating CommunicationsClientBuilder for {clientName}", clientName);
+            _logger.LogInformation("Instantiating CommunicationsClientBuilder for {clientName}", clientName);
             var communicationClientBuilder = new CommunicationsClientBuilder(
                     clientName,
-                    configuration.BotConfiguration.AadAppId,
-                    graphLogger);
+                    _configuration.BotConfiguration.AadAppId,
+                    _graphLogger);
 
-            logger.LogInformation("Instantiating AuthenticationProvider for {clientName}", clientName);
+            _logger.LogInformation("Instantiating AuthenticationProvider for {clientName}", clientName);
             var authProvider = new AuthenticationProvider(
-                configuration.BotConfiguration.AadAppId,
-                configuration.BotConfiguration.AadAppSecret,
-                graphLogger);
+                _configuration.BotConfiguration.AadAppId,
+                _configuration.BotConfiguration.AadAppSecret,
+                _graphLogger);
 
-            logger.LogInformation("Setting AuthenticationProvider for {clientName}", clientName);
+            _logger.LogInformation("Setting AuthenticationProvider for {clientName}", clientName);
             communicationClientBuilder.SetAuthenticationProvider(authProvider);
 
-            logger.LogInformation("Setting NotificationUrl for {clientName}", clientName);
-            communicationClientBuilder.SetNotificationUrl(configuration.BotConfiguration.CallControlBaseUrl);
+            _logger.LogInformation("Setting NotificationUrl for {clientName}", clientName);
+            communicationClientBuilder.SetNotificationUrl(_configuration.BotConfiguration.CallControlBaseUrl);
 
-            logger.LogInformation("Getting MediaPlatformSettings for {clientName}", clientName);
-            var mediaPlatformSettings = configuration.BotConfiguration.GetMediaPlatformSettings();
+            _logger.LogInformation("Getting MediaPlatformSettings for {clientName}", clientName);
+            var mediaPlatformSettings = _configuration.BotConfiguration.GetMediaPlatformSettings();
 
-            logger.LogInformation("Setting MediaPlatformSettings for {clientName}", clientName);
+            _logger.LogInformation("Setting MediaPlatformSettings for {clientName}", clientName);
             communicationClientBuilder.SetMediaPlatformSettings(mediaPlatformSettings);
 
-            logger.LogInformation("Setting ServiceBaseUrl for {clientName}", clientName);
-            communicationClientBuilder.SetServiceBaseUrl(configuration.BotConfiguration.PlaceCallEndpointUrl);
+            _logger.LogInformation("Setting ServiceBaseUrl for {clientName}", clientName);
+            communicationClientBuilder.SetServiceBaseUrl(_configuration.BotConfiguration.PlaceCallEndpointUrl);
 
-            logger.LogInformation("Building Communication Client for {clientName}", clientName);
+            _logger.LogInformation("Building Communication Client for {clientName}", clientName);
             var client = communicationClientBuilder.Build();
 
-            logger.LogInformation("Communication Client for {clientName} has been succesfully built", clientName);
+            _logger.LogInformation("Communication Client for {clientName} has been succesfully built", clientName);
 
             return client;
         }

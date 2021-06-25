@@ -6,7 +6,6 @@ using Application.Interfaces.Persistance;
 using AutoMapper;
 using BotService.Application.Core;
 using BotService.Configuration;
-using BotService.InfCrastructure.Core;
 using BotService.Infrastructure.Client;
 using BotService.Infrastructure.Common;
 using BotService.Infrastructure.Common.Logging;
@@ -21,22 +20,24 @@ using Infrastructure.Core.Services;
 using MediatR;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Communications.Client;
 using Microsoft.Graph.Communications.Common.Telemetry;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace BotService
 {
     public class Startup
     {
         private readonly ILogger<Startup> _logger;
-        public Startup(IConfiguration configuration,
+
+        public Startup(
+            IConfiguration configuration,
             ILogger<Startup> logger)
         {
             Configuration = configuration;
@@ -80,9 +81,10 @@ namespace BotService
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             // register CosmosDB client and data repositories
-            services.AddCosmosDb(appConfiguration.CosmosDbConfiguration.EndpointUrl,
-                                 appConfiguration.CosmosDbConfiguration.PrimaryKey,
-                                 appConfiguration.CosmosDbConfiguration.DatabaseName);
+            services.AddCosmosDb(
+                appConfiguration.CosmosDbConfiguration.EndpointUrl,
+                appConfiguration.CosmosDbConfiguration.PrimaryKey,
+                appConfiguration.CosmosDbConfiguration.DatabaseName);
 
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<ICallRepository, CallRepository>();
@@ -101,7 +103,7 @@ namespace BotService
 
             services.AddScoped<IInjectionUrlHelper, InjectionUrlHelper>();
 
-            services.AddMvc(config => 
+            services.AddMvc(config =>
             {
                 if (!environment.IsLocal())
                 {
@@ -116,7 +118,8 @@ namespace BotService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app,
+        public void Configure(
+            IApplicationBuilder app,
             IHostEnvironment env,
             IBot bot,
             IAppConfiguration appConfiguration)
@@ -132,7 +135,7 @@ namespace BotService
             }
 
             app.UseAuthentication();
-            app.ConfigureExceptionHandler(_logger, env.IsProduction(),"BotServiceApi");
+            app.ConfigureExceptionHandler(_logger, env.IsProduction(), "BotServiceApi");
             app.UseMvc();
             bot.RegisterServiceAsync(appConfiguration.BotConfiguration.VirtualMachineName).Wait();
         }

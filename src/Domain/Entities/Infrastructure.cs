@@ -3,7 +3,7 @@ namespace Domain.Entities
     public class Infrastructure
     {
         public string VirtualMachineName { get; set; }
-        
+
         public string ResourceGroup { get; set; }
 
         public string SubscriptionId { get; set; }

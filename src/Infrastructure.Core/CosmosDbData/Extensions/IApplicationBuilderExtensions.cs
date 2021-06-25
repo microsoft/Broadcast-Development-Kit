@@ -5,14 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Infrastructure.Core.CosmosDbData.Extensions
 {
     /// <summary>
-    ///     IApplicationBuilderExtensions 
+    ///     IApplicationBuilderExtensions.
     /// </summary>
     public static class IApplicationBuilderExtensions
     {
         /// <summary>
-        ///     Ensure Cosmos DB is created
+        ///     Ensure Cosmos DB is created.
         /// </summary>
-        /// <param name="builder"></param>
+        /// <param name="builder">The IApplicationBuilder where the services are registered.</param>
         public static void EnsureCosmosDbIsCreated(this IApplicationBuilder builder)
         {
             using (IServiceScope serviceScope = builder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())

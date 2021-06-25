@@ -7,6 +7,5 @@ namespace Domain.Entities
         public string Message { get; set; }
 
         public ProvisioningStateType State { get; set; }
-
     }
 }

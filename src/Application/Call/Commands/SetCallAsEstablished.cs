@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Interfaces.Persistance;
 using Domain.Entities;
 using Domain.Enums;
@@ -5,22 +9,12 @@ using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using static Domain.Constants.Constants;
 
 namespace Application.Call.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class SetCallAsEstablished
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class SetCallAsEstablishedCommand : IRequest<SetCallAsEstablishedCommandResponse>
         {
             public string CallId { get; set; }
@@ -28,20 +22,11 @@ namespace Application.Call.Commands
             public string GraphCallId { get; set; }
         }
 
-        /// <summary>
-        ///     Command Response
-        /// </summary>
         public class SetCallAsEstablishedCommandResponse
         {
-            /// <summary>
-            ///     Item Id
-            /// </summary>
             public string Id { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class SetCallAsEstablishedCommandValidator : AbstractValidator<SetCallAsEstablishedCommand>
         {
             public SetCallAsEstablishedCommandValidator()
@@ -53,14 +38,11 @@ namespace Application.Call.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class SetCallAsEstablishedCommandHandler : IRequestHandler<SetCallAsEstablishedCommand, SetCallAsEstablishedCommandResponse>
         {
-            private readonly ICallRepository callRepository;
-            private readonly IParticipantStreamRepository participantStreamRepository;
-            private readonly ILogger<SetCallAsEstablishedCommandHandler> logger;
+            private readonly ICallRepository _callRepository;
+            private readonly IParticipantStreamRepository _participantStreamRepository;
+            private readonly ILogger<SetCallAsEstablishedCommandHandler> _logger;
 
             private readonly List<ParticipantStream> defaultParticipantStreams = new List<ParticipantStream>
             {
@@ -71,7 +53,7 @@ namespace Application.Call.Commands
                     Type = ResourceType.PrimarySpeaker,
                     State = StreamState.Disconnected,
                     IsHealthy = true,
-                    Details = new ParticipantStreamDetails()
+                    Details = new ParticipantStreamDetails(),
                 },
                 new ParticipantStream
                 {
@@ -80,47 +62,36 @@ namespace Application.Call.Commands
                     Type = ResourceType.Vbss,
                     State = StreamState.Disconnected,
                     IsHealthy = true,
-                    Details = new ParticipantStreamDetails()
-                }
+                    Details = new ParticipantStreamDetails(),
+                },
             };
 
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="callRepository"></param>
-            /// <param name="logger"></param>
-            public SetCallAsEstablishedCommandHandler(ICallRepository callRepository,
+            public SetCallAsEstablishedCommandHandler(
+                ICallRepository callRepository,
                 IParticipantStreamRepository participantStreamRepository,
                 ILogger<SetCallAsEstablishedCommandHandler> logger)
             {
-                this.callRepository = callRepository;
-                this.participantStreamRepository = participantStreamRepository;
-                this.logger = logger;
+                _callRepository = callRepository;
+                _participantStreamRepository = participantStreamRepository;
+                _logger = logger;
             }
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="request"></param>
-            /// <param name="cancellationToken"></param>
-            /// <returns></returns>
             public async Task<SetCallAsEstablishedCommandResponse> Handle(SetCallAsEstablishedCommand request, CancellationToken cancellationToken)
             {
                 var response = new SetCallAsEstablishedCommandResponse();
 
-                var entity = await callRepository.GetItemAsync(request.CallId);
+                var entity = await _callRepository.GetItemAsync(request.CallId);
                 if (entity == null)
                 {
-                    logger.LogError("Call with id {id} was not found", request.CallId);
+                    _logger.LogError("Call with id {id} was not found", request.CallId);
                     throw new EntityNotFoundException($"Call with id  {request.CallId} was not found");
                 }
 
-                entity.State = Domain.Enums.CallState.Established;
+                entity.State = CallState.Established;
                 entity.StartedAt = DateTime.UtcNow;
                 entity.GraphId = request.GraphCallId;
 
-                await callRepository.UpdateItemAsync(entity.Id, entity);
+                await _callRepository.UpdateItemAsync(entity.Id, entity);
                 await AddDefaultParticipantsStreams(request.CallId);
 
                 response.Id = entity.Id;
@@ -134,7 +105,7 @@ namespace Application.Call.Commands
                 foreach (var participant in defaultParticipantStreams)
                 {
                     participant.CallId = callId;
-                    insertTasks.Add(participantStreamRepository.AddItemAsync(participant));
+                    insertTasks.Add(_participantStreamRepository.AddItemAsync(participant));
                 }
 
                 await Task.WhenAll(insertTasks);

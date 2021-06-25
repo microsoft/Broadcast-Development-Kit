@@ -1,13 +1,13 @@
+using System.Linq;
 using Microsoft.Graph;
 using Microsoft.Graph.Communications.Calls;
-using System.Linq;
 
 namespace BotService.Infrastructure.Extensions
 {
     public static class ParticipantExtensions
     {
-        private const string guestKey = "guest";
-        private const string liveEventBot = "live";
+        private const string GuestKey = "guest";
+        private const string LiveEventBot = "live";
 
         public static bool IsParticipantCapableToSendVideo(this IParticipant participant)
         {
@@ -54,14 +54,14 @@ namespace BotService.Infrastructure.Extensions
 
         public static bool IsGuestUser(this IParticipant participant)
         {
-            bool isGuestUser = participant.Resource.Info.Identity.AdditionalData.ContainsKey(guestKey);
+            bool isGuestUser = participant.Resource.Info.Identity.AdditionalData.ContainsKey(GuestKey);
 
             return isGuestUser;
         }
 
         public static bool IsLiveEventBot(this IParticipant participant)
         {
-            bool isLiveEventBot = participant.Resource.Info.Identity.Application != null && participant.Resource.Info.Identity.Application.DisplayName?.ToLower() == liveEventBot;
+            bool isLiveEventBot = participant.Resource.Info.Identity.Application != null && participant.Resource.Info.Identity.Application.DisplayName?.ToLower() == LiveEventBot;
 
             return isLiveEventBot;
         }
@@ -75,7 +75,7 @@ namespace BotService.Infrastructure.Extensions
 
             if (participant.IsGuestUser())
             {
-                return participant.Resource.Info.Identity.AdditionalData[guestKey] as Identity;
+                return participant.Resource.Info.Identity.AdditionalData[GuestKey] as Identity;
             }
 
             if (participant.IsLiveEventBot())

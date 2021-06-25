@@ -1,8 +1,7 @@
-using Application.Service.Commands;
-using Application.Service.Queries;
-using Application.Stream.Commands;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Application.Service.Commands;
+using Application.Stream.Commands;
 
 namespace Application.Interfaces.Common
 {
@@ -23,7 +22,7 @@ namespace Application.Interfaces.Common
         Task<HttpResponseMessage> MuteBotAsync();
 
         Task<HttpResponseMessage> UnmuteBotAsync();
-        
+
         void SetBaseUrl(string baseUrl);
     }
 }

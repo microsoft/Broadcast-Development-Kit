@@ -1,27 +1,27 @@
-using Application.Interfaces.Common;
-using Domain.Exceptions;
-using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Application.Interfaces.Common;
+using Domain.Exceptions;
+using Microsoft.Graph;
 
 namespace Infrastructure.Core.Services
 {
     public class MicrosoftGraphService : IGraphService
     {
-        private readonly IGraphServiceClient graphServiceClient;
+        private readonly IGraphServiceClient _graphServiceClient;
 
         public MicrosoftGraphService(IGraphServiceClient graphServiceClient)
         {
-            this.graphServiceClient = graphServiceClient;
+            _graphServiceClient = graphServiceClient;
         }
 
         public async Task<Call> GetCallAsync(string callId)
         {
-            var call = await graphServiceClient.Communications.Calls[callId]
+            var call = await _graphServiceClient.Communications.Calls[callId]
                             .Request()
                             .GetAsync();
 
@@ -30,7 +30,7 @@ namespace Infrastructure.Core.Services
 
         public async Task<IList<Participant>> GetCallParticipantsAsync(string callId)
         {
-            var participants = await graphServiceClient.Communications.Calls[callId]
+            var participants = await _graphServiceClient.Communications.Calls[callId]
                 .Participants
                 .Request()
                 .GetAsync();
@@ -46,7 +46,7 @@ namespace Infrastructure.Core.Services
             try
             {
                 // we can parametrize the requested size, or let the default size.
-                var photo = await graphServiceClient.Users[participantAadId].Photos["240x240"].Content
+                var photo = await _graphServiceClient.Users[participantAadId].Photos["240x240"].Content
                     .Request()
                     .GetAsync();
 
@@ -78,7 +78,7 @@ namespace Infrastructure.Core.Services
                 var user = participant.Info?.Identity?.User;
                 if (user != null)
                 {
-                    tasks.Add(this.GetUserPhotoAsync(user.Id));
+                    tasks.Add(GetUserPhotoAsync(user.Id));
                 }
             }
 
@@ -89,7 +89,7 @@ namespace Infrastructure.Core.Services
 
         public async Task<IList<ProfilePhoto>> GetUserPhotoAsync(string userId)
         {
-            var photo = await graphServiceClient.Users[userId].Photos
+            var photo = await _graphServiceClient.Users[userId].Photos
                 .Request()
                 .GetAsync();
 
@@ -98,7 +98,7 @@ namespace Infrastructure.Core.Services
 
         public async Task<OnlineMeeting> GetOnlineMeetingAsync(string meetingId)
         {
-            var meetingRequest = this.graphServiceClient.Me.OnlineMeetings[meetingId].Request();
+            var meetingRequest = _graphServiceClient.Me.OnlineMeetings[meetingId].Request();
 
             var meeting = await meetingRequest.GetAsync().ConfigureAwait(false);
 

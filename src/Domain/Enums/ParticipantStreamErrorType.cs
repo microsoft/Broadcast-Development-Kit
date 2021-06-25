@@ -4,6 +4,6 @@ namespace Domain.Enums
     {
         StartExtraction,
         StopExtraction,
-        Unknown
+        Unknown,
     }
 }

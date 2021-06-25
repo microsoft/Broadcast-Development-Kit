@@ -15,7 +15,7 @@ namespace Application.Participants.Specifications
             {
                 Query.Where(x =>
                x.CallId == callId && x.LeftAt == null);
-            }     
+            }
         }
     }
 }

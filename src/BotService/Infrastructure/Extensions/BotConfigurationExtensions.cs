@@ -1,10 +1,10 @@
+using System.Net;
 using Application.Common.Config;
 using Microsoft.Skype.Bots.Media;
-using System.Net;
 
 namespace BotService.Infrastructure.Extensions
 {
-    public static class BotWorkerConfigurationExtensions
+    public static class BotConfigurationExtensions
     {
         public static MediaPlatformSettings GetMediaPlatformSettings(this BotConfiguration configuration)
         {

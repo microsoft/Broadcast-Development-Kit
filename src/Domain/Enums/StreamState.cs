@@ -7,6 +7,6 @@ namespace Domain.Enums
         Started,
         Stopping,
         StartingError,
-        StoppingError
+        StoppingError,
     }
 }

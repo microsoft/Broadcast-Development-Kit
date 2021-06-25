@@ -1,10 +1,10 @@
-using Application.Exceptions;
-using FluentValidation;
-using MediatR;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Exceptions;
+using FluentValidation;
+using MediatR;
 
 namespace Application.Common
 {
@@ -28,8 +28,11 @@ namespace Application.Common
                 var failures = validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
 
                 if (failures.Count != 0)
+                {
                     throw new ApiValidationException(failures);
+                }
             }
+
             return await next();
         }
     }

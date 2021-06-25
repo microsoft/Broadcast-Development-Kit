@@ -21,24 +21,24 @@ namespace BotService.Infrastructure.Common.Logging
         private static readonly int MaxLogCount = 5000;
 
         /// <summary>
+        /// Lock for securing logs.
+        /// </summary>
+        private readonly object _lockLogs = new object();
+
+        /// <summary>
         /// Observer subscription.
         /// </summary>
-        private IDisposable subscription;
+        private IDisposable _subscription;
 
         /// <summary>
         /// Linked list representing the logs.
         /// </summary>
-        private LinkedList<string> logs = new LinkedList<string>();
-
-        /// <summary>
-        /// Lock for securing logs.
-        /// </summary>
-        private readonly object lockLogs = new object();
+        private LinkedList<string> _logs = new LinkedList<string>();
 
         /// <summary>
         /// The formatter.
         /// </summary>
-        private ILogEventFormatter formatter = new CommsLogEventFormatter();
+        private ILogEventFormatter _formatter = new CommsLogEventFormatter();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SampleObserver" /> class.
@@ -50,7 +50,7 @@ namespace BotService.Infrastructure.Common.Logging
             AppDomain.CurrentDomain.UnhandledException += (_, e) => logger.Error(e.ExceptionObject as Exception, $"Unhandled exception");
             TaskScheduler.UnobservedTaskException += (_, e) => logger.Error(e.Exception, "Unobserved task exception");
 
-            this.subscription = logger.Subscribe(this);
+            _subscription = logger.Subscribe(this);
         }
 
         /// <summary>
@@ -61,10 +61,10 @@ namespace BotService.Infrastructure.Common.Logging
         /// <returns>Log entries.</returns>
         public string GetLogs(int skip = 0, int take = int.MaxValue)
         {
-            lock (this.lockLogs)
+            lock (_lockLogs)
             {
-                skip = skip < 0 ? Math.Max(0, this.logs.Count + skip) : skip;
-                var filteredLogs = this.logs
+                skip = skip < 0 ? Math.Max(0, _logs.Count + skip) : skip;
+                var filteredLogs = _logs
                     .Skip(skip)
                     .Take(take);
                 return string.Join(Environment.NewLine, filteredLogs);
@@ -82,10 +82,10 @@ namespace BotService.Infrastructure.Common.Logging
         /// </returns>
         public string GetLogs(string filter, int skip = 0, int take = int.MaxValue)
         {
-            lock (this.lockLogs)
+            lock (_lockLogs)
             {
-                skip = skip < 0 ? Math.Max(0, this.logs.Count + skip) : skip;
-                var filteredLogs = this.logs
+                skip = skip < 0 ? Math.Max(0, _logs.Count + skip) : skip;
+                var filteredLogs = _logs
                     .Where(log => log.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0)
                     .Skip(skip)
                     .Take(take);
@@ -108,13 +108,13 @@ namespace BotService.Infrastructure.Common.Logging
                 return;
             }
 
-            var logString = this.formatter.Format(logEvent);
-            lock (this.lockLogs)
+            var logString = _formatter.Format(logEvent);
+            lock (_lockLogs)
             {
-                this.logs.AddFirst(logString);
-                if (this.logs.Count > MaxLogCount)
+                _logs.AddFirst(logString);
+                if (_logs.Count > MaxLogCount)
                 {
-                    this.logs.RemoveLast();
+                    _logs.RemoveLast();
                 }
             }
         }
@@ -142,15 +142,15 @@ namespace BotService.Infrastructure.Common.Logging
         {
             if (disposing)
             {
-                lock (this.lockLogs)
+                lock (_lockLogs)
                 {
-                    this.logs?.Clear();
-                    this.logs = null;
+                    _logs?.Clear();
+                    _logs = null;
                 }
 
-                this.subscription?.Dispose();
-                this.subscription = null;
-                this.formatter = null;
+                _subscription?.Dispose();
+                _subscription = null;
+                _formatter = null;
             }
         }
     }

@@ -16,7 +16,6 @@ namespace Application.Stream.Commands
 
         public class MuteBotFromCallCommandResponse
         {
-
         }
 
         public class MuteBotFromCallCommandHandler : IRequestHandler<MuteBotFromCallCommand, MuteBotFromCallCommandResponse>
@@ -28,8 +27,7 @@ namespace Application.Stream.Commands
             public MuteBotFromCallCommandHandler(
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
-                IServiceRepository serviceRepository
-                )
+                IServiceRepository serviceRepository)
             {
                 _botServiceClient = botServiceClient ?? throw new ArgumentNullException(nameof(botServiceClient));
                 _callRepository = callRepository ?? throw new ArgumentNullException(nameof(callRepository));

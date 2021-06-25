@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Application.Exceptions.Models;
 using Infrastructure.Core.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Infrastructure.Core.Common.Extensions
 {
@@ -41,7 +41,7 @@ namespace Infrastructure.Core.Common.Extensions
                 Detail = problemDetails.Detail,
                 StackTrace = problemDetails.StackTrace,
                 Identifier = problemDetails.Identifier,
-                InnerException = problemDetails.InnerException
+                InnerException = problemDetails.InnerException,
             };
 
             return exceptionDetails;
@@ -58,7 +58,7 @@ namespace Infrastructure.Core.Common.Extensions
                 Detail = problemDetails.Detail,
                 StackTrace = problemDetails.StackTrace,
                 Identifier = problemDetails.Identifier,
-                InnerException = problemDetails.InnerException
+                InnerException = problemDetails.InnerException,
             };
 
             return exceptionDetails;

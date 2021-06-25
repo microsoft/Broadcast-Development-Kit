@@ -5,6 +5,7 @@ namespace Domain.Constants
     public static class Constants
     {
         public const string StorageAccountSettingName = "AzureWebJobsStorage";
+
         public static class AzureQueueNames
         {
             public const string InitializeServiceQueue = "initialize-service-queue";
@@ -21,7 +22,6 @@ namespace Domain.Constants
                 {
                     public const string Client = "rtmp://{0}:1936/ingest/{1}?callId={2}";
                     public const string Gstreamer = "rtmp://{0}:1936/ingest/{1}";
-
                 }
             }
 
@@ -31,7 +31,6 @@ namespace Domain.Constants
                 {
                     public const string Client = "rtmps://{0}:2936/secure-ingest/{1}?callId={2}";
                     public const string Gstreamer = "rtmp://{0}:29361/secure-ingest/{1}";
-
                 }
             }
 
@@ -41,11 +40,10 @@ namespace Domain.Constants
                 {
                     public const string Client = "srt://{0}:9000?mode=caller";
                     public const string Gstreamer = "srt://{0}:9000?mode=listener";
-
                 }
             }
         }
-        
+
         public static class AzureEventGid
         {
             public static class EventTypes

@@ -16,7 +16,6 @@ namespace Application.Call.Commands
 
         public class UnmuteBotFromCallCommandResponse
         {
-
         }
 
         public class UnmuteBotFromCallCommandHandler : IRequestHandler<UnmuteBotFromCallCommand, UnmuteBotFromCallCommandResponse>
@@ -28,8 +27,7 @@ namespace Application.Call.Commands
             public UnmuteBotFromCallCommandHandler(
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
-                IServiceRepository serviceRepository
-                )
+                IServiceRepository serviceRepository)
             {
                 _botServiceClient = botServiceClient ?? throw new ArgumentNullException(nameof(botServiceClient));
                 _callRepository = callRepository ?? throw new ArgumentNullException(nameof(callRepository));

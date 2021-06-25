@@ -1,31 +1,28 @@
+using System.Net.Http;
 using System.Reflection;
 using Application;
+using Application.Common.Config;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
+using BotService.Infrastructure.Common;
 using FluentValidation;
-using Infrastructure.Core.CosmosDbData.Repository;
+using Infrastructure.Core.Common;
 using Infrastructure.Core.CosmosDbData.Extensions;
+using Infrastructure.Core.CosmosDbData.Repository;
 using Infrastructure.Core.Services;
 using ManagementApi.Filters;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Management.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
-using Microsoft.Net.Http.Headers;
-using Application.Common.Config;
-using BotService.Infrastructure.Common;
-using Infrastructure.Core.Common;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web;
-using Microsoft.Azure.Management.Fluent;
-using System.Net.Http;
-using Microsoft.Identity.Client;
-using System;
-using Application.Call;
+using Microsoft.Net.Http.Headers;
 
 namespace ManagementApi
 {
@@ -62,7 +59,6 @@ namespace ManagementApi
              */
             if (hostEnvironment.IsLocal())
             {
-
                 services.AddHttpClient("bot-service-client")
                    .ConfigurePrimaryHttpMessageHandler(() =>
                    {
@@ -75,13 +71,11 @@ namespace ManagementApi
 #pragma warning restore S4830
                            {
                                return true;
-                           }
-
+                           },
                        };
 
                        return clientHandler;
                    });
-
             }
             else
             {
@@ -108,9 +102,10 @@ namespace ManagementApi
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             // register CosmosDB client and data repositories
-            services.AddCosmosDb(appConfiguration.CosmosDbConfiguration.EndpointUrl,
-                                 appConfiguration.CosmosDbConfiguration.PrimaryKey,
-                                 appConfiguration.CosmosDbConfiguration.DatabaseName);
+            services.AddCosmosDb(
+                appConfiguration.CosmosDbConfiguration.EndpointUrl,
+                appConfiguration.CosmosDbConfiguration.PrimaryKey,
+                appConfiguration.CosmosDbConfiguration.DatabaseName);
 
             services.AddScoped<ICallRepository, CallRepository>();
             services.AddScoped<IServiceRepository, ServiceRepository>();
@@ -187,7 +182,7 @@ namespace ManagementApi
             app.ConfigureExceptionHandler(_logger, env.IsProduction());
             app.UseRouting();
             app.UseAuthentication();
-            app.UseAuthorization();           
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

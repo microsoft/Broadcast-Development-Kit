@@ -12,12 +12,6 @@ namespace Infrastructure.Core.CosmosDbData
         private readonly string _databaseName;
         private readonly Dictionary<string, string> _containerDictionary;
 
-        /// <summary>
-        ///     Ctor
-        /// </summary>
-        /// <param name="cosmosClient"></param>
-        /// <param name="databaseName"></param>
-        /// <param name="containers"></param>
         public CosmosDbContainerFactory(CosmosClient cosmosClient, string databaseName)
         {
             _databaseName = databaseName ?? throw new ArgumentNullException(nameof(databaseName));
@@ -30,7 +24,7 @@ namespace Infrastructure.Core.CosmosDbData
                 { CosmosDbConstants.CallContainer, CosmosDbConstants.CallPartitionKey },
                 { CosmosDbConstants.ParticipantStreamContainer, CosmosDbConstants.ParticipantStreamPartitionKey },
                 { CosmosDbConstants.StreamContainer, CosmosDbConstants.StreamPartitionKey },
-                { CosmosDbConstants.ServiceContainer, CosmosDbConstants.ServicePartitionKey }
+                { CosmosDbConstants.ServiceContainer, CosmosDbConstants.ServicePartitionKey },
             };
         }
 

@@ -17,7 +17,7 @@ namespace BotService.Infrastructure.Core
             : base(initialVideoSocket, audioSocket, mediaProcessorFactory, loggerFactory)
         {
             _mediaSocketPool = mediaSocketPool;
-            _logger = loggerFactory.CreateLogger<SwitchingMediaExtractor>();
+            Logger = loggerFactory.CreateLogger<SwitchingMediaExtractor>();
         }
 
         public void SwitchMediaSourceSafely(uint mediaSourceId)
@@ -33,12 +33,12 @@ namespace BotService.Infrastructure.Core
                         _mediaSocketPool.ReleaseSocket(_nextVideoSocket);
                     }
 
-                    // Attempt to subscribe a new socket temporarily 
+                    // Attempt to subscribe a new socket temporarily
                     var newSocket = _mediaSocketPool.GetParticipantVideoSocket();
                     if (newSocket != null)
                     {
                         // We subscribe to the new socket and inmediately request a key-frame
-                        newSocket.Subscribe(_mediaStreamSettings.VideoResolution, mediaSourceId);
+                        newSocket.Subscribe(MediaStreamSettings.VideoResolution, mediaSourceId);
                         newSocket.VideoMediaReceived += OnVideoMediaReceived;
                         newSocket.RequestKeyFrame();
 
@@ -52,14 +52,14 @@ namespace BotService.Infrastructure.Core
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "There was an error trying to initiate a switch between video sockets");
+                    Logger.LogError(ex, "There was an error trying to initiate a switch between video sockets");
                 }
             }
         }
 
         public void SwitchMediaSourceForcefully(uint mediaSourceId)
         {
-            VideoSocket.Subscribe(_mediaStreamSettings.VideoResolution, mediaSourceId);
+            VideoSocket.Subscribe(MediaStreamSettings.VideoResolution, mediaSourceId);
         }
 
         protected override void OnVideoMediaReceived(object sender, VideoMediaReceivedEventArgs e)

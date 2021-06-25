@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Application.Common.Config;
 using Application.Interfaces.Common;
@@ -17,7 +15,7 @@ namespace Infrastructure.Core.Services
         private IConfidentialClientApplication _confidentialClientApplication;
 
         public BotServiceAuthenticationProvider(
-            ILogger<BotServiceAuthenticationProvider> logger, 
+            ILogger<BotServiceAuthenticationProvider> logger,
             IAppConfiguration appConfiguration)
         {
             _logger = logger;
@@ -55,7 +53,6 @@ namespace Infrastructure.Core.Services
                 _logger.LogError(ex, "Error acquiring Token for Client to authenticate with BotService API");
                 throw;
             }
-
         }
     }
 }

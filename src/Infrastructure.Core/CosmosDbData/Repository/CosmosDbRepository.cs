@@ -12,25 +12,44 @@ using Microsoft.Azure.Cosmos.Linq;
 
 namespace Infrastructure.Core.CosmosDbData.Repository
 {
-    public abstract class CosmosDbRepository<T> : IRepository<T>, IContainerContext<T> where T : BaseEntity
+    public abstract class CosmosDbRepository<T> : IRepository<T>, IContainerContext<T>
+        where T : BaseEntity
     {
+        private readonly Container _container;
+
         /// <summary>
-        ///     Name of the CosmosDB container
+        ///     Audit container that will store audit log for all entities.
+        /// </summary>
+        private readonly Container _auditContainer;
+
+        protected CosmosDbRepository(ICosmosDbContainerFactory cosmosDbContainerFactory)
+        {
+            if (cosmosDbContainerFactory == null)
+            {
+                throw new ArgumentNullException(nameof(cosmosDbContainerFactory));
+            }
+
+            _container = cosmosDbContainerFactory.GetContainer(ContainerName).Container;
+            _auditContainer = cosmosDbContainerFactory.GetContainer(CosmosDbConstants.AuditContainer).Container;
+        }
+
+        /// <summary>
+        ///     Gets the name of the CosmosDB container.
         /// </summary>
         public abstract string ContainerName { get; }
 
         /// <summary>
-        ///     Generate id
+        ///     Generate id.
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <param name="entity">The entity for which the id will be generated.</param>
+        /// <returns>The generated id.</returns>
         public abstract string GenerateId(T entity);
 
         /// <summary>
-        ///     Resolve the partition key
+        ///     Resolve the partition key.
         /// </summary>
-        /// <param name="entityId"></param>
-        /// <returns></returns>
+        /// <param name="entityId">The entity for which the partition key will be resolved.</param>
+        /// <returns>The partition key.</returns>
         public abstract PartitionKey ResolvePartitionKey(string entityId);
 
         /// <summary>
@@ -40,8 +59,8 @@ namespace Infrastructure.Core.CosmosDbData.Repository
         ///     Audit records for different entities will use different partition key values,
         ///     so we are not limited to the 20G per logical partition storage limit.
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <param name="entity">The entity for which the id will be generated.</param>
+        /// <returns>The generated id.</returns>
         public virtual string GenerateAuditId(Audit entity) => $"{entity.EntityId}:{Guid.NewGuid()}";
 
         /// <summary>
@@ -51,36 +70,19 @@ namespace Infrastructure.Core.CosmosDbData.Repository
         ///     Audit records for different entities will use different partition key values,
         ///     so we are not limited to the 20G per logical partition storage limit.
         /// </summary>
-        /// <param name="entityId"></param>
-        /// <returns></returns>
+        /// <param name="entityId">The entity for which the partition key will be resolved.</param>
+        /// <returns>The partition key.</returns>
         public virtual PartitionKey ResolveAuditPartitionKey(string entityId) => new PartitionKey($"{entityId.Split(':')[0]}");
-
-        private readonly Microsoft.Azure.Cosmos.Container _container;
-        /// <summary>
-        ///     Audit container that will store audit log for all entities.
-        /// </summary>
-        private readonly Microsoft.Azure.Cosmos.Container _auditContainer;
-
-        protected CosmosDbRepository(ICosmosDbContainerFactory cosmosDbContainerFactory)
-        {
-            if (cosmosDbContainerFactory == null)
-            {
-                throw new ArgumentNullException(nameof(cosmosDbContainerFactory));
-            }
-
-            this._container = cosmosDbContainerFactory.GetContainer(ContainerName).Container;
-            this._auditContainer = cosmosDbContainerFactory.GetContainer(CosmosDbConstants.AuditContainer).Container;
-        }
 
         public async Task AddItemAsync(T item)
         {
-            item.Id = string.IsNullOrEmpty(item.Id) ? GenerateId(item) :item.Id;
+            item.Id = string.IsNullOrEmpty(item.Id) ? GenerateId(item) : item.Id;
             await _container.CreateItemAsync<T>(item, ResolvePartitionKey(item.Id));
         }
 
         public async Task DeleteItemAsync(string id)
         {
-            await this._container.DeleteItemAsync<T>(id, ResolvePartitionKey(id));
+            await _container.DeleteItemAsync<T>(id, ResolvePartitionKey(id));
         }
 
         public async Task<T> GetItemAsync(string id)
@@ -95,6 +97,7 @@ namespace Infrastructure.Core.CosmosDbData.Repository
                 return null;
             }
         }
+
         public async Task<T> GetFirstItemAsync(ISpecification<T> specification)
         {
             IQueryable<T> queryable = ApplySpecification(specification);
@@ -109,11 +112,10 @@ namespace Infrastructure.Core.CosmosDbData.Repository
             return null;
         }
 
-
         // Search data using SQL query string
         // This shows how to use SQL string to read data from Cosmos DB for demonstration purpose.
         // For production, try to use safer alternatives like Parameterized Query and LINQ if possible.
-        // Using string can expose SQL Injection vulnerability, e.g. select * from c where c.id=1 OR 1=1. 
+        // Using string can expose SQL Injection vulnerability, e.g. select * from c where c.id=1 OR 1=1.
         // String can also be hard to work with due to special characters and spaces when advanced querying like search and pagination is required.
         public async Task<IEnumerable<T>> GetItemsAsync(string query)
         {
@@ -129,7 +131,7 @@ namespace Infrastructure.Core.CosmosDbData.Repository
             return results;
         }
 
-        /// <inheritdoc cref="IRepository{T}.GetItemsAsync(Ardalis.Specification.ISpecification{T})"/>
+        /// <inheritdoc cref="IRepository{T}.GetItemsAsync(ISpecification{T})"/>
         public async Task<IEnumerable<T>> GetItemsAsync(ISpecification<T> specification)
         {
             IQueryable<T> queryable = ApplySpecification(specification);
@@ -157,15 +159,16 @@ namespace Infrastructure.Core.CosmosDbData.Repository
         {
             // Audit
             await Audit(item);
+
             // Update
-            await this._container.UpsertItemAsync<T>(item, ResolvePartitionKey(id));
+            await _container.UpsertItemAsync<T>(item, ResolvePartitionKey(id));
         }
 
         /// <summary>
-        ///     Evaluate specification and return IQueryable
+        ///     Evaluate specification and return IQueryable.
         /// </summary>
-        /// <param name="specification"></param>
-        /// <returns></returns>
+        /// <param name="specification">The specification to evaluate.</param>
+        /// <returns>The resulting IQueryable.</returns>
         private IQueryable<T> ApplySpecification(ISpecification<T> specification)
         {
             CosmosDbSpecificationEvaluator<T> evaluator = new CosmosDbSpecificationEvaluator<T>();
@@ -173,18 +176,18 @@ namespace Infrastructure.Core.CosmosDbData.Repository
         }
 
         /// <summary>
-        ///     Audit a item by adding it to the audit container
+        ///     Audit a item by adding it to the audit container.
         /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
+        /// <param name="item">The item to add.</param>
         private async Task Audit(T item)
         {
-            Audit auditItem = new Domain.Entities.Audit.Audit(item.GetType().Name,
-                                                    item.Id,
-                                                    Newtonsoft.Json.JsonConvert.SerializeObject(item));
+            Audit auditItem = new Audit(
+                item.GetType().Name,
+                item.Id,
+                Newtonsoft.Json.JsonConvert.SerializeObject(item));
+
             auditItem.Id = GenerateAuditId(auditItem);
             await _auditContainer.CreateItemAsync<Audit>(auditItem, ResolveAuditPartitionKey(auditItem.Id));
         }
-
     }
 }

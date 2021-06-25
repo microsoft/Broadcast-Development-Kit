@@ -7,6 +7,6 @@ namespace Domain.Enums
         Unavailable = 2,
         Stopping = 3,
         Stopped = 4,
-        Unknown = 5
+        Unknown = 5,
     }
 }

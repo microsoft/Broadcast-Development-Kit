@@ -1,38 +1,39 @@
-using Domain.Entities.Base;
 using System;
+using Domain.Entities.Base;
 
 namespace Domain.Entities.Audit
 {
     public class Audit : BaseEntity
     {
-        public Audit(string entityType,
-                     string entityId,
-                     string entity)
+        public Audit(
+            string entityType,
+            string entityId,
+            string entity)
         {
-            this.EntityType = entityType;
-            this.EntityId = entityId;
-            this.Entity = entity;
-            this.DateCreatedUTC = DateTime.UtcNow;
+            EntityType = entityType;
+            EntityId = entityId;
+            Entity = entity;
+            DateCreatedUTC = DateTime.UtcNow;
         }
 
         /// <summary>
-        ///     Type of the entity, e.g., ToDoItem
+        ///     Gets or sets the type of the entity, e.g., ToDoItem.
         /// </summary>
         public string EntityType { get; set; }
 
         /// <summary>
-        ///     Entity Id.
+        ///     Gets or sets the entity Id.
         ///     Use this as the Partition Key, so that all the auditing records for the same entity are stored in the same logical partition.
         /// </summary>
         public string EntityId { get; set; }
 
         /// <summary>
-        ///     Entity itself
+        ///     Gets or sets the entity itself.
         /// </summary>
         public string Entity { get; set; }
 
         /// <summary>
-        ///     Date audit record created
+        ///     Gets or sets the date audit record create.
         /// </summary>
         public DateTime DateCreatedUTC { get; set; }
     }

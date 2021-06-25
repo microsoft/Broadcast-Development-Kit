@@ -10,14 +10,6 @@ namespace Application.Exceptions
     [Serializable]
     public class ApiValidationException : Exception
     {
-        /// <summary>
-        ///     Validation errors
-        /// </summary>
-        public IDictionary<string, string[]> Errors { get; }
-        public ModelStateDictionary ModelState { get; }
-        /// <summary>
-        ///     ctor
-        /// </summary>
         public ApiValidationException()
             : base("One or more validation failures have occurred.")
         {
@@ -25,10 +17,6 @@ namespace Application.Exceptions
             ModelState = new ModelStateDictionary();
         }
 
-        /// <summary>
-        ///     ctor 
-        /// </summary>
-        /// <param name="failures"></param>
         public ApiValidationException(IEnumerable<ValidationFailure> failures)
             : this()
         {
@@ -36,12 +24,19 @@ namespace Application.Exceptions
                 .GroupBy(e => e.PropertyName, e => e.ErrorMessage)
                 .ToDictionary(failureGroup => failureGroup.Key, failureGroup => failureGroup.ToArray());
 
-            foreach(var failure in failures)
+            foreach (var failure in failures)
             {
                 ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
             }
         }
 
-        protected ApiValidationException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected ApiValidationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+        public IDictionary<string, string[]> Errors { get; }
+
+        public ModelStateDictionary ModelState { get; }
     }
 }

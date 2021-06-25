@@ -1,6 +1,6 @@
 namespace Application.Common.Models
 {
-    public class RtmpStreamExtractionBody: StartStreamExtractionBody
+    public class RtmpStreamExtractionBody : StartStreamExtractionBody
     {
     }
 }

@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
@@ -6,8 +8,6 @@ using Domain.Constants;
 using Domain.Enums;
 using Domain.Exceptions;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 using static Application.Service.Commands.StartServiceInfrastructure;
 
 namespace Application.Service.Commands
@@ -22,6 +22,7 @@ namespace Application.Service.Commands
         public class StartingServiceInfrastructureCommandResponse
         {
             public string Id { get; set; }
+
             public ServiceModel Resource { get; set; }
         }
 
@@ -31,7 +32,8 @@ namespace Application.Service.Commands
             private readonly IAzStorageHandler _storageHandler;
             private readonly IMapper _mapper;
 
-            public StartingServiceInfrastructureCommandHandler(IServiceRepository serviceRepository,
+            public StartingServiceInfrastructureCommandHandler(
+                IServiceRepository serviceRepository,
                 IAzStorageHandler storageHandler,
                 IMapper mapper)
             {
@@ -46,7 +48,7 @@ namespace Application.Service.Commands
                 /* TODO: Change this.
                   NOTE: The Management Portal does not have the feature to select the service before initializing the call.
                   The following code is temporary, if the service Id is not specified, we use a harcoded ID to retrieve the service.
-              */
+                */
 
                 var serviceId = string.IsNullOrEmpty(request.ServiceId) ? Constants.EnvironmentDefaults.ServiceId : request.ServiceId;
                 var service = await _serviceRepository.GetItemAsync(serviceId);
@@ -56,8 +58,7 @@ namespace Application.Service.Commands
                     throw new EntityNotFoundException(nameof(Domain.Entities.Service), serviceId);
                 }
 
-
-                //TODO: Review
+                // TODO: Review
                 service.State = ServiceState.Starting;
                 service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Provisioning;
                 service.Infrastructure.ProvisioningDetails.Message = $"Provisioning service {service.Name}.";
@@ -74,7 +75,7 @@ namespace Application.Service.Commands
                 response.Resource = _mapper.Map<ServiceModel>(service);
 
                 return response;
-            } 
+            }
         }
     }
 }

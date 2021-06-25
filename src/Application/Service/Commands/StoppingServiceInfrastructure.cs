@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
@@ -6,9 +8,6 @@ using Domain.Constants;
 using Domain.Enums;
 using Domain.Exceptions;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 using static Application.Service.Commands.StopServiceInfrastructure;
 
 namespace Application.Service.Commands
@@ -23,6 +22,7 @@ namespace Application.Service.Commands
         public class StoppingServiceInfrastructureCommandResponse
         {
             public string Id { get; set; }
+
             public ServiceModel Resource { get; set; }
         }
 
@@ -59,8 +59,7 @@ namespace Application.Service.Commands
                     throw new EntityNotFoundException(nameof(Domain.Entities.Service), serviceId);
                 }
 
-
-                //TODO: Review
+                // TODO: Review
                 service.State = ServiceState.Stopping;
                 service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Deprovisioning;
                 service.Infrastructure.ProvisioningDetails.Message = $"Deprovisioning service {service.Name}";
@@ -68,14 +67,14 @@ namespace Application.Service.Commands
 
                 var stopServiceInfrastructureCommand = new StopServiceInfrastructureCommand
                 {
-                    Id = service.Id
+                    Id = service.Id,
                 };
 
                 await _storageHandler.AddQueueMessageAsync(Constants.AzureQueueNames.StopVirtualMachineQueue, stopServiceInfrastructureCommand);
-                
+
                 response.Id = service.Id;
                 response.Resource = _mapper.Map<ServiceModel>(service);
-                
+
                 return response;
             }
         }

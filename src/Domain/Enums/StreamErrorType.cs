@@ -6,6 +6,6 @@ namespace Domain.Enums
         StopExtraction,
         StartInjection,
         StopInjection,
-        Unknown
+        Unknown,
     }
 }

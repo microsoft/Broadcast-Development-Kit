@@ -19,50 +19,51 @@ namespace BotService.Infrastructure.Core
         private IMediaProcessor _mediaProcessor;
         private bool _disposed = false;
 
-        protected ILogger _logger;
-        protected MediaExtractionSettings _mediaStreamSettings;
-
         public MediaExtractor(IVideoSocket videoSocket, IAudioSocket audioSocket, IMediaProcessorFactory mediaProcessorFactory, ILoggerFactory loggerFactory)
         {
             VideoSocket = videoSocket;
             _audioSocket = audioSocket;
             _mediaProcessorFactory = mediaProcessorFactory;
 
-            _logger = loggerFactory.CreateLogger<MediaExtractor>();
+            Logger = loggerFactory.CreateLogger<MediaExtractor>();
 
             _requestKeyFrameTimer = new Timer(2000);
             _requestKeyFrameTimer.Elapsed += OnRequestKeyFrameTimer;
         }
 
-        public Protocol Protocol => _mediaStreamSettings.ProtocolSettings.Type;
+        public Protocol Protocol => MediaStreamSettings.ProtocolSettings.Type;
 
         public IVideoSocket VideoSocket { get; protected set; }
 
         public bool IsRunning { get; private set; } = false;
 
+        protected ILogger Logger { get; set; }
+
+        protected MediaExtractionSettings MediaStreamSettings { get; set; }
+
         public void Start(MediaExtractionSettings mediaStreamSettings)
         {
             try
             {
-                _mediaStreamSettings = mediaStreamSettings;
+                MediaStreamSettings = mediaStreamSettings;
                 _mediaProcessor = _mediaProcessorFactory.CreateMediaProcessor(mediaStreamSettings.ProtocolSettings);
                 _mediaProcessor.Play();
 
                 VideoSocket.Subscribe(mediaStreamSettings.VideoResolution, mediaStreamSettings.MediaSourceId);
-                VideoSocket.VideoMediaReceived += this.OnVideoMediaReceived;
+                VideoSocket.VideoMediaReceived += OnVideoMediaReceived;
 
                 Task.Delay(250).Wait();
 
-                // This socket is shared across all MediaSockets so we don't need to invoke the Subscribe method. 
-                _audioSocket.AudioMediaReceived += this.OnAudioMediaReceived;
-                
+                // This socket is shared across all MediaSockets so we don't need to invoke the Subscribe method.
+                _audioSocket.AudioMediaReceived += OnAudioMediaReceived;
+
                 _requestKeyFrameTimer.Start();
 
                 IsRunning = true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Subscribing to video failed for the socket: {SocketId}", VideoSocket.SocketId);
+                Logger.LogError(ex, "Subscribing to video failed for the socket: {SocketId}", VideoSocket.SocketId);
             }
         }
 
@@ -74,16 +75,16 @@ namespace BotService.Infrastructure.Core
                 _requestKeyFrameTimer.Stop();
 
                 VideoSocket.Unsubscribe();
-                VideoSocket.VideoMediaReceived -= this.OnVideoMediaReceived;
+                VideoSocket.VideoMediaReceived -= OnVideoMediaReceived;
 
                 // The audio socket is shared across all MediaSockets, so we should not invoke Unsubscribe on it.
-                _audioSocket.AudioMediaReceived -= this.OnAudioMediaReceived;
+                _audioSocket.AudioMediaReceived -= OnAudioMediaReceived;
 
                 IsRunning = false;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unsubscribing to video failed for the socket: {SocketId}", VideoSocket.SocketId);
+                Logger.LogError(ex, "Unsubscribing to video failed for the socket: {SocketId}", VideoSocket.SocketId);
             }
         }
 
@@ -104,9 +105,9 @@ namespace BotService.Infrastructure.Core
             {
                 _requestKeyFrameTimer.Stop();
 
-                _audioSocket.AudioMediaReceived -= this.OnAudioMediaReceived;
+                _audioSocket.AudioMediaReceived -= OnAudioMediaReceived;
 
-                VideoSocket.VideoMediaReceived -= this.OnVideoMediaReceived;
+                VideoSocket.VideoMediaReceived -= OnVideoMediaReceived;
                 VideoSocket.Unsubscribe();
 
                 if (_mediaProcessor != null)
@@ -132,8 +133,8 @@ namespace BotService.Infrastructure.Core
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error pushing audio buffer");
-                _logger.LogError("Error message {Message}, stack trace: {StackTrace}", ex.Message, ex.StackTrace);
+                Logger.LogError("Error pushing audio buffer");
+                Logger.LogError("Error message {Message}, stack trace: {StackTrace}", ex.Message, ex.StackTrace);
             }
         }
 
@@ -153,8 +154,8 @@ namespace BotService.Infrastructure.Core
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error pushing video buffer");
-                _logger.LogError("Error message {Message}, stack trace: {StackTrace}", ex.Message, ex.StackTrace);
+                Logger.LogError("Error pushing video buffer");
+                Logger.LogError("Error message {Message}, stack trace: {StackTrace}", ex.Message, ex.StackTrace);
             }
         }
 
@@ -166,7 +167,7 @@ namespace BotService.Infrastructure.Core
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "There was an error requesting a key frame for video socket {SocketId}", VideoSocket.SocketId);
+                Logger.LogError(ex, "There was an error requesting a key frame for video socket {SocketId}", VideoSocket.SocketId);
             }
         }
     }

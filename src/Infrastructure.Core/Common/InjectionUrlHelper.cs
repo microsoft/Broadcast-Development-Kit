@@ -1,12 +1,12 @@
+using System;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Domain.Constants;
 using Domain.Enums;
-using System;
 
 namespace Infrastructure.Core.Common
 {
-    public class InjectionUrlHelper: IInjectionUrlHelper
+    public class InjectionUrlHelper : IInjectionUrlHelper
     {
         public string GetStreamUrl(StartStreamInjectionBody startStreamInjectionBody, string serviceDns = null)
         {
@@ -27,6 +27,7 @@ namespace Infrastructure.Core.Common
                 default:
                     break;
             }
+
             return streamUrl;
         }
 

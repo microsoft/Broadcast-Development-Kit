@@ -1,29 +1,31 @@
-using Application.Common.Config;
-using Application.Interfaces.Common;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Application.Common.Config;
+using Application.Interfaces.Common;
 
 namespace Infrastructure.Core.Services
 {
     public class CloudConfigurationService : ICloudConfigurationService
     {
-        private readonly CloudConfigSettings configSettings;
+        private readonly CloudConfigSettings _configSettings;
 
         public CloudConfigurationService(CloudConfigSettings configSettings)
         {
-            this.configSettings = configSettings;
+            _configSettings = configSettings;
         }
+
         public Stream GetCertificate()
         {
-            var certificateUri = GetFileBlobStorageUri(this.configSettings.CertificateFileName);
+            var certificateUri = GetFileBlobStorageUri(_configSettings.CertificateFileName);
             var certificateStream = GetFileFromBlobStorageAsStreamtAsync(certificateUri).Result;
 
             return certificateStream;
         }
+
         public async Task<Stream> GetCertificateAsync()
         {
-            var certificateUri = GetFileBlobStorageUri(this.configSettings.CertificateFileName);
+            var certificateUri = GetFileBlobStorageUri(_configSettings.CertificateFileName);
             var certificateStream = await GetFileFromBlobStorageAsStreamtAsync(certificateUri);
 
             return certificateStream;
@@ -31,7 +33,7 @@ namespace Infrastructure.Core.Services
 
         public Stream GetAppSettingsAsStream()
         {
-            var appSettingsUri = GetFileBlobStorageUri(this.configSettings.AppSettingsFileName);
+            var appSettingsUri = GetFileBlobStorageUri(_configSettings.AppSettingsFileName);
             var appSettingsStream = GetFileFromBlobStorageAsStreamtAsync(appSettingsUri).Result;
 
             return appSettingsStream;
@@ -39,7 +41,7 @@ namespace Infrastructure.Core.Services
 
         public async Task<Stream> GetAppSettingsAsStreamAsync()
         {
-            var appSettingsUri = GetFileBlobStorageUri(this.configSettings.AppSettingsFileName);
+            var appSettingsUri = GetFileBlobStorageUri(_configSettings.AppSettingsFileName);
             var appSettingsStream = await GetFileFromBlobStorageAsStreamtAsync(appSettingsUri);
 
             return appSettingsStream;
@@ -62,9 +64,10 @@ namespace Infrastructure.Core.Services
                 return responseStream;
             }
         }
+
         private string GetFileBlobStorageUri(string fileName)
         {
-            var uri = $"https://{this.configSettings.StorageAccountName}.blob.core.windows.net/{this.configSettings.BlobContainerName}/{fileName}{this.configSettings.SasToken}";
+            var uri = $"https://{_configSettings.StorageAccountName}.blob.core.windows.net/{_configSettings.BlobContainerName}/{fileName}{_configSettings.SasToken}";
             return uri;
         }
     }

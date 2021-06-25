@@ -6,6 +6,6 @@ namespace Domain.Enums
         Established,
         Terminating,
         Terminated,
-        Error
+        Error,
     }
 }

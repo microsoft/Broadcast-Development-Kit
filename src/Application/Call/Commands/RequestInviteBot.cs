@@ -20,14 +20,8 @@ using static Application.Service.Commands.InviteBot;
 
 namespace Application.Call.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class RequestInviteBot
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class RequestInviteBotCommand : IRequest<RequestInviteBotCommandResponse>
         {
             public string MeetingUrl { get; set; }
@@ -37,29 +31,19 @@ namespace Application.Call.Commands
             public string ServiceId { get; set; }
         }
 
-        /// <summary>
-        ///     Command Response
-        /// </summary>
         public class RequestInviteBotCommandResponse
         {
-            //TODO: Modify response
-            /// <summary>
-            ///     Item Id
-            /// </summary>
+            // TODO: Modify response
             public string Id { get; set; }
-            public CallModel Resource { get; set; }
 
-            
+            public CallModel Resource { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class RequestInviteBotCommandValidator : AbstractValidator<RequestInviteBotCommand>
         {
             public RequestInviteBotCommandValidator()
             {
-                //TODO: Check how to do a custom validation for Meeting URL
+                // TODO: Check how to do a custom validation for Meeting URL
                 RuleFor(x => x.MeetingUrl)
                     .NotEmpty();
                 RuleFor(x => x.MeetingUrl)
@@ -76,9 +60,6 @@ namespace Application.Call.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class RequestInviteBotCommandHandler : IRequestHandler<RequestInviteBotCommand, RequestInviteBotCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
@@ -88,12 +69,8 @@ namespace Application.Call.Commands
             private readonly IMeetingUrlHelper _meetingUrlHelper;
             private readonly IStreamKeyGeneratorHelper _streamKeyGeneratorHelper;
 
-            /// <summary>
-            ///  Ctor
-            /// </summary>
-            /// <param name="callRepository"></param>
-            /// <param name="storageHandler"></param>
-            public RequestInviteBotCommandHandler(IBotServiceClient botServiceClient,
+            public RequestInviteBotCommandHandler(
+                IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository,
                 IMapper mapper,
@@ -116,6 +93,7 @@ namespace Application.Call.Commands
                     _meetingUrlHelper.Init(request.MeetingUrl);
                     request.MeetingId = _meetingUrlHelper.GetMeetingId();
                 }
+
                 /* TODO: Change this.
                     NOTE: The Management Portal does not have the feature to select the service before initializing the call.
                     The following code is temporary, if the service Id is not specified, we use a harcoded ID to retrieve the service.
@@ -157,12 +135,12 @@ namespace Application.Call.Commands
                 {
                     CallId = call.Id,
                     MeetingId = request.MeetingId,
-                    MeetingUrl = request.MeetingUrl
+                    MeetingUrl = request.MeetingUrl,
                 };
 
                 try
                 {
-                    //TODO: Handle response for error handling
+                    // TODO: Handle response for error handling
                     _botServiceClient.SetBaseUrl(service.Infrastructure.Dns);
                     await _botServiceClient.InviteBotAsync(inviteBotCommand);
 
@@ -176,7 +154,8 @@ namespace Application.Call.Commands
                     await _serviceRepository.UpdateItemAsync(service.Id, service);
 
                     call.State = CallState.Error;
-                    //TODO: Call Error details
+
+                    // TODO: Call Error details
                     await _callRepository.UpdateItemAsync(call.Id, call);
 
                     throw;

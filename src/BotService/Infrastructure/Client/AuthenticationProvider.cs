@@ -1,10 +1,3 @@
-using Microsoft.Graph.Communications.Client.Authentication;
-using Microsoft.Graph.Communications.Common;
-using Microsoft.Graph.Communications.Common.Telemetry;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
@@ -12,6 +5,13 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Graph.Communications.Client.Authentication;
+using Microsoft.Graph.Communications.Common;
+using Microsoft.Graph.Communications.Common.Telemetry;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BotService.Infrastructure.Client
 {
@@ -20,27 +20,27 @@ namespace BotService.Infrastructure.Client
         /// <summary>
         /// The application identifier.
         /// </summary>
-        private readonly string appId;
+        private readonly string _appId;
 
         /// <summary>
         /// The application secret.
         /// </summary>
-        private readonly string appSecret;
+        private readonly string _appSecret;
 
         /// <summary>
         /// The open ID configuration refresh interval.
         /// </summary>
-        private readonly TimeSpan openIdConfigRefreshInterval = TimeSpan.FromHours(2);
+        private readonly TimeSpan _openIdConfigRefreshInterval = TimeSpan.FromHours(2);
 
         /// <summary>
         /// The previous update timestamp for OpenIdConfig.
         /// </summary>
-        private DateTime prevOpenIdConfigUpdateTimestamp = DateTime.MinValue;
+        private DateTime _prevOpenIdConfigUpdateTimestamp = DateTime.MinValue;
 
         /// <summary>
         /// The open identifier configuration.
         /// </summary>
-        private OpenIdConnectConfiguration openIdConfiguration;
+        private OpenIdConnectConfiguration _openIdConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationProvider" /> class.
@@ -51,8 +51,8 @@ namespace BotService.Infrastructure.Client
         public AuthenticationProvider(string appId, string appSecret, IGraphLogger logger)
             : base(logger.NotNull(nameof(logger)).CreateShim(nameof(AuthenticationProvider)))
         {
-            this.appId = appId.NotNullOrWhitespace(nameof(appId));
-            this.appSecret = appSecret.NotNullOrWhitespace(nameof(appSecret));
+            _appId = appId.NotNullOrWhitespace(nameof(appId));
+            _appSecret = appSecret.NotNullOrWhitespace(nameof(appSecret));
         }
 
         /// <summary>
@@ -79,9 +79,9 @@ namespace BotService.Infrastructure.Client
             tenant = string.IsNullOrWhiteSpace(tenant) ? "common" : tenant;
             var tokenLink = oauthV2TokenLink.Replace(replaceString, tenant);
 
-            this.GraphLogger.Info("AuthenticationProvider: Generating OAuth token.");
+            GraphLogger.Info("AuthenticationProvider: Generating OAuth token.");
             var context = new AuthenticationContext(tokenLink);
-            var creds = new ClientCredential(this.appId, this.appSecret);
+            var creds = new ClientCredential(_appId, _appSecret);
 
             AuthenticationResult result;
             try
@@ -90,11 +90,11 @@ namespace BotService.Infrastructure.Client
             }
             catch (Exception ex)
             {
-                this.GraphLogger.Error(ex, $"Failed to generate token for client: {this.appId}");
+                GraphLogger.Error(ex, $"Failed to generate token for client: {_appId}");
                 throw;
             }
 
-            this.GraphLogger.Info($"AuthenticationProvider: Generated OAuth token. Expires in {result.ExpiresOn.Subtract(DateTimeOffset.UtcNow).TotalMinutes} minutes.");
+            GraphLogger.Info($"AuthenticationProvider: Generated OAuth token. Expires in {result.ExpiresOn.Subtract(DateTimeOffset.UtcNow).TotalMinutes} minutes.");
 
             request.Headers.Authorization = new AuthenticationHeaderValue(schema, result.AccessToken);
         }
@@ -120,18 +120,18 @@ namespace BotService.Infrastructure.Client
             // with a private certificate.  In order for us to be able to ensure the certificate is
             // valid we need to download the corresponding public keys from a trusted source.
             const string authDomain = "https://api.aps.skype.com/v1/.well-known/OpenIdConfiguration";
-            if (this.openIdConfiguration == null || DateTime.Now > this.prevOpenIdConfigUpdateTimestamp.Add(this.openIdConfigRefreshInterval))
+            if (_openIdConfiguration == null || DateTime.Now > _prevOpenIdConfigUpdateTimestamp.Add(_openIdConfigRefreshInterval))
             {
-                this.GraphLogger.Info("Updating OpenID configuration");
+                GraphLogger.Info("Updating OpenID configuration");
 
                 // Download the OIDC configuration which contains the JWKS
                 IConfigurationManager<OpenIdConnectConfiguration> configurationManager =
                     new ConfigurationManager<OpenIdConnectConfiguration>(
                         authDomain,
                         new OpenIdConnectConfigurationRetriever());
-                this.openIdConfiguration = await configurationManager.GetConfigurationAsync(CancellationToken.None).ConfigureAwait(false);
+                _openIdConfiguration = await configurationManager.GetConfigurationAsync(CancellationToken.None).ConfigureAwait(false);
 
-                this.prevOpenIdConfigUpdateTimestamp = DateTime.Now;
+                _prevOpenIdConfigUpdateTimestamp = DateTime.Now;
             }
 
             // The incoming token should be issued by graph.
@@ -147,8 +147,8 @@ namespace BotService.Infrastructure.Client
             TokenValidationParameters validationParameters = new TokenValidationParameters
             {
                 ValidIssuers = authIssuers,
-                ValidAudience = this.appId,
-                IssuerSigningKeys = this.openIdConfiguration.SigningKeys,
+                ValidAudience = _appId,
+                IssuerSigningKeys = _openIdConfiguration.SigningKeys,
             };
 
             ClaimsPrincipal claimsPrincipal;
@@ -165,12 +165,12 @@ namespace BotService.Infrastructure.Client
             catch (Exception ex)
             {
                 // Some other error
-                this.GraphLogger.Error(ex, $"Failed to validate token for client: {this.appId}.");
+                GraphLogger.Error(ex, $"Failed to validate token for client: {_appId}.");
                 return new RequestValidationResult() { IsValid = false };
             }
 
-            const string ClaimType = "http://schemas.microsoft.com/identity/claims/tenantid";
-            var tenantClaim = claimsPrincipal.FindFirst(claim => claim.Type.Equals(ClaimType, StringComparison.Ordinal));
+            const string claimType = "http://schemas.microsoft.com/identity/claims/tenantid";
+            var tenantClaim = claimsPrincipal.FindFirst(claim => claim.Type.Equals(claimType, StringComparison.Ordinal));
 
             if (string.IsNullOrEmpty(tenantClaim?.Value))
             {

@@ -120,6 +120,7 @@ namespace BotService
                 {
                     throw new CertificateNotFoundException($"No certificate with thumbprint {thumbprint} was found in the machine store.");
                 }
+
                 return certs[0];
             }
             finally
@@ -151,7 +152,7 @@ namespace BotService
                 BlobContainerName = Environment.GetEnvironmentVariable(BlobContainerEnvVariableKey),
                 CertificateFileName = string.IsNullOrEmpty(certificateFileName) ? DefaultCertificateFileName : certificateFileName,
                 SasToken = Environment.GetEnvironmentVariable(BlobSasQueryEnvVariableKey),
-                StorageAccountName = Environment.GetEnvironmentVariable(StorageAcountEnvVariableKey)
+                StorageAccountName = Environment.GetEnvironmentVariable(StorageAcountEnvVariableKey),
             };
 
             var cloudConfigurationService = new CloudConfigurationService(cloudConfigSettings);

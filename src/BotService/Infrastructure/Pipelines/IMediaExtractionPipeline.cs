@@ -5,6 +5,7 @@ namespace BotService.Infrastructure.Pipelines
     public interface IMediaExtractionPipeline
     {
         Bus Bus { get; set; }
+
         StateChangeReturn Play();
 
         StateChangeReturn Stop();

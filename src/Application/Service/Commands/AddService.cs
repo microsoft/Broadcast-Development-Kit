@@ -21,19 +21,25 @@ namespace Application.Service.Commands
         public class AddServiceCommand : IRequest<AddServiceCommandResponse>
         {
             public string FriendlyName { get; set; }
+
             public string ResourceGroup { get; set; }
+
             public string SubscriptionId { get; set; }
+
             public string Name { get; set; }
+
             public string Dns { get; set; }
+
             public bool IsDefault { get; set; }
         }
 
         /// <summary>
-        ///     Command Response
+        ///     Command Response.
         /// </summary>
         public class AddServiceCommandResponse
         {
             public string Id { get; set; }
+
             public ServiceModel Resource { get; set; }
         }
 
@@ -61,7 +67,8 @@ namespace Application.Service.Commands
             private readonly IHostEnvironment _environment;
             private readonly IMapper _mapper;
 
-            public AddServiceCommandHandler(IServiceRepository serviceRepository,
+            public AddServiceCommandHandler(
+                IServiceRepository serviceRepository,
                 IAzVirtualMachineService virtualMachineService,
                 IHostEnvironment environment,
                 IMapper mapper)
@@ -84,7 +91,7 @@ namespace Application.Service.Commands
                 var provisioningDetails = new Domain.Entities.ProvisioningDetails
                 {
                     State = ProvisioningStateType.Provisioned,
-                    Message = string.Empty
+                    Message = string.Empty,
                 };
 
                 if (!_environment.IsLocal())
@@ -95,7 +102,7 @@ namespace Application.Service.Commands
                     ipAddress = publicIpAddress.IPAddress;
                     powerState = virtualMachine.PowerState.Value;
                     virtualMachineName = request.Name;
-                    provisioningDetails.State = ProvisioningStateType.Deprovisioned; //The VM must be off before adding the service
+                    provisioningDetails.State = ProvisioningStateType.Deprovisioned; // The VM must be off before adding the service
                 }
 
                 await CheckIfResourceHasBeenRegistered(resourceId);
@@ -120,10 +127,9 @@ namespace Application.Service.Commands
                         ResourceGroup = request.ResourceGroup,
                         SubscriptionId = request.SubscriptionId,
                         VirtualMachineName = virtualMachineName,
-                        ProvisioningDetails = provisioningDetails
-                    }
+                        ProvisioningDetails = provisioningDetails,
+                    },
                 };
-
 
                 await _serviceRepository.AddItemAsync(entity);
 

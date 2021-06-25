@@ -1,46 +1,35 @@
-using Application.Interfaces.Common;
-using Application.Interfaces.Persistance;
-using Domain.Enums;
-using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Models;
-using Domain.Exceptions;
-using static Domain.Constants.Constants;
+using Application.Interfaces.Common;
+using Application.Interfaces.Persistance;
 using Domain.Entities;
+using Domain.Enums;
+using Domain.Exceptions;
+using FluentValidation;
+using MediatR;
+using static Domain.Constants.Constants;
 
 namespace Application.Stream.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class StoppingInjection
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public class StoppingInjectionCommand: IRequest<StoppingInjectionCommandResponse>
+        public class StoppingInjectionCommand : IRequest<StoppingInjectionCommandResponse>
         {
             public string CallId { get; set; }
+
             public string StreamId { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StoppingInjectionCommandResponse
         {
             public string Id { get; set; }
+
             public StreamModel Resource { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public class StoppingInjectionCommandValidator: AbstractValidator<StoppingInjectionCommand>
+        public class StoppingInjectionCommandValidator : AbstractValidator<StoppingInjectionCommand>
         {
             public StoppingInjectionCommandValidator()
             {
@@ -51,9 +40,6 @@ namespace Application.Stream.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StoppingInjectionCommandHandler : IRequestHandler<StoppingInjectionCommand, StoppingInjectionCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
@@ -65,8 +51,7 @@ namespace Application.Stream.Commands
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository,
-                IStreamRepository streamRepository
-                )
+                IStreamRepository streamRepository)
             {
                 _botServiceClient = botServiceClient ?? throw new ArgumentNullException(nameof(botServiceClient));
                 _callRepository = callRepository ?? throw new ArgumentNullException(nameof(callRepository));
@@ -83,7 +68,7 @@ namespace Application.Stream.Commands
                 _botServiceClient.SetBaseUrl(service.Infrastructure.Dns);
 
                 var entity = await _streamRepository.GetItemAsync(request.StreamId);
-                
+
                 if (entity == null)
                 {
                     throw new EntityNotFoundException(nameof(Domain.Entities.Stream), request.StreamId);
@@ -97,7 +82,7 @@ namespace Application.Stream.Commands
                 var command = new StopInjection.StopInjectionCommand
                 {
                     CallId = request.CallId,
-                    StreamId = entity.Id
+                    StreamId = entity.Id,
                 };
 
                 try

@@ -10,33 +10,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Service.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class RegisterService
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public class RegisterServiceCommand: IRequest<RegisterServiceCommandResponse>
+        public class RegisterServiceCommand : IRequest<RegisterServiceCommandResponse>
         {
             public string VirtualMachineName { get; set; }
         }
 
-        /// <summary>
-        ///     Command Response
-        /// </summary>
         public class RegisterServiceCommandResponse
         {
-            /// <summary>
-            ///     Item Id
-            /// </summary>
             public string Id { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class RegisterServiceCommandValidator : AbstractValidator<RegisterServiceCommand>
         {
             public RegisterServiceCommandValidator()
@@ -46,33 +31,19 @@ namespace Application.Service.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class RegisterServiceCommandHandler : IRequestHandler<RegisterServiceCommand, RegisterServiceCommandResponse>
         {
             private readonly IServiceRepository _serviceRepository;
             private readonly ILogger<RegisterServiceCommandHandler> _logger;
 
-
-            /// <summary>
-            ///     Ctor
-            /// </summary>
-            /// <param name="serviceRepository"></param>
-            /// <param name="logger"></param>
-            public RegisterServiceCommandHandler(IServiceRepository serviceRepository,
+            public RegisterServiceCommandHandler(
+                IServiceRepository serviceRepository,
                 ILogger<RegisterServiceCommandHandler> logger)
             {
                 _serviceRepository = serviceRepository ?? throw new System.ArgumentNullException(nameof(serviceRepository));
                 _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
             }
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="request"></param>
-            /// <param name="cancellationToken"></param>
-            /// <returns></returns>
             public async Task<RegisterServiceCommandResponse> Handle(RegisterServiceCommand request, CancellationToken cancellationToken)
             {
                 var response = new RegisterServiceCommandResponse();
@@ -80,13 +51,13 @@ namespace Application.Service.Commands
                 var specification = new ServiceGetByVirtualMachineNameSpecification(request.VirtualMachineName);
 
                 var services = await _serviceRepository.GetItemsAsync(specification);
-               
+
                 var entity = services.FirstOrDefault();
-               
+
                 if (entity == null)
                 {
                     _logger.LogError("[Bot Service API] There is no service configured with virtual machine {virtualMachineName} registered", request.VirtualMachineName);
-                    throw new EntityNotFoundException($"[Bot Service API]There is no service configured with virtual machine {request.VirtualMachineName} registered"); 
+                    throw new EntityNotFoundException($"[Bot Service API]There is no service configured with virtual machine {request.VirtualMachineName} registered");
                 }
 
                 entity.CallId = null;

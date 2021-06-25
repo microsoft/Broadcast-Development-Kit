@@ -1,46 +1,32 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
-using Ardalis.Result;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Stream.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class StartExtraction
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartExtractionCommand : IRequest<StartExtractionCommandResponse>
         {
             public StartStreamExtractionBody Body { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartExtractionCommandResponse
         {
             public string Id { get; set; }
+
             public ParticipantStreamModel Resource { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartExtractionCommandValidator : AbstractValidator<StartExtractionCommand>
         {
             public StartExtractionCommandValidator()
@@ -58,30 +44,26 @@ namespace Application.Stream.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StartExtractionCommandHandler : IRequestHandler<StartExtractionCommand, StartExtractionCommandResponse>
         {
-            private readonly IBot bot;
-            private readonly IParticipantStreamRepository participantStreamRepository;
-            private readonly IMapper mapper;
+            private readonly IBot _bot;
+            private readonly IParticipantStreamRepository _participantStreamRepository;
+            private readonly IMapper _mapper;
 
             public StartExtractionCommandHandler(
                 IBot bot,
                 IParticipantStreamRepository participantStreamRepository,
-                IMapper mapper
-                )
+                IMapper mapper)
             {
-                this.bot = bot ?? throw new ArgumentNullException(nameof(bot));
-                this.participantStreamRepository = participantStreamRepository ?? throw new ArgumentNullException(nameof(participantStreamRepository));
-                this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+                _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+                _participantStreamRepository = participantStreamRepository ?? throw new ArgumentNullException(nameof(participantStreamRepository));
+                _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             }
 
             public async Task<StartExtractionCommandResponse> Handle(StartExtractionCommand request, CancellationToken cancellationToken)
             {
-                //TODO: Change parameter, participant Id is not the key. It is the Id assigned by the teams call
-                var participant = await participantStreamRepository.GetItemAsync(request.Body.ParticipantId);
+                // TODO: Change parameter, participant Id is not the key. It is the Id assigned by the teams call
+                var participant = await _participantStreamRepository.GetItemAsync(request.Body.ParticipantId);
 
                 if (participant == null)
                 {
@@ -90,7 +72,7 @@ namespace Application.Stream.Commands
 
                 try
                 {
-                    StartStreamExtractionResponse startExtractionResponse = bot.StartExtraction(request.Body);
+                    StartStreamExtractionResponse startExtractionResponse = _bot.StartExtraction(request.Body);
 
                     participant.State = StreamState.Started;
                     participant.Details.TimeOverlay = startExtractionResponse.TimeOverlay;
@@ -117,14 +99,14 @@ namespace Application.Stream.Commands
                             break;
                     }
 
-                    await participantStreamRepository.UpdateItemAsync(participant.Id, participant);
+                    await _participantStreamRepository.UpdateItemAsync(participant.Id, participant);
                 }
                 catch (Exception ex)
                 {
                     participant.State = StreamState.Disconnected;
                     participant.Error = new StreamErrorDetails(StreamErrorType.StartExtraction, ex.Message);
 
-                    await participantStreamRepository.UpdateItemAsync(participant.Id, participant);
+                    await _participantStreamRepository.UpdateItemAsync(participant.Id, participant);
 
                     throw;
                 }
@@ -132,7 +114,7 @@ namespace Application.Stream.Commands
                 StartExtractionCommandResponse response = new StartExtractionCommandResponse
                 {
                     Id = participant.Id,
-                    Resource = mapper.Map<ParticipantStreamModel>(participant)
+                    Resource = _mapper.Map<ParticipantStreamModel>(participant),
                 };
 
                 return response;

@@ -1,8 +1,8 @@
+using System.Net.Http;
+using System.Threading.Tasks;
 using Application.Common.Config;
 using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Core.Services
 {
@@ -11,21 +11,21 @@ namespace Infrastructure.Core.Services
     /// </summary>
     public class GraphAuthenticationProvider : IAuthenticationProvider
     {
-        private const string GRAPH_URI = "https://graph.microsoft.com/";
-        private readonly GraphClientConfiguration configuration;
+        private const string GraphUri = "https://graph.microsoft.com/";
+        private readonly GraphClientConfiguration _configuration;
 
         public GraphAuthenticationProvider(IAppConfiguration configuration)
         {
-            this.configuration = configuration.GraphClientConfiguration;
+            _configuration = configuration.GraphClientConfiguration;
         }
 
         public async Task AuthenticateRequestAsync(HttpRequestMessage request)
         {
-            AuthenticationContext authContext = new AuthenticationContext($"https://login.microsoftonline.com/{configuration.TenantId}");
+            AuthenticationContext authContext = new AuthenticationContext($"https://login.microsoftonline.com/{_configuration.TenantId}");
 
-            ClientCredential creds = new ClientCredential(configuration.ClientId, configuration.ClientSecret);
+            ClientCredential creds = new ClientCredential(_configuration.ClientId, _configuration.ClientSecret);
 
-            AuthenticationResult authResult = await authContext.AcquireTokenAsync(GRAPH_URI, creds);
+            AuthenticationResult authResult = await authContext.AcquireTokenAsync(GraphUri, creds);
 
             request.Headers.Add("Authorization", "Bearer " + authResult.AccessToken);
         }

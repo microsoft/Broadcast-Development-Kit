@@ -7,29 +7,30 @@ namespace BotService
 {
     public class HostService : WebHostService
     {
-        private readonly ILogger logger;
+        private readonly ILogger _logger;
 
-        public HostService(IWebHost host) : base(host)
+        public HostService(IWebHost host)
+            : base(host)
         {
-            this.logger = host.Services
+            _logger = host.Services
                 .GetRequiredService<ILogger<HostService>>();
         }
 
         protected override void OnStarting(string[] args)
         {
-            logger.LogInformation("OnStarting method called.");
+            _logger.LogInformation("OnStarting method called.");
             base.OnStarting(args);
         }
 
         protected override void OnStarted()
         {
-            logger.LogInformation("OnStarted method called.");
+            _logger.LogInformation("OnStarted method called.");
             base.OnStarted();
         }
 
         protected override void OnStopping()
         {
-            logger.LogInformation("OnStopping method called.");
+            _logger.LogInformation("OnStopping method called.");
             base.OnStopping();
         }
     }

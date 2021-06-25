@@ -1,13 +1,13 @@
-using Application.Exceptions;
-using Application.Service.Commands;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Infrastructure.Core.Common.Extensions;
-using Application.Interfaces.Common;
-using Application.Stream.Commands;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Application.Exceptions;
+using Application.Interfaces.Common;
+using Application.Service.Commands;
+using Application.Stream.Commands;
+using Infrastructure.Core.Common.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Core.Services
 {
@@ -15,16 +15,15 @@ namespace Infrastructure.Core.Services
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly ILogger<BotServiceClient> _logger;
-        private string _baseUrl;
         private readonly IBotServiceAuthenticationProvider _botServiceAuthenticationProvider;
         private readonly IHostEnvironment _environment;
+        private string _baseUrl;
 
         public BotServiceClient(
             IHttpClientFactory clientFactory,
             ILogger<BotServiceClient> logger,
             IBotServiceAuthenticationProvider botServiceAuthenticationProvider,
-            IHostEnvironment hostEnvironment
-        )
+            IHostEnvironment hostEnvironment)
         {
             _clientFactory = clientFactory;
             _logger = logger;
@@ -59,7 +58,6 @@ namespace Infrastructure.Core.Services
             return response;
         }
 
-
         public async Task<StartInjection.StartInjectionCommandResponse> StartInjectionAsync(StartInjection.StartInjectionCommand command)
         {
             ValidateBaseUrl();
@@ -81,6 +79,7 @@ namespace Infrastructure.Core.Services
 
             return response;
         }
+
         public async Task<HttpResponseMessage> UnmuteBotAsync()
         {
             ValidateBaseUrl();

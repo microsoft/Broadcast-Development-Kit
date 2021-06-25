@@ -13,7 +13,7 @@ namespace Application.Common.Models
         public string PowerState { get; set; }
 
         public string IpAddress { get; set; }
-        
+
         public string Dns { get; set; }
 
         public ProvisioningDetailsModel ProvisioningDetails { get; set; } = new ProvisioningDetailsModel();

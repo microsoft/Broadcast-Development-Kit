@@ -10,12 +10,13 @@ namespace Application.Exceptions
         {
         }
 
-        public StartStreamExtractionException(string message) : base(message)
+        public StartStreamExtractionException(string message)
+            : base(message)
         {
-
         }
 
-        protected StartStreamExtractionException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected StartStreamExtractionException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

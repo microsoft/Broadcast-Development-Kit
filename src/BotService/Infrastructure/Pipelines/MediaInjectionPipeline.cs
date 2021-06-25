@@ -1,3 +1,4 @@
+using System;
 using Application.Exceptions;
 using BotService.Application.Core;
 using BotService.Infrastructure.Common.Logging;
@@ -6,7 +7,6 @@ using Domain.Enums;
 using Gst;
 using Gst.App;
 using Microsoft.Extensions.Logging;
-using System;
 using static Domain.Constants.Constants;
 using DateTime = System.DateTime;
 
@@ -14,24 +14,25 @@ namespace BotService.Infrastructure.Pipelines
 {
     public class MediaInjectionPipeline : IObservable<BusEventPayload>, IMediaInjectionPipeline
     {
+        private readonly ILogger _logger;
+        private readonly Pipeline _pipeline;
+        private readonly Bin _audioProcessingBin, _videoProcessingBin;
+        private readonly AppSink _videoAppSink, _audioAppSink;
+        private readonly MediaInjectionSettings _injectionSettings;
+        private readonly Bus _bus;
+
         private PipelineBusObserver pipelineBusObserver;
-        private readonly ILogger logger;
-        private readonly Pipeline pipeline;
-        private readonly Bin audioProcessingBin, videoProcessingBin;
-        private readonly AppSink videoAppSink, audioAppSink;
-        private readonly MediaInjectionSettings injectionSettings;
-        private readonly Bus bus;
 
         public MediaInjectionPipeline(
             MediaInjectionSettings injectionSettings,
             ILoggerFactory loggerFactory)
         {
-            this.injectionSettings = injectionSettings;
-            this.logger = loggerFactory.CreateLogger<MediaInjectionPipeline>();
+            _injectionSettings = injectionSettings;
+            _logger = loggerFactory.CreateLogger<MediaInjectionPipeline>();
 
             var name = $"pipeline_{injectionSettings.StreamId}";
-            pipeline = new Pipeline(name);
-            bus = pipeline.Bus;
+            _pipeline = new Pipeline(name);
+            _bus = _pipeline.Bus;
             Element source = GetSource();
             Element decodebin = ElementFactory.Make("decodebin");
 
@@ -41,66 +42,66 @@ namespace BotService.Infrastructure.Pipelines
             }
 
             decodebin.PadAdded += HandlePadAdded;
-            videoProcessingBin = CreateVideoProcessingBin();
-            audioProcessingBin = CreateAudioProcessingBin();
+            _videoProcessingBin = CreateVideoProcessingBin();
+            _audioProcessingBin = CreateAudioProcessingBin();
 
-            audioAppSink = new AppSink("audioappsink")
+            _audioAppSink = new AppSink("audioappsink")
             {
-                EmitSignals = true
+                EmitSignals = true,
             };
 
-            videoAppSink = new AppSink("videoappsink")
+            _videoAppSink = new AppSink("videoappsink")
             {
-                EmitSignals = true
+                EmitSignals = true,
             };
 
-            pipeline.Add(source, decodebin);
+            _pipeline.Add(source, decodebin);
             Element.Link(source, decodebin);
         }
 
         public (State State, State NextState) GetState()
         {
-            pipeline.GetState(out State state, out State pending, 1000);
+            _pipeline.GetState(out State state, out State pending, 1000);
 
             return (state, pending);
         }
 
         public void Play()
         {
-            bus.EnableSyncMessageEmission();
-            bus.SyncMessage += OnBusMessage;
-            pipeline.SetState(State.Playing);
-            logger.LogInformation("[Media Injection] Started injection");
+            _bus.EnableSyncMessageEmission();
+            _bus.SyncMessage += OnBusMessage;
+            _pipeline.SetState(State.Playing);
+            _logger.LogInformation("[Media Injection] Started injection");
         }
 
         public void Stop()
         {
-            pipeline.SetState(State.Null);
-            bus.SyncMessage -= OnBusMessage;
-            bus.Unref();
-            pipeline.Unref();
+            _pipeline.SetState(State.Null);
+            _bus.SyncMessage -= OnBusMessage;
+            _bus.Unref();
+            _pipeline.Unref();
 
-            logger.LogInformation("[Media Injection] Stopped injection");
+            _logger.LogInformation("[Media Injection] Stopped injection");
         }
 
         public void SetNewAudioSampleHandler(NewSampleHandler newAudioSampleHandler)
         {
-            audioAppSink.NewSample += newAudioSampleHandler;
+            _audioAppSink.NewSample += newAudioSampleHandler;
         }
 
         public void SetNewVideoSampleHandler(NewSampleHandler newVideoSampleHandler)
         {
-            videoAppSink.NewSample += newVideoSampleHandler;
+            _videoAppSink.NewSample += newVideoSampleHandler;
         }
 
         public void RemoveNewAudioSampleHandler(NewSampleHandler newAudioSampleHandler)
         {
-            audioAppSink.NewSample -= newAudioSampleHandler;
+            _audioAppSink.NewSample -= newAudioSampleHandler;
         }
 
         public void RemoveNewVideoSampleHandler(NewSampleHandler newVideoSampleHandler)
         {
-            videoAppSink.NewSample -= newVideoSampleHandler;
+            _videoAppSink.NewSample -= newVideoSampleHandler;
         }
 
         public IDisposable Subscribe(IObserver<BusEventPayload> observer)
@@ -152,9 +153,59 @@ namespace BotService.Infrastructure.Pipelines
             return uri;
         }
 
+        private static void AddBinPads(Bin bin, Element sinkElement, Element srcElement)
+        {
+            var sinkPad = sinkElement.GetStaticPad("sink");
+            var binSinkPad = new GhostPad("sink", sinkPad);
+            var srcPad = srcElement.GetStaticPad("src");
+            var binSrcPad = new GhostPad("src", srcPad);
+
+            bin.AddPad(binSrcPad);
+            bin.AddPad(binSinkPad);
+        }
+
+        private static (BusMessageType messageType, string message) GetFormatedMessage(Message msg)
+        {
+            var messageType = BusMessageType.Unknown;
+            var formatedMessage = string.Empty;
+
+            switch (msg.Type)
+            {
+                case MessageType.Error:
+                    var structure = msg.ParseErrorDetails();
+                    msg.ParseError(out GLib.GException err, out string debug);
+                    messageType = BusMessageType.Error;
+                    formatedMessage = $"Error received from element {msg.Src.Name}: {err.Message}, Debugging information {debug ?? "none"} {structure}";
+                    break;
+                case MessageType.Qos:
+                    msg.ParseQosStats(out Gst.Format format, out ulong processed, out ulong dropped);
+                    messageType = BusMessageType.Qos;
+                    formatedMessage = $"QoS message from: {msg.Src.Name}, Format = {format}, Processed = {processed}, Dropped = {dropped}";
+                    break;
+
+                case MessageType.StateChanged:
+                    var element = (Element)msg.Src;
+
+                    // Format only the state change of the pipeline, not elements
+                    if (element.Name.Contains("pipeline"))
+                    {
+                        messageType = BusMessageType.StateChanged;
+                        formatedMessage = $"State changed message from: {msg.Src.Name}, Current state: {element.CurrentState}";
+                    }
+
+                    break;
+                case MessageType.Eos:
+                    messageType = BusMessageType.Eos;
+                    formatedMessage = "End of stream received";
+                    break;
+            }
+
+            return (messageType, formatedMessage);
+        }
+
         private Element GetSource()
         {
-            var protocolSettings = this.injectionSettings.ProtocolSettings;
+            var protocolSettings = _injectionSettings.ProtocolSettings;
             Element element;
             switch (protocolSettings.Type)
             {
@@ -198,7 +249,7 @@ namespace BotService.Infrastructure.Pipelines
 
             if (!Element.Link(queue, videoConvert, videoScale, videoRate, capsFilter))
             {
-                logger.LogError("Could not link video processing elements for stream id: {streamId}", injectionSettings.StreamId);
+                _logger.LogError("Could not link video processing elements for stream id: {streamId}", _injectionSettings.StreamId);
 
                 throw new StartStreamInjectionException("Error linking video processing elements");
             }
@@ -226,23 +277,12 @@ namespace BotService.Infrastructure.Pipelines
 
             if (!Element.Link(queue, audioConvert, audioResample, audioBufferSplit, capsFilter))
             {
-                logger.LogError("Could not link audio processing elements for stream id: {streamId}", injectionSettings.StreamId);
+                _logger.LogError("Could not link audio processing elements for stream id: {streamId}", _injectionSettings.StreamId);
 
                 throw new StartStreamInjectionException("Error linking audio processing elements");
             }
 
             return audioBin;
-        }
-
-        private static void AddBinPads(Bin bin, Element sinkElement, Element srcElement)
-        {
-            var sinkPad = sinkElement.GetStaticPad("sink");
-            var binSinkPad = new GhostPad("sink", sinkPad);
-            var srcPad = srcElement.GetStaticPad("src");
-            var binSrcPad = new GhostPad("src", srcPad);
-
-            bin.AddPad(binSrcPad);
-            bin.AddPad(binSinkPad);
         }
 
         private void OnBusMessage(object sender, GLib.SignalArgs args)
@@ -254,11 +294,11 @@ namespace BotService.Infrastructure.Pipelines
             {
                 var busEvent = new BusEventPayload
                 {
-                    CallId = injectionSettings.CallId,
-                    StreamId = injectionSettings.StreamId,
+                    CallId = _injectionSettings.CallId,
+                    StreamId = _injectionSettings.StreamId,
                     MessageType = messageType,
                     Message = formatedMessage,
-                    DateTime = DateTime.Now
+                    DateTime = DateTime.Now,
                 };
 
                 pipelineBusObserver.OnNext(busEvent);
@@ -269,6 +309,7 @@ namespace BotService.Infrastructure.Pipelines
         {
             var element = o as Element;
             var newPad = args.NewPad;
+
             // Check the new pad's type
             var newPadCaps = newPad.Caps;
             var newPadStruct = newPadCaps.GetStructure(0);
@@ -276,20 +317,20 @@ namespace BotService.Infrastructure.Pipelines
 
             if (newPadType.StartsWith("video"))
             {
-                var linkStatus = LinkProcesingBin(videoProcessingBin, videoAppSink, newPad);
+                var linkStatus = LinkProcesingBin(_videoProcessingBin, _videoAppSink, newPad);
 
                 if (linkStatus != PadLinkReturn.Ok)
                 {
-                    logger.LogError("Couldn't link video src pad from element {element} in stream {streamId}", element, injectionSettings.StreamId);
+                    _logger.LogError("Couldn't link video src pad from element {element} in stream {streamId}", element, _injectionSettings.StreamId);
                 }
             }
             else if (newPadType.StartsWith("audio"))
             {
-                var linkStatus = LinkProcesingBin(audioProcessingBin, audioAppSink, newPad);
+                var linkStatus = LinkProcesingBin(_audioProcessingBin, _audioAppSink, newPad);
 
                 if (linkStatus != PadLinkReturn.Ok)
                 {
-                    logger.LogError("Couldn't link audio src pad from element {element} in stream {streamId}", element, injectionSettings.StreamId);
+                    _logger.LogError("Couldn't link audio src pad from element {element} in stream {streamId}", element, _injectionSettings.StreamId);
                 }
             }
         }
@@ -300,49 +341,12 @@ namespace BotService.Infrastructure.Pipelines
             var binSrcPad = bin.GetStaticPad("src");
             var appSinkPad = appSink.GetStaticPad("sink");
 
-            pipeline.Add(bin, appSink);
+            _pipeline.Add(bin, appSink);
             bin.SyncStateWithParent();
             appSink.SyncStateWithParent();
             binSrcPad.Link(appSinkPad);
 
             return decodePad.Link(binSinkPad);
-        }
-
-        private static (BusMessageType messageType, string message) GetFormatedMessage(Message msg)
-        {
-            var messageType = BusMessageType.Unknown;
-            var formatedMessage = string.Empty;
-
-            switch (msg.Type)
-            {
-                case MessageType.Error:
-                    var structure = msg.ParseErrorDetails();
-                    msg.ParseError(out GLib.GException err, out string debug);
-                    messageType = BusMessageType.Error;
-                    formatedMessage = $"Error received from element {msg.Src.Name}: {err.Message}, Debugging information {(debug ?? "none")} {structure}";
-                    break;
-                case MessageType.Qos:
-                    msg.ParseQosStats(out Gst.Format format, out ulong processed, out ulong dropped);
-                    messageType = BusMessageType.Qos;
-                    formatedMessage = $"QoS message from: {msg.Src.Name}, Format = {format}, Processed = {processed}, Dropped = {dropped}";
-                    break;
-
-                case MessageType.StateChanged:
-                    var element = (Element)msg.Src;
-                    // Format only the state change of the pipeline, not elements
-                    if (element.Name.Contains("pipeline"))
-                    {
-                        messageType = BusMessageType.StateChanged;
-                        formatedMessage = $"State changed message from: {msg.Src.Name}, Current state: {element.CurrentState}";
-                    }
-                    break;
-                case MessageType.Eos:
-                    messageType = BusMessageType.Eos;
-                    formatedMessage = "End of stream received";
-                    break;
-            }
-
-            return (messageType, formatedMessage);
         }
     }
 }

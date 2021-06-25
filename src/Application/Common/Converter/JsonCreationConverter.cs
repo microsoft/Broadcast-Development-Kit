@@ -1,6 +1,6 @@
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace Application.Common.Converter
 {
@@ -14,20 +14,19 @@ namespace Application.Common.Converter
             }
         }
 
-        protected abstract T Create(Type objectType, JObject jObject);
-
         public override bool CanConvert(Type objectType)
         {
             return typeof(T).IsAssignableFrom(objectType);
         }
 
-
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader == null) throw new ArgumentNullException(nameof(reader));
-            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+            reader = reader ?? throw new ArgumentNullException(nameof(reader));
+            serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             if (reader.TokenType == JsonToken.Null)
+            {
                 return null;
+            }
 
             JObject jObject = JObject.Load(reader);
             T target = Create(objectType, jObject);
@@ -39,5 +38,7 @@ namespace Application.Common.Converter
         {
             throw new NotImplementedException();
         }
+
+        protected abstract T Create(Type objectType, JObject jObject);
     }
 }

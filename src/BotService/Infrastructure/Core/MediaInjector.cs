@@ -14,16 +14,19 @@ namespace BotService.Infrastructure.Core
 {
     public class MediaInjector : IMediaInjector, IDisposable
     {
-        private const int VIDEO_SAMPLES_PSEC = 30;
-        private const int AUDIO_SAMPLES_PSEC = 50;
+        private const int VideoSamplesPerSecond = 30;
+        private const int AudioSamplesPerSecond = 50;
 
-        private const ulong VIDEO_SAMPLE_LENGTH = 1000000000 / VIDEO_SAMPLES_PSEC; // 33.33...ms, in nano-seconds
-        private const ulong AUDIO_SAMPLE_LENGTH = 1000000000 / AUDIO_SAMPLES_PSEC; // 20ms, in nano-seconds
+        private const ulong VideoSampleLength = 1000000000 / VideoSamplesPerSecond; // 33.33...ms, in nano-seconds
+        private const ulong AudioSampleLength = 1000000000 / AudioSamplesPerSecond; // 20ms, in nano-seconds
 
         private readonly IAudioSocket _audioSocket;
         private readonly PipelineBusObserver _pipelineBusObserver;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<MediaInjector> _logger;
+
+        private readonly object _updateReferenceAudioLock = new object();
+        private readonly object _updateReferenceVideoLock = new object();
 
         private IMediaInjectionPipeline _pipeline;
         private IDisposable _unsubscribeObserver;
@@ -33,7 +36,7 @@ namespace BotService.Infrastructure.Core
         private int _audioReceivedSamples = 0;
         private int _audioAcceptedSamples = 0;
         private int _audioDroppedSamples = 0;
-        private readonly object _updateReferenceAudioLock = new object();
+
         private ulong _referenceAudioPts;
         private long _referenceAudioTimestamp;
         private bool _isAudioReady = false;
@@ -42,7 +45,6 @@ namespace BotService.Infrastructure.Core
         private int _videoReceivedFrames = 0;
         private int _videoAcceptedFrames = 0;
         private int _videoDroppedFrames = 0;
-        private readonly object _updateReferenceVideoLock = new object();
         private ulong _referenceVideoPts;
         private long _referenceVideoTimestamp;
         private bool _isVideoReady = false;
@@ -173,14 +175,14 @@ namespace BotService.Infrastructure.Core
                     }
 
                     // If the frame is too late we will simply discard it
-                    if (adjustedBufferPts + VIDEO_SAMPLE_LENGTH >= pipelineTime)
+                    if (adjustedBufferPts + VideoSampleLength >= pipelineTime)
                     {
                         // The Media Platform uses timestamps in units of 100-ns, while GStreamer uses timestamps in units of 1-ns.
                         long timestamp = _referenceVideoTimestamp + ((long)(adjustedBufferPts - _referenceVideoPts) / 100);
                         long platformTimestamp = MediaPlatform.GetCurrentTimestamp();
                         long timestampDrift = platformTimestamp - timestamp;
 
-                        if (_videoReceivedFrames % VIDEO_SAMPLES_PSEC == 0)
+                        if (_videoReceivedFrames % VideoSamplesPerSecond == 0)
                         {
                             _logger.LogInformation($"[Injection] Video - Frames Received: {_videoReceivedFrames - 1} Accepted: {_videoAcceptedFrames} Dropped: {_videoDroppedFrames}");
                             _logger.LogInformation($"[Injection] Video - Buffer #{_videoReceivedFrames - 1} check - Pipeline time: {pipelineTime}(ns) Buffer PTS: {buffer.Pts}(ns) Latency: {sink.Latency}(ns) Platform diff: {timestampDrift}(100-ns)");
@@ -222,7 +224,6 @@ namespace BotService.Infrastructure.Core
 
                 sample.Dispose();
             }
-
             else
             {
                 _logger.LogWarning("[Injection] Video - New sample signal was triggered without a sample.");
@@ -264,14 +265,14 @@ namespace BotService.Infrastructure.Core
                     }
 
                     // If the audio sample is too late we will simply discard it
-                    if (adjustedBufferPts + AUDIO_SAMPLE_LENGTH >= pipelineTime)
+                    if (adjustedBufferPts + AudioSampleLength >= pipelineTime)
                     {
                         // The Media Platform uses timestamps in units of 100-ns, while GStreamer uses timestamps in units of 1-ns.
                         long timestamp = _referenceAudioTimestamp + ((long)(adjustedBufferPts - _referenceAudioPts) / 100);
                         long platformTimestamp = MediaPlatform.GetCurrentTimestamp();
                         long timestampDrift = platformTimestamp - timestamp;
 
-                        if (_audioReceivedSamples % AUDIO_SAMPLES_PSEC == 0)
+                        if (_audioReceivedSamples % AudioSamplesPerSecond == 0)
                         {
                             _logger.LogInformation($"[Injection] Audio - Samples Received: {_audioReceivedSamples - 1} Accepted: {_audioAcceptedSamples} Dropped: {_audioDroppedSamples}");
                             _logger.LogInformation($"[Injection] Audio - Buffer #{_audioReceivedSamples - 1} check - Pipeline time: {pipelineTime}(ns) Buffer PTS: {buffer.Pts}(ns) Latency: {sink.Latency}(ns) Platform diff: {timestampDrift}(100-ns)");

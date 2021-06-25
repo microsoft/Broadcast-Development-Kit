@@ -1,7 +1,5 @@
-
 using System.Threading.Tasks;
 using Application.Common.Config;
-using Application.Interfaces.Common;
 using Application.Service.Commands;
 using Application.Stream.Commands;
 using BotService.Infrastructure.Common.Logging;
@@ -10,8 +8,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Application.Service.Commands.ProcessNotification;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace BotService.Controllers
 {
@@ -23,7 +19,8 @@ namespace BotService.Controllers
         private readonly SampleObserver _observer;
         private readonly PipelineBusObserver _pipelineBusObserver;
 
-        public BotController(IMediator mediator,
+        public BotController(
+            IMediator mediator,
             SampleObserver observer,
             PipelineBusObserver pipelineBusObserver)
         {
@@ -48,7 +45,7 @@ namespace BotService.Controllers
         {
             var command = new RemoveBot.RemoveBotCommand
             {
-                GraphCallId = graphCallId
+                GraphCallId = graphCallId,
             };
 
             await _mediator.Send(command);
@@ -90,7 +87,7 @@ namespace BotService.Controllers
             var command = new StopInjection.StopInjectionCommand
             {
                 CallId = callId,
-                StreamId = streamId
+                StreamId = streamId,
             };
 
             var response = await _mediator.Send(command);
@@ -125,7 +122,7 @@ namespace BotService.Controllers
             var command = new ValidateStreamKey.ValidateStreamKeyCommand
             {
                 CallId = callId,
-                StreamKey = name
+                StreamKey = name,
             };
 
             await _mediator.Send(command);
@@ -142,7 +139,7 @@ namespace BotService.Controllers
         {
             var command = new ProcessNotificationCommand
             {
-                HttpRequestMessage = Request.CreateRequestMessage()
+                HttpRequestMessage = Request.CreateRequestMessage(),
             };
 
             var response = await _mediator.Send(command);
@@ -230,4 +227,3 @@ namespace BotService.Controllers
         }
     }
 }
-

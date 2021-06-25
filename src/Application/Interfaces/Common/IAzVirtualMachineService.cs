@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using Ardalis.Result;
 using Microsoft.Azure.Management.Compute.Fluent;
-using System.Threading.Tasks;
 
 namespace Application.Interfaces.Common
 {

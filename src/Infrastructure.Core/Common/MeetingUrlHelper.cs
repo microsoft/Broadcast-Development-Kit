@@ -1,9 +1,9 @@
-using Application.Common.Models;
-using BotService.Infrastructure.Common;
-using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Text.RegularExpressions;
+using Application.Common.Models;
+using BotService.Infrastructure.Common;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Core.Common
 {

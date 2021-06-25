@@ -6,7 +6,7 @@ using static Application.Participant.Commands.UpdateParticipantMeetingStatus;
 namespace Application.Participants
 {
     /// <summary>
-    ///     Mapping Profile for AutoMapper
+    ///     Mapping Profile for AutoMapper.
     /// </summary>
     public class MappingProfile : Profile
     {

@@ -16,7 +16,9 @@ namespace Application.Service.Commands
         public class HandleEventGridServiceInfrastructureEventCommand : IRequest
         {
             public string EventType { get; set; }
+
             public dynamic Data { get; set; }
+
             public string ServiceInfrastructureId { get; set; }
         }
 
@@ -24,15 +26,15 @@ namespace Application.Service.Commands
         {
             private readonly IServiceRepository _serviceRepository;
             private readonly ILogger<HandleEventGridServiceInfrastructureEventCommandHandler> _logger;
-            private readonly List<string> _operationTypes = new List<string> {
+            private readonly List<string> _operationTypes = new List<string>
+            {
                 Constants.AzureEventGid.VirtualMachineOperationType.Start,
-                Constants.AzureEventGid.VirtualMachineOperationType.Deallocate
+                Constants.AzureEventGid.VirtualMachineOperationType.Deallocate,
             };
 
             public HandleEventGridServiceInfrastructureEventCommandHandler(
                 IServiceRepository serviceRepository,
-                ILogger<HandleEventGridServiceInfrastructureEventCommandHandler> logger
-                )
+                ILogger<HandleEventGridServiceInfrastructureEventCommandHandler> logger)
             {
                 _serviceRepository = serviceRepository ?? throw new ArgumentNullException(nameof(serviceRepository));
                 _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -54,8 +56,10 @@ namespace Application.Service.Commands
                     if (!_operationTypes.Contains(operation))
                     {
                         string data = request.Data.ToString();
-                        _logger.LogInformation("The event's operation name {name} is not part of the handler's scope.\nData: {data}",
-                            operation, data);
+                        _logger.LogInformation(
+                            "The event's operation name {name} is not part of the handler's scope.\nData: {data}",
+                            operation,
+                            data);
 
                         return Unit.Value;
                     }
@@ -77,13 +81,16 @@ namespace Application.Service.Commands
                     service.Infrastructure.PowerState = powerState;
                     service.Infrastructure.ProvisioningDetails = new Domain.Entities.ProvisioningDetails
                     {
-                        State = provisioningState
+                        State = provisioningState,
                     };
 
                     await _serviceRepository.UpdateItemAsync(service.Id, service);
-                    _logger.LogInformation("Service {serviceName} / Infrastructure {infrastructureName} has been succesfully updated.\n " +
-                        "Provisioning State {provisioningState} - Powerstate {powerState}.", service.Name, service.Infrastructure.VirtualMachineName,
-                        provisioningState, powerState);
+                    _logger.LogInformation(
+                        "Service {serviceName} / Infrastructure {infrastructureName} has been succesfully updated.\n Provisioning State {provisioningState} - Powerstate {powerState}.",
+                        service.Name,
+                        service.Infrastructure.VirtualMachineName,
+                        provisioningState,
+                        powerState);
 
                     return Unit.Value;
                 }

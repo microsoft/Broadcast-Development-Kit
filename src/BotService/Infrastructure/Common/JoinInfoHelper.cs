@@ -8,11 +8,10 @@ namespace BotService.Infrastructure.Common
     /// </summary>
     public static class JoinInfoHelper
     {
-
         /// <summary>
         /// Parse Join URL into its components.
         /// </summary>
-        /// <param name="joinURL">Join URL from Team's meeting body.</param>
+        /// <param name="joinUrl">Join URL from Team's meeting body.</param>
         /// <returns>Parsed data.</returns>
         public static (ChatInfo, MeetingInfo) ParseJoinURL(string joinUrl)
         {
@@ -37,6 +36,7 @@ namespace BotService.Infrastructure.Common
                     User = new Identity { Id = context.Oid },
                 },
             };
+
             meetingInfo.Organizer.User.SetTenantId(context.Tid);
 
             return (chatInfo, meetingInfo);

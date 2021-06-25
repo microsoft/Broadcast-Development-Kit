@@ -1,3 +1,6 @@
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
@@ -7,10 +10,6 @@ using Domain.Enums;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.Azure.Management.Compute.Fluent;
-using Microsoft.Extensions.Logging;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Service.Commands
 {
@@ -24,6 +23,7 @@ namespace Application.Service.Commands
         public class StopServiceInfrastructureCommandResponse
         {
             public string Id { get; set; }
+
             public ServiceModel Resource { get; set; }
         }
 
@@ -79,6 +79,7 @@ namespace Application.Service.Commands
                         {
                             sb.AppendLine(error);
                         }
+
                         service.Infrastructure.PowerState = PowerState.Unknown.Value;
                         service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Error;
                         service.Infrastructure.ProvisioningDetails.Message = sb.ToString();

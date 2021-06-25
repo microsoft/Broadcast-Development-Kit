@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace Infrastructure.Core.Common.Models
 {
-    public class ErrorDetails: ProblemDetails
+    public class ErrorDetails : ProblemDetails
     {
         public ErrorDetails()
         {
-
         }
 
         public string StackTrace { get; set; }

@@ -1,7 +1,6 @@
-using Application.Common.Models;
-using Ardalis.Result;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Application.Common.Models;
 using static Application.Service.Commands.InviteBot;
 
 namespace Application.Interfaces.Common
@@ -29,8 +28,7 @@ namespace Application.Interfaces.Common
         Task MuteBotAsync();
 
         Task UnmuteBotAsync();
-        
+
         Task RegisterServiceAsync(string virtualMachineName);
     }
 }
-

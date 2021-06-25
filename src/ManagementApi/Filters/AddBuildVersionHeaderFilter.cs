@@ -5,11 +5,11 @@ namespace ManagementApi.Filters
 {
     public class AddBuildVersionHeaderFilter : IResultFilter
     {
-        private readonly string buildVersion;
+        private readonly string _buildVersion;
 
         public AddBuildVersionHeaderFilter(IAppConfiguration configuration)
         {
-            this.buildVersion = configuration.BuildVersion;
+            _buildVersion = configuration.BuildVersion;
         }
 
         public void OnResultExecuted(ResultExecutedContext context)
@@ -19,7 +19,7 @@ namespace ManagementApi.Filters
 
         public void OnResultExecuting(ResultExecutingContext context)
         {
-            context.HttpContext.Response.Headers.Add("X-build-version", buildVersion);
+            context.HttpContext.Response.Headers.Add("X-build-version", _buildVersion);
         }
     }
 }

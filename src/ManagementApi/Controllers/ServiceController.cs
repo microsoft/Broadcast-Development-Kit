@@ -1,10 +1,8 @@
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Application.Service.Commands;
 using Application.Service.Queries;
-using Microsoft.AspNetCore.Authorization;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementApi.Controllers
 {
@@ -23,9 +21,9 @@ namespace ManagementApi.Controllers
         [Route("{serviceId}/start")]
         public async Task<IActionResult> Start([FromRoute] string serviceId)
         {
-            var command = new StartingServiceInfrastructure.StartingServiceInfrastructureCommand 
-            { 
-                ServiceId = serviceId 
+            var command = new StartingServiceInfrastructure.StartingServiceInfrastructureCommand
+            {
+                ServiceId = serviceId,
             };
 
             var response = await _mediator.Send(command);
@@ -45,9 +43,9 @@ namespace ManagementApi.Controllers
         [Route("{serviceId}/stop")]
         public async Task<IActionResult> Stop([FromRoute] string serviceId)
         {
-            var command = new StoppingServiceInfrastructure.StoppingServiceInfrastructureCommand 
-            { 
-                ServiceId = serviceId 
+            var command = new StoppingServiceInfrastructure.StoppingServiceInfrastructureCommand
+            {
+                ServiceId = serviceId,
             };
 
             var response = await _mediator.Send(command);
@@ -61,7 +59,7 @@ namespace ManagementApi.Controllers
         {
             var query = new GetService.GetServiceQuery
             {
-                ServiceId = serviceId
+                ServiceId = serviceId,
             };
 
             var response = await _mediator.Send(query);

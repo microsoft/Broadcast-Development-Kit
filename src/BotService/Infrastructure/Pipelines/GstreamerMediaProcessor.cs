@@ -1,49 +1,49 @@
+using System;
 using BotService.Application.Core;
 using BotService.Infrastructure.Core;
 using Domain.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.Skype.Bots.Media;
-using System;
 
 namespace BotService.Infrastructure.Pipelines
 {
     public class GstreamerMediaProcessor : IMediaProcessor
-    { 
-        private IMediaExtractionPipeline pipeline;
-        private readonly ILogger logger;
-        private readonly ProtocolSettings protocolSettings;
+    {
+        private readonly ILogger _logger;
+        private readonly ProtocolSettings _protocolSettings;
+        private IMediaExtractionPipeline _pipeline;
 
         public GstreamerMediaProcessor(ProtocolSettings protocolSettings, ILoggerFactory loggerFactory)
         {
-            this.protocolSettings = protocolSettings ?? throw new ArgumentNullException(nameof(protocolSettings));
-            this.logger = loggerFactory.CreateLogger<GstreamerMediaProcessor>();
+            _protocolSettings = protocolSettings ?? throw new ArgumentNullException(nameof(protocolSettings));
+            _logger = loggerFactory.CreateLogger<GstreamerMediaProcessor>();
         }
 
         public void Play()
         {
-            this.pipeline = CreatePipeline(protocolSettings);
-            this.pipeline.Bus.EnableSyncMessageEmission();
-            this.pipeline.Bus.SyncMessage += OnBusMessage;
+            _pipeline = CreatePipeline(_protocolSettings);
+            _pipeline.Bus.EnableSyncMessageEmission();
+            _pipeline.Bus.SyncMessage += OnBusMessage;
 
-            this.pipeline.Play();
+            _pipeline.Play();
         }
 
         public void Stop()
         {
-            if (this.pipeline != null)
+            if (_pipeline != null)
             {
-                this.pipeline.Stop();
+                _pipeline.Stop();
             }
         }
 
         public void PushAudioBuffer(byte[] buffer, AudioFormat audioFormat, long timestamp, int rate)
         {
-            this.pipeline.PushAudioBuffer(buffer, timestamp);
+            _pipeline.PushAudioBuffer(buffer, timestamp);
         }
 
         public void PushVideoBuffer(byte[] buffer, VideoColorFormat videoFormat, long timestamp, int width, int height)
         {
-            this.pipeline.PushVideoBuffer(buffer, timestamp, width, height);
+            _pipeline.PushVideoBuffer(buffer, timestamp, width, height);
         }
 
         public void Dispose()
@@ -54,9 +54,9 @@ namespace BotService.Infrastructure.Pipelines
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && this.pipeline != null)
+            if (disposing && _pipeline != null)
             {
-                this.pipeline.Stop();
+                _pipeline.Stop();
             }
         }
 
@@ -90,27 +90,27 @@ namespace BotService.Infrastructure.Pipelines
                 case Gst.MessageType.Error:
                     var structure = msg.ParseErrorDetails();
                     msg.ParseError(out GLib.GException err, out string debug);
-                    this.logger.LogError("[MediaPipeline] Error received from element {Name}: {Message}", msg.Src.Name, err.Message);
-                    this.logger.LogError("[MediaPipeline] Debugging information: {0}", debug ?? "none");
-                    this.logger.LogError("[MediaPipeline] {structure}", structure);
+                    _logger.LogError("[MediaPipeline] Error received from element {Name}: {Message}", msg.Src.Name, err.Message);
+                    _logger.LogError("[MediaPipeline] Debugging information: {0}", debug ?? "none");
+                    _logger.LogError("[MediaPipeline] {structure}", structure);
                     break;
                 case Gst.MessageType.StateChanged:
                     var element = (Gst.Element)msg.Src;
-                    this.logger.LogInformation("[MediaPipeline] Pipeline state changed message from: {Name}, current state: {CurrentState}", msg.Src.Name, element.CurrentState);
+                    _logger.LogInformation("[MediaPipeline] Pipeline state changed message from: {Name}, current state: {CurrentState}", msg.Src.Name, element.CurrentState);
                     break;
                 case Gst.MessageType.StreamStatus:
-                    this.logger.LogInformation("[MediaPipeline] Pipeline stream status message from: {Name}", msg.Src.Parent.Name);
+                    _logger.LogInformation("[MediaPipeline] Pipeline stream status message from: {Name}", msg.Src.Parent.Name);
                     break;
                 case Gst.MessageType.Qos:
                     msg.ParseQosStats(out Gst.Format format, out ulong processed, out ulong dropped);
-                    this.logger.LogInformation("[MediaPipeline] QoS message: format = {format}, processed = {processed}, dropped = {dropped}", format, processed, dropped);
+                    _logger.LogInformation("[MediaPipeline] QoS message: format = {format}, processed = {processed}, dropped = {dropped}", format, processed, dropped);
                     break;
                 case Gst.MessageType.Warning:
                     msg.ParseWarning(out _, out string debugMessage);
-                    this.logger.LogWarning("[MediaPipeline] Warning message from element: {Name}, debug message: {debugMessage}", msg.Src.Name, debugMessage);
+                    _logger.LogWarning("[MediaPipeline] Warning message from element: {Name}, debug message: {debugMessage}", msg.Src.Name, debugMessage);
                     break;
                 default:
-                    this.logger.LogInformation("[MediaPipeline] default message type: {Type}, from element: {Name}", msg.Type, msg.Src.Name);
+                    _logger.LogInformation("[MediaPipeline] default message type: {Type}, from element: {Name}", msg.Type, msg.Src.Name);
                     break;
             }
         }

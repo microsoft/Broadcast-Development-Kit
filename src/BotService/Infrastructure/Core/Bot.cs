@@ -7,13 +7,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Application.Common.Config;
 using Application.Common.Models;
-using Application.Exceptions;
 using Application.Interfaces.Common;
 using Application.Service.Commands;
-using Ardalis.Result;
 using BotService.Application.Core;
 using BotService.Infrastructure.Common;
-using BotService.Infrastructure.Core;
 using BotService.Infrastructure.Extensions;
 using BotService.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
@@ -25,50 +22,49 @@ using Microsoft.Graph.Communications.Common;
 using Microsoft.Graph.Communications.Common.Telemetry;
 using Microsoft.Graph.Communications.Resources;
 using Microsoft.Skype.Bots.Media;
-using static Domain.Constants.Constants;
 
-namespace BotService.InfCrastructure.Core
+namespace BotService.Infrastructure.Core
 {
     public class Bot : IBot
     {
-        public string Id { get; private set; }
-        public string VirtualMachineName { get; set; }
+        private readonly ICommunicationsClient _client;
+        private readonly IMediatorService _mediatorService;
+        private readonly IMediaHandlerFactory _mediaHandlerFactory;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly BotConfiguration _config;
+        private readonly ILogger<Bot> _logger;
 
-        private readonly ICommunicationsClient Client;
-        private readonly IMediatorService mediatorService;
-        private readonly IMediaHandlerFactory mediaHandlerFactory;
-        private readonly ILoggerFactory loggerFactory;
-        private readonly BotConfiguration config;
-        private readonly ILogger<Bot> logger;
-
-        /// <summary>
-        /// Gets the collection of call handlers.
-        /// </summary>
-        public ConcurrentDictionary<string, CallHandler> CallHandlers { get; } = new ConcurrentDictionary<string, CallHandler>();
-       
         public Bot(
             ICommunicationsClient client,
             IMediatorService mediatorService,
             IMediaHandlerFactory mediaHandlerFactory,
             IAppConfiguration config,
-            ILoggerFactory loggerFactory
-        )
+            ILoggerFactory loggerFactory)
         {
-            Client = client;
-            this.mediatorService = mediatorService;
-            this.mediaHandlerFactory = mediaHandlerFactory;
-            this.loggerFactory = loggerFactory;
+            _client = client;
+            _mediatorService = mediatorService;
+            _mediaHandlerFactory = mediaHandlerFactory;
+            _loggerFactory = loggerFactory;
 
-            this.config = config.BotConfiguration;
-            this.logger = loggerFactory.CreateLogger<Bot>();
+            _config = config.BotConfiguration;
+            _logger = loggerFactory.CreateLogger<Bot>();
 
-            Client.Calls().OnIncoming += CallsOnIncoming;
-            Client.Calls().OnUpdated += CallsOnUpdated;
+            _client.Calls().OnIncoming += CallsOnIncoming;
+            _client.Calls().OnUpdated += CallsOnUpdated;
         }
+
+        /// <summary>
+        /// Gets the collection of call handlers.
+        /// </summary>
+        public ConcurrentDictionary<string, CallHandler> CallHandlers { get; } = new ConcurrentDictionary<string, CallHandler>();
+
+        public string Id { get; private set; }
+
+        public string VirtualMachineName { get; set; }
 
         public async Task InviteBotAsync(InviteBot.InviteBotCommand command)
         {
-            logger.LogInformation("[Bot] Getting meeting info for call {callId}", command.CallId);
+            _logger.LogInformation("[Bot] Getting meeting info for call {callId}", command.CallId);
 
             MeetingInfo meetingInfo;
             ChatInfo chatInfo;
@@ -85,25 +81,25 @@ namespace BotService.InfCrastructure.Core
 
             var scenarioId = Guid.Parse(command.CallId);
 
-            logger.LogInformation("[Bot] Initiating call {callId} with scenario id {scenarioId}", command.CallId, scenarioId);
+            _logger.LogInformation("[Bot] Initiating call {callId} with scenario id {scenarioId}", command.CallId, scenarioId);
 
-            var statefulCall = await Client.Calls().AddAsync(joinParams, scenarioId).ConfigureAwait(false);
+            var statefulCall = await _client.Calls().AddAsync(joinParams, scenarioId).ConfigureAwait(false);
 
-            logger.LogInformation("[Bot] Call initialization completed - call {callId}", command.CallId);
+            _logger.LogInformation("[Bot] Call initialization completed - call {callId}", command.CallId);
 
             statefulCall.GraphLogger.Info($"Call creation complete: {statefulCall.Id}");
 
-            //TODO: Analyze if we need to return something
+            // TODO: Analyze if we need to return something
         }
 
         public async Task ProcessNotificationAsync(HttpRequestMessage request)
         {
-            await Client.ProcessNotificationAsync(request).ConfigureAwait(false);
+            await _client.ProcessNotificationAsync(request).ConfigureAwait(false);
         }
 
         public async Task RegisterServiceAsync(string virtualMachineName)
         {
-            var response = await mediatorService.RegisterServiceAsync(virtualMachineName);
+            var response = await _mediatorService.RegisterServiceAsync(virtualMachineName);
             Id = response.Id;
         }
 
@@ -134,11 +130,11 @@ namespace BotService.InfCrastructure.Core
             {
                 // Manually remove the call from SDK state.
                 // This will trigger the ICallCollection.OnUpdated event with the removed resource.
-                Client.Calls().TryForceRemove(callGraphId, out _);
+                _client.Calls().TryForceRemove(callGraphId, out _);
             }
         }
 
-        //TODO: Define Output
+        // TODO: Define Output
         public void StartInjection(StartStreamInjectionBody startStreamInjectionBody)
         {
             var callHandler = CallHandlers.First().Value;
@@ -164,6 +160,7 @@ namespace BotService.InfCrastructure.Core
         }
 
         #region Private
+
         /// <summary>
         /// Creates the local media session.
         /// </summary>
@@ -184,16 +181,13 @@ namespace BotService.InfCrastructure.Core
                     {
                         VideoFormat.NV12_1280x720_30Fps,
                         VideoFormat.NV12_1920x1080_30Fps,
-                        //VideoFormat.H264_320x180_15Fps,
-                        //VideoFormat.H264_1280x720_30Fps,
-                        //VideoFormat.H264_1920x1080_30Fps
                     },
-                    MaxConcurrentSendStreams = 1
-                }
+                    MaxConcurrentSendStreams = 1,
+                },
             };
 
             // create the receive only sockets settings for the multiview support
-            for (int i = 0; i < config.NumberOfMultiviewSockets; i++)
+            for (int i = 0; i < _config.NumberOfMultiviewSockets; i++)
             {
                 videoSocketSettings.Add(new VideoSocketSettings
                 {
@@ -216,7 +210,7 @@ namespace BotService.InfCrastructure.Core
             };
 
             // create media session object, this is needed to establish call connections
-            var mediaSession = Client.CreateMediaSession(
+            var mediaSession = _client.CreateMediaSession(
                 new AudioSocketSettings
                 {
                     StreamDirections = StreamDirection.Sendrecv,
@@ -257,7 +251,7 @@ namespace BotService.InfCrastructure.Core
         {
             foreach (var call in args.AddedResources)
             {
-                var callHandler = new CallHandler(call, config, mediatorService, mediaHandlerFactory, loggerFactory);
+                var callHandler = new CallHandler(call, _config, _mediatorService, _mediaHandlerFactory, _loggerFactory);
                 CallHandlers[call.Id] = callHandler;
             }
 

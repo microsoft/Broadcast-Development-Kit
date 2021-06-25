@@ -1,31 +1,31 @@
+using System.Threading.Tasks;
+using Application.Common.Models;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Graph.Communications.Calls;
-using System.Threading.Tasks;
 using static Application.Call.Commands.SetCallAsEstablished;
 using static Application.Call.Commands.SetCallAsTerminated;
-using static Application.Service.Commands.SetBotServiceAsAvailable;
 using static Application.Participant.Commands.AddParticipantStream;
 using static Application.Participant.Commands.HandleParticipantLeave;
 using static Application.Participant.Commands.UpdateParticipantMeetingStatus;
-using Application.Common.Models;
 using static Application.Service.Commands.RegisterService;
+using static Application.Service.Commands.SetBotServiceAsAvailable;
 
 namespace BotService.Infrastructure.Services
 {
     public class MediatorService : IMediatorService
     {
-        private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public MediatorService(IServiceScopeFactory serviceScopeFactory)
         {
-            this.serviceScopeFactory = serviceScopeFactory;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task<UpdateParticipantMeetingStatusCommandResponse> UpdateParticipantMeetingStatusAsync(string callId, IParticipant participant)
         {
-            using var scope = serviceScopeFactory.CreateScope();
+            using var scope = _serviceScopeFactory.CreateScope();
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
             var command = mapper.Map<UpdateParticipantMeetingStatusCommand>(participant);
@@ -38,7 +38,7 @@ namespace BotService.Infrastructure.Services
 
         public async Task<AddParticipantStreamCommandResponse> AddParticipantStreamAsync(string callId, IParticipant participant)
         {
-            using var scope = serviceScopeFactory.CreateScope();
+            using var scope = _serviceScopeFactory.CreateScope();
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
             var model = mapper.Map<ParticipantStreamModel>(participant);
@@ -46,7 +46,7 @@ namespace BotService.Infrastructure.Services
 
             var command = new AddParticipantStreamCommand
             {
-                Participant = model
+                Participant = model,
             };
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -56,11 +56,11 @@ namespace BotService.Infrastructure.Services
 
         public async Task<SetCallAsEstablishedCommandResponse> SetCallAsEstablishedAsync(string callId, string graphCallId)
         {
-            using var scope = serviceScopeFactory.CreateScope();
+            using var scope = _serviceScopeFactory.CreateScope();
             var command = new SetCallAsEstablishedCommand
             {
                 CallId = callId,
-                GraphCallId = graphCallId
+                GraphCallId = graphCallId,
             };
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -70,10 +70,10 @@ namespace BotService.Infrastructure.Services
 
         public async Task<SetCallAsTerminatedCommandResponse> SetCallAsTerminatedAsync(string callId)
         {
-            using var scope = serviceScopeFactory.CreateScope();
+            using var scope = _serviceScopeFactory.CreateScope();
             var command = new SetCallAsTerminatedCommand
             {
-                CallId = callId
+                CallId = callId,
             };
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -83,10 +83,10 @@ namespace BotService.Infrastructure.Services
 
         public async Task<SetBotServiceAsAvailableCommandResponse> SetBotServiceAsAvailableAsync(string callId)
         {
-            using var scope = serviceScopeFactory.CreateScope();
+            using var scope = _serviceScopeFactory.CreateScope();
             var command = new SetBotServiceAsAvailableCommand
             {
-                CallId = callId
+                CallId = callId,
             };
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -96,11 +96,11 @@ namespace BotService.Infrastructure.Services
 
         public async Task<HandleParticipantLeaveCommandResponse> HandleParticipantLeaveAsync(string callId, string participantId)
         {
-            using var scope = serviceScopeFactory.CreateScope();
+            using var scope = _serviceScopeFactory.CreateScope();
             var command = new HandleParticipantLeaveCommand
             {
                 CallId = callId,
-                ParticipantId = participantId
+                ParticipantId = participantId,
             };
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -110,10 +110,10 @@ namespace BotService.Infrastructure.Services
 
         public async Task<RegisterServiceCommandResponse> RegisterServiceAsync(string virtualMachineName)
         {
-            using var scope = serviceScopeFactory.CreateScope();
+            using var scope = _serviceScopeFactory.CreateScope();
             var command = new RegisterServiceCommand
             {
-                VirtualMachineName = virtualMachineName
+                VirtualMachineName = virtualMachineName,
             };
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();

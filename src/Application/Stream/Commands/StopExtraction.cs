@@ -1,46 +1,32 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
-using Ardalis.Result;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Stream.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class StopExtraction
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class StopExtractionCommand : IRequest<StopExtractionCommandResponse>
         {
             public StopStreamExtractionBody Body { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StopExtractionCommandResponse
         {
             public string Id { get; set; }
+
             public ParticipantStreamModel Resource { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StopExtractionCommandValidator : AbstractValidator<StopExtractionCommand>
         {
             public StopExtractionCommandValidator()
@@ -56,9 +42,6 @@ namespace Application.Stream.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StopExtractionCommandHandler : IRequestHandler<StopExtractionCommand, StopExtractionCommandResponse>
         {
             private readonly IBot _bot;
@@ -68,8 +51,7 @@ namespace Application.Stream.Commands
             public StopExtractionCommandHandler(
                 IBot bot,
                 IParticipantStreamRepository participantStreamRepository,
-                IMapper mapper
-                )
+                IMapper mapper)
             {
                 _bot = bot ?? throw new ArgumentNullException(nameof(bot));
                 _participantStreamRepository = participantStreamRepository ?? throw new ArgumentNullException(nameof(participantStreamRepository));
@@ -78,12 +60,12 @@ namespace Application.Stream.Commands
 
             public async Task<StopExtractionCommandResponse> Handle(StopExtractionCommand request, CancellationToken cancellationToken)
             {
-                //TODO: Change parameter, participant Id is not the key. It is the Id assigned by the teams call
+                // TODO: Change parameter, participant Id is not the key. It is the Id assigned by the teams call
                 var participant = await _participantStreamRepository.GetItemAsync(request.Body.ParticipantId);
-                
+
                 if (participant == null)
                 {
-                    throw new EntityNotFoundException(nameof(Domain.Entities.ParticipantStream), request.Body.ParticipantId);
+                    throw new EntityNotFoundException(nameof(ParticipantStream), request.Body.ParticipantId);
                 }
 
                 try
@@ -91,7 +73,7 @@ namespace Application.Stream.Commands
                     _bot.StopExtraction(request.Body);
 
                     participant.State = StreamState.Disconnected;
-                    participant.Details = new Domain.Entities.ParticipantStreamDetails();
+                    participant.Details = new ParticipantStreamDetails();
                     participant.Error = null;
 
                     await _participantStreamRepository.UpdateItemAsync(participant.Id, participant);
@@ -107,9 +89,9 @@ namespace Application.Stream.Commands
                 }
 
                 StopExtractionCommandResponse response = new StopExtractionCommandResponse
-                { 
+                {
                     Id = participant.Id,
-                    Resource = _mapper.Map<ParticipantStreamModel>(participant)
+                    Resource = _mapper.Map<ParticipantStreamModel>(participant),
                 };
 
                 return response;

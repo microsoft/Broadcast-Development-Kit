@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace ManagementApi.Filters
+namespace BotService.Infrastructure.Filters
 {
     public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     {

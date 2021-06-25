@@ -1,5 +1,5 @@
-using Application.Interfaces.Common;
 using System;
+using Application.Interfaces.Common;
 
 namespace Infrastructure.Core.Common
 {
@@ -10,14 +10,14 @@ namespace Infrastructure.Core.Common
             return GuidToBase64();
         }
 
-        private string GuidToBase64()
+        private static string GuidToBase64()
         {
             var guid = Guid.NewGuid();
             var streamKey = Convert.ToBase64String(guid.ToByteArray())
-                .Replace("/", "")
-                .Replace("=", "")
-                .Replace("+", "")
-                .Replace("&", "");
+                .Replace("/", string.Empty)
+                .Replace("=", string.Empty)
+                .Replace("+", string.Empty)
+                .Replace("&", string.Empty);
 
             return streamKey;
         }

@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Infrastructure.Core.Common.Models
 {
-    public class ValidationErrorDetails: ValidationProblemDetails
+    public class ValidationErrorDetails : ValidationProblemDetails
     {
-        public ValidationErrorDetails(ModelStateDictionary modelState) : base(modelState) { }
+        public ValidationErrorDetails(ModelStateDictionary modelState)
+            : base(modelState)
+        {
+        }
+
         public string StackTrace { get; set; }
 
         public string InnerException { get; set; }

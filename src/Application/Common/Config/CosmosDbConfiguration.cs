@@ -3,17 +3,17 @@ namespace Application.Common.Config
     public class CosmosDbConfiguration
     {
         /// <summary>
-        ///     CosmosDb Account - The Azure Cosmos DB endpoint
+        ///     Gets or sets the CosmosDb Account - The Azure Cosmos DB endpoint.
         /// </summary>
         public string EndpointUrl { get; set; }
 
         /// <summary>
-        ///     Key - The primary key for the Azure DocumentDB account.
+        ///     Gets or sets the Key - The primary key for the Azure DocumentDB account.
         /// </summary>
         public string PrimaryKey { get; set; }
 
         /// <summary>
-        ///     Database name
+        ///    Gets or sets the  Database nam.
         /// </summary>
         public string DatabaseName { get; set; }
     }

@@ -2,7 +2,7 @@ using Ardalis.Specification;
 
 namespace Application.Service.Specifications
 {
-    public class ServiceGetByCallIdSpecification: Specification<Domain.Entities.Service>
+    public class ServiceGetByCallIdSpecification : Specification<Domain.Entities.Service>
     {
         public ServiceGetByCallIdSpecification(string callId)
         {

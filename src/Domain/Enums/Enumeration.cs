@@ -21,83 +21,6 @@ namespace Domain.Enums
 
         public string Name { get; set; }
 
-        public override string ToString()
-        {
-            return Name;
-        }
-
-        public static IEnumerable<T> GetAll<T>() where T : Enumeration, new()
-        {
-            var type = typeof(T);
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-
-            foreach (var info in fields)
-            {
-                var instance = new T();
-
-                if (info.GetValue(instance) is T locatedValue)
-                {
-                    yield return locatedValue;
-                }
-            }
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Enumeration otherValue)
-            {
-                var typeMatches = GetType().Equals(obj.GetType());
-                var valueMatches = Id.Equals(otherValue.Id);
-
-                return typeMatches && valueMatches;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-
-        public static int AbsoluteDifference(Enumeration firstValue, Enumeration secondValue)
-        {
-            var absoluteDifference = Math.Abs(firstValue.Id - secondValue.Id);
-            return absoluteDifference;
-        }
-
-        public static T FromValue<T>(int value) where T : Enumeration, new()
-        {
-            var matchingItem = Parse<T, int>(value, "value", item => item.Id == value);
-            return matchingItem;
-        }
-
-        public static T FromDisplayName<T>(string displayName) where T : Enumeration, new()
-        {
-            var matchingItem = Parse<T, string>(displayName, "display name", item => item.Name == displayName);
-            return matchingItem;
-        }
-
-        private static T Parse<T, K>(K value, string description, Func<T, bool> predicate) where T : Enumeration, new()
-        {
-            var matchingItem = GetAll<T>().FirstOrDefault(predicate);
-
-            if (matchingItem == null)
-            {
-                var message = string.Format("'{0}' is not a valid {1} in {2}", value, description, typeof(T));
-                throw new ArgumentException(message);
-            }
-
-            return matchingItem;
-        }
-
-        public int CompareTo(object obj)
-        {
-            return Id.CompareTo(((Enumeration)obj).Id);
-        }
-
         public static bool operator ==(Enumeration left, Enumeration right)
         {
             if (left is null)
@@ -131,6 +54,87 @@ namespace Domain.Enums
         public static bool operator >=(Enumeration left, Enumeration right)
         {
             return left is null ? right is null : left.CompareTo(right) >= 0;
+        }
+
+        public static IEnumerable<T> GetAll<T>()
+            where T : Enumeration, new()
+        {
+            var type = typeof(T);
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
+
+            foreach (var info in fields)
+            {
+                var instance = new T();
+
+                if (info.GetValue(instance) is T locatedValue)
+                {
+                    yield return locatedValue;
+                }
+            }
+        }
+
+        public static int AbsoluteDifference(Enumeration firstValue, Enumeration secondValue)
+        {
+            var absoluteDifference = Math.Abs(firstValue.Id - secondValue.Id);
+            return absoluteDifference;
+        }
+
+        public static T FromValue<T>(int value)
+    where T : Enumeration, new()
+        {
+            var matchingItem = Parse<T, int>(value, "value", item => item.Id == value);
+            return matchingItem;
+        }
+
+        public static T FromDisplayName<T>(string displayName)
+            where T : Enumeration, new()
+        {
+            var matchingItem = Parse<T, string>(displayName, "display name", item => item.Name == displayName);
+            return matchingItem;
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Enumeration otherValue)
+            {
+                var typeMatches = GetType().Equals(obj.GetType());
+                var valueMatches = Id.Equals(otherValue.Id);
+
+                return typeMatches && valueMatches;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public int CompareTo(object obj)
+        {
+            return Id.CompareTo(((Enumeration)obj).Id);
+        }
+
+        private static T Parse<T, K>(K value, string description, Func<T, bool> predicate)
+            where T : Enumeration, new()
+        {
+            var matchingItem = GetAll<T>().FirstOrDefault(predicate);
+
+            if (matchingItem == null)
+            {
+                var message = string.Format("'{0}' is not a valid {1} in {2}", value, description, typeof(T));
+                throw new ArgumentException(message);
+            }
+
+            return matchingItem;
         }
     }
 }

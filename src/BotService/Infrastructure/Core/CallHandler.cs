@@ -50,10 +50,6 @@ namespace BotService.Infrastructure.Core
         private uint _currentPrimarySpeaker = DominantSpeakerChangedEventArgs.None;
         private string _primarySpeakerId;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CallHandler"/> class.
-        /// </summary>
-        /// <param name="statefulCall">The stateful call.</param>
         public CallHandler(
             ICall statefulCall,
             BotConfiguration config,
@@ -199,7 +195,7 @@ namespace BotService.Infrastructure.Core
                         Latency = srtStreamBody.Latency,
                         Mode = srtStreamBody.Mode,
                         Passphrase = srtStreamBody.StreamKey,
-                        Url = srtStreamBody.StreamUrl
+                        Url = srtStreamBody.StreamUrl,
                     };
 
                     break;
@@ -221,7 +217,7 @@ namespace BotService.Infrastructure.Core
             {
                 CallId = streamInjectionBody.CallId,
                 StreamId = streamInjectionBody.StreamId,
-                ProtocolSettings = protocolSettings
+                ProtocolSettings = protocolSettings,
             };
 
             return injectionSettings;
@@ -242,7 +238,7 @@ namespace BotService.Infrastructure.Core
                         Latency = srtSettings.Latency,
                         Passphrase = srtSettings.Passphrase,
                         AudioFormat = srtSettings.AudioFormat,
-                        TimeOverlay = srtSettings.TimeOverlay
+                        TimeOverlay = srtSettings.TimeOverlay,
                     };
 
                     return srtResponse;
@@ -255,7 +251,7 @@ namespace BotService.Infrastructure.Core
                         StreamKey = rtmpSettings.StreamKey,
                         StreamUrl = rtmpSettings.StreamUrl,
                         AudioFormat = rtmpSettings.AudioFormat,
-                        TimeOverlay = rtmpSettings.TimeOverlay
+                        TimeOverlay = rtmpSettings.TimeOverlay,
                     };
 
                     return rtmpResponse;
@@ -327,11 +323,10 @@ namespace BotService.Infrastructure.Core
                 throw new StopStreamExtractionException($"Participant {streamBody.ParticipantGraphId} does not have an active stream");
             }
 
-
             // TODO: I don't think we need this lock here
             lock (_subscriptionLock)
             {
-                if(_currentMediaExtractors.TryRemove(streamBody.ParticipantGraphId, out IMediaExtractor mediaExtractor))
+                if (_currentMediaExtractors.TryRemove(streamBody.ParticipantGraphId, out IMediaExtractor mediaExtractor))
                 {
                     mediaExtractor.Stop();
 
@@ -385,7 +380,7 @@ namespace BotService.Infrastructure.Core
                 participant = GetParticipantFromMSI(_currentPrimarySpeaker);
                 if (!participant.IsParticipantCapableToSendVideo())
                 {
-                    //TODO: Do something else
+                    // TODO: Do something else
                     _logger.LogWarning("[Call Handler] Current primary speaker {id} cannot share video", participant.Resource.Id);
                     _logger.LogWarning("[Call Handler] Trying to get default participant");
 
@@ -412,7 +407,6 @@ namespace BotService.Infrastructure.Core
             StartStreamExtractionResponse response = GetStreamExtractionResponse(mediaStreamSettings.ProtocolSettings);
 
             return response;
-
         }
 
         private void StopPrimarySpeakerStreamExtraction()
@@ -426,12 +420,11 @@ namespace BotService.Infrastructure.Core
                     mediaExtractor.Stop();
                     if (mediaExtractor.Protocol == Protocol.SRT)
                     {
-                        _currentAssignedPorts.TryRemove(_primarySpeakerId, out int port); //TODO: Verify if necessary to validate this case
+                        _currentAssignedPorts.TryRemove(_primarySpeakerId, out int port); // TODO: Verify if necessary to validate this case
                         _availablePorts.Add(port);
                     }
 
                     _mediaSocketPool.ReleaseSocket(mediaExtractor.VideoSocket);
-
                 }
                 else
                 {
@@ -449,6 +442,7 @@ namespace BotService.Infrastructure.Core
                 _logger.LogError("[Call Handler] Participant {participant} is not sharing screen", streamExtraction.ParticipantGraphId);
                 throw new StartStreamExtractionException($"Participant {streamExtraction.ParticipantGraphId} is not sharing screen");
             }
+
             var vbssMediaStream = vbssParticipant.GetScreenShareStream();
             var msi = uint.Parse(vbssMediaStream.SourceId);
 
@@ -484,13 +478,6 @@ namespace BotService.Infrastructure.Core
             _isCapturingScreenShare = false;
         }
 
-        /// <summary>
-        /// Gets the participant with the corresponding MSI.
-        /// </summary>
-        /// <param name="msi">media stream id.</param>
-        /// <returns>
-        /// The <see cref="IParticipant"/>.
-        /// </returns>
         private IParticipant GetParticipantFromMSI(uint msi)
         {
             return Call.Participants.SingleOrDefault(x => x.Resource.IsInLobby == false && x.Resource.MediaStreams.Any(y => y.SourceId == msi.ToString()));
@@ -506,7 +493,7 @@ namespace BotService.Infrastructure.Core
                     {
                         _logger.LogWarning("[Call Handler] There are no ports available");
 
-                        //TODO: Throw custom exception
+                        // TODO: Throw custom exception
                         return null;
                     }
 
@@ -521,7 +508,7 @@ namespace BotService.Infrastructure.Core
                         Port = port,
                         Url = srtStreamBody.Mode == SrtMode.Caller ? srtStreamBody.StreamUrl : $"srt://{_config.ServiceFqdn}:{port}?mode=caller",
                         AudioFormat = streamBody.AudioFormat,
-                        TimeOverlay = streamBody.TimeOverlay
+                        TimeOverlay = streamBody.TimeOverlay,
                     };
 
                     break;
@@ -532,12 +519,11 @@ namespace BotService.Infrastructure.Core
                         StreamKey = rtmpStreamBody.StreamKey,
                         StreamUrl = rtmpStreamBody.StreamUrl,
                         AudioFormat = streamBody.AudioFormat,
-                        TimeOverlay = streamBody.TimeOverlay
+                        TimeOverlay = streamBody.TimeOverlay,
                     };
                     break;
                 default:
                     throw new ArgumentException("Protocol not supported", nameof(streamBody));
-
             }
 
             var mediaStreamSettings = new MediaExtractionSettings
@@ -545,7 +531,7 @@ namespace BotService.Infrastructure.Core
                 MediaSourceId = msi,
                 MediaType = MediaType.Video,
                 VideoResolution = VideoResolution.HD1080p,
-                ProtocolSettings = protocolSettings
+                ProtocolSettings = protocolSettings,
             };
 
             return mediaStreamSettings;
@@ -553,6 +539,7 @@ namespace BotService.Infrastructure.Core
         #endregion
 
         #region Private Event Handlers
+
         /// <summary>
         /// Event fired when the call has been updated.
         /// </summary>
@@ -639,7 +626,6 @@ namespace BotService.Infrastructure.Core
                 }
                 catch (Exception ex)
                 {
-
                     _logger.LogError(ex, "[CallHandler] Error while trying to remove participant with graph id {id}.", participant.Id);
                 }
             }
@@ -657,7 +643,7 @@ namespace BotService.Infrastructure.Core
             {
                 _logger.LogInformation("[CallHandler] OnParticipantUpdated - Call {callId} - Participant Graph Id {participantId}", callId, sender.Id);
 
-                //TODO: Analyze what to do with the response
+                // TODO: Analyze what to do with the response
                 await _mediatorService.UpdateParticipantMeetingStatusAsync(callId, sender);
 
                 var isParticipantSharingScreen = sender.IsParticipantSharingScreen();
@@ -708,7 +694,7 @@ namespace BotService.Infrastructure.Core
                             }
                             else
                             {
-                                //TODO: throw a custom exception
+                                // TODO: throw a custom exception
                             }
                         }
                     }

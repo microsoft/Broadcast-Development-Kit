@@ -47,7 +47,9 @@ namespace BotService.Infrastructure.Extensions
 
                 foreach (var address in ipAddresses)
                 {
-                    options.Listen(address, port,
+                    options.Listen(
+                        address,
+                        port,
                         listenOptions =>
                         {
                             if (config.Scheme == "https")

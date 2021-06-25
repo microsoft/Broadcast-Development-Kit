@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
@@ -6,39 +9,24 @@ using Domain.Enums;
 using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using static Domain.Constants.Constants;
 
 namespace Application.Stream.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class StoppingExtraction
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class StoppingExtractionCommand : IRequest<StoppingExtractionCommandResponse>
         {
             public StopStreamExtractionBody Body { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StoppingExtractionCommandResponse
         {
             public string Id { get; set; }
+
             public ParticipantStreamModel Resource { get; set; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StoppingExtractionCommandValidator : AbstractValidator<StoppingExtractionCommand>
         {
             public StoppingExtractionCommandValidator()
@@ -54,9 +42,6 @@ namespace Application.Stream.Commands
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public class StoppingExtractionCommandHandler : IRequestHandler<StoppingExtractionCommand, StoppingExtractionCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
@@ -68,8 +53,7 @@ namespace Application.Stream.Commands
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository,
-                IParticipantStreamRepository participantStreamRepository
-                )
+                IParticipantStreamRepository participantStreamRepository)
             {
                 _botServiceClient = botServiceClient ?? throw new ArgumentNullException(nameof(botServiceClient));
                 _callRepository = callRepository ?? throw new ArgumentNullException(nameof(callRepository));
@@ -83,13 +67,13 @@ namespace Application.Stream.Commands
 
                 var command = new StopExtraction.StopExtractionCommand
                 {
-                    Body = request.Body
+                    Body = request.Body,
                 };
 
                 var participant = await _participantStreamRepository.GetItemAsync(request.Body.ParticipantId);
                 if (participant == null)
                 {
-                    throw new EntityNotFoundException(nameof(Domain.Entities.ParticipantStream), request.Body.ParticipantId);
+                    throw new EntityNotFoundException(nameof(ParticipantStream), request.Body.ParticipantId);
                 }
 
                 var call = await _callRepository.GetItemAsync(request.Body.CallId);

@@ -1,8 +1,11 @@
 namespace Domain.Enums
 {
-    /// <remarks> 
-    /// ProvisioningStateType type class should have a protected constructor to encapsulate known enum types
-    /// this is currently not possible as Cosmos DB uses this constructor to map the document into the corresponding type.
+    /// <summary>
+    ///     An enumeration to encapsulate Enums in the solution.
+    /// </summary>
+    /// <remarks>
+    ///     ProvisioningStateType type class should have a protected constructor to encapsulate known enum types
+    ///     this is currently not possible as Cosmos DB uses this constructor to map the document into the corresponding type.
     /// </remarks>
     public class ProvisioningStateType : Enumeration
     {
@@ -13,7 +16,13 @@ namespace Domain.Enums
         public static readonly ProvisioningStateType Error = new ProvisioningStateType(4, nameof(Error));
         public static readonly ProvisioningStateType Unknown = new ProvisioningStateType(5, nameof(Unknown));
 
-        public ProvisioningStateType() { }
-        public ProvisioningStateType(int id, string name) : base(id, name) { }
+        public ProvisioningStateType()
+        {
+        }
+
+        public ProvisioningStateType(int id, string name)
+            : base(id, name)
+        {
+        }
     }
 }

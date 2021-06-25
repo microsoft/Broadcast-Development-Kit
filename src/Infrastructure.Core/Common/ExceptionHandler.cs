@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Application.Exceptions;
 using Domain.Exceptions;
 using Infrastructure.Core.Common.Models;
@@ -9,9 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Infrastructure.Core.Common
 {
@@ -23,7 +23,7 @@ namespace Infrastructure.Core.Common
             { typeof(EntityNotFoundException), HandleNotFoundException },
             { typeof(NotSuccessfulRequestException), HandleNotSuccesfulRequestException },
             { typeof(ServiceException), HandleServiceException },
-            { typeof(CustomBaseException), HandleCustomBaseException }
+            { typeof(CustomBaseException), HandleCustomBaseException },
         };
 
         public static void ConfigureExceptionHandler(this IApplicationBuilder app, ILogger logger, bool isProduction, string appIdentifier = null)
@@ -45,7 +45,7 @@ namespace Infrastructure.Core.Common
                             new JsonSerializerSettings
                             {
                                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                                NullValueHandling = NullValueHandling.Ignore
+                                NullValueHandling = NullValueHandling.Ignore,
                             }));
                 });
             });
@@ -62,12 +62,12 @@ namespace Infrastructure.Core.Common
                     Status = StatusCodes.Status500InternalServerError,
                     Title = "SERVER_ERRROR",
                     Detail = "Server error",
-                    Identifier = identifier
+                    Identifier = identifier,
                 };
 
                 return new ObjectResult(details)
                 {
-                    DeclaredType = details.GetType()
+                    DeclaredType = details.GetType(),
                 };
             }
 
@@ -96,7 +96,7 @@ namespace Infrastructure.Core.Common
                 Title = "An error occurred while processing your request.",
                 Detail = ex?.Message,
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                Identifier = identifier
+                Identifier = identifier,
             };
 
             if (!isProductionEnvironment)
@@ -108,7 +108,7 @@ namespace Infrastructure.Core.Common
             return new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
-                DeclaredType = !isProductionEnvironment ? details.GetType() : default
+                DeclaredType = !isProductionEnvironment ? details.GetType() : default,
             };
         }
 
@@ -117,14 +117,14 @@ namespace Infrastructure.Core.Common
             NotSuccessfulRequestException exception = ex as NotSuccessfulRequestException;
 
             logger.Log(logLevel, "Exception found (NotSuccessfulRequestException) - ErrorMessage: {Message}, Identifier: {identifier}, Trace: {StackTrace}", exception.Message, identifier, exception.StackTrace);
-            
+
             ErrorDetails details = new ErrorDetails
             {
                 Status = StatusCodes.Status500InternalServerError,
                 Title = exception.RequestDetails.Title,
                 Detail = exception.RequestDetails.Detail,
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                Identifier = identifier
+                Identifier = identifier,
             };
 
             if (!isProductionEnvironment)
@@ -136,7 +136,7 @@ namespace Infrastructure.Core.Common
             return new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
-                DeclaredType = !isProductionEnvironment ? details.GetType() : default
+                DeclaredType = !isProductionEnvironment ? details.GetType() : default,
             };
         }
 
@@ -152,7 +152,7 @@ namespace Infrastructure.Core.Common
                 Title = "An error ocurred while trying to communicate with Graph API",
                 Detail = exception.Error.Message,
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                Identifier = identifier
+                Identifier = identifier,
             };
 
             if (!isProductionEnvironment)
@@ -164,7 +164,7 @@ namespace Infrastructure.Core.Common
             return new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
-                DeclaredType = !isProductionEnvironment ? details.GetType() : default
+                DeclaredType = !isProductionEnvironment ? details.GetType() : default,
             };
         }
 
@@ -177,7 +177,7 @@ namespace Infrastructure.Core.Common
             ValidationErrorDetails details = new ValidationErrorDetails(exception.ModelState)
             {
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-                Identifier = identifier
+                Identifier = identifier,
             };
 
             if (!isProductionEnvironment)
@@ -188,7 +188,7 @@ namespace Infrastructure.Core.Common
 
             return new BadRequestObjectResult(details)
             {
-                DeclaredType = !isProductionEnvironment ? details.GetType() : default
+                DeclaredType = !isProductionEnvironment ? details.GetType() : default,
             };
         }
 
@@ -203,7 +203,7 @@ namespace Infrastructure.Core.Common
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
                 Title = "The specified resource was not found.",
                 Detail = !isProductionEnvironment ? exception.Message : "SERVER_ERROR",
-                Identifier = identifier
+                Identifier = identifier,
             };
 
             if (!isProductionEnvironment)
@@ -214,14 +214,14 @@ namespace Infrastructure.Core.Common
 
             return new NotFoundObjectResult(details)
             {
-                DeclaredType = details.GetType()
+                DeclaredType = details.GetType(),
             };
         }
 
         private static ObjectResult HandleCustomBaseException(Exception ex, string identifier, bool isProductionEnvironment, ILogger logger, LogLevel logLevel = LogLevel.Error)
         {
             logger.Log(logLevel, "Exception found (CustomeBaseException) - Type: {Type} - ErrorMessage: {Message}, Identifier: {identifier}, Trace: {StackTrace}", ex.GetType().ToString(), ex.Message, identifier, ex.StackTrace);
-            
+
             CustomBaseException exception = ex as CustomBaseException;
 
             ErrorDetails details = new ErrorDetails
@@ -230,7 +230,7 @@ namespace Infrastructure.Core.Common
                 Title = exception.Title,
                 Detail = exception.Message,
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                Identifier = identifier
+                Identifier = identifier,
             };
 
             if (!isProductionEnvironment)
@@ -242,7 +242,7 @@ namespace Infrastructure.Core.Common
             return new ObjectResult(details)
             {
                 StatusCode = details.Status,
-                DeclaredType = !isProductionEnvironment ? details.GetType() : default
+                DeclaredType = !isProductionEnvironment ? details.GetType() : default,
             };
         }
     }

@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Common.Models;
 using Application.Call.Commands;
 using Application.Call.Queries;
+using Application.Common.Models;
 using Application.Stream.Commands;
+using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Enums;
 
 namespace ManagementApi.Controllers
 {
@@ -39,7 +38,7 @@ namespace ManagementApi.Controllers
             var query = new GetCall.GetCallQuery
             {
                 Id = id,
-                Archived = archive
+                Archived = archive,
             };
 
             var response = await _mediator.Send(query);
@@ -54,7 +53,7 @@ namespace ManagementApi.Controllers
             var query = new GetCallByMeetingId.GetCallByMeetingIdQuery
             {
                 MeetingId = meetingId,
-                Archived = archive
+                Archived = archive,
             };
 
             var response = await _mediator.Send(query);
@@ -69,7 +68,7 @@ namespace ManagementApi.Controllers
             var command = new EndCall.EndCallCommand
             {
                 CallId = callId,
-                ShouldShutDownService = false
+                ShouldShutDownService = false,
             };
             var response = await _mediator.Send(command);
 
@@ -93,7 +92,7 @@ namespace ManagementApi.Controllers
             var query = new GetArchivedCalls.GetArchivedCallsQuery
             {
                 PageSize = pageSize,
-                PageNumber = pageNumber
+                PageNumber = pageNumber,
             };
 
             var response = await _mediator.Send(query);
@@ -108,7 +107,7 @@ namespace ManagementApi.Controllers
             streamExtraction.CallId = callId;
             var command = new StartingExtraction.StartingExtractionCommand
             {
-                Body = streamExtraction
+                Body = streamExtraction,
             };
             var response = await _mediator.Send(command);
 
@@ -122,7 +121,7 @@ namespace ManagementApi.Controllers
             streamExtraction.CallId = callId;
             var command = new StoppingExtraction.StoppingExtractionCommand
             {
-                Body = streamExtraction
+                Body = streamExtraction,
             };
             var response = await _mediator.Send(command);
 
@@ -137,7 +136,7 @@ namespace ManagementApi.Controllers
 
             var command = new StartingInjection.StartingInjectionCommand
             {
-                Body = streamInjection
+                Body = streamInjection,
             };
 
             var response = await _mediator.Send(command);
@@ -152,7 +151,7 @@ namespace ManagementApi.Controllers
             var command = new StoppingInjection.StoppingInjectionCommand
             {
                 CallId = callId,
-                StreamId = streamId
+                StreamId = streamId,
             };
 
             var response = await _mediator.Send(command);
@@ -166,7 +165,7 @@ namespace ManagementApi.Controllers
         {
             var command = new MuteBotFromCall.MuteBotFromCallCommand
             {
-                CallId = callId
+                CallId = callId,
             };
             var response = await _mediator.Send(command);
             return Ok(response);
@@ -178,7 +177,7 @@ namespace ManagementApi.Controllers
         {
             var command = new UnmuteBotFromCall.UnmuteBotFromCallCommand
             {
-                CallId = callId
+                CallId = callId,
             };
             var response = await _mediator.Send(command);
             return Ok(response);
@@ -190,7 +189,7 @@ namespace ManagementApi.Controllers
         {
             var command = new GenerateStreamKey.GenerateStreamKeyCommand
             {
-                CallId = callId
+                CallId = callId,
             };
 
             var response = await _mediator.Send(command);
@@ -205,7 +204,7 @@ namespace ManagementApi.Controllers
             {
                 CallId = callId,
                 PrivacyLevel = privacyLevel,
-                Values = values
+                Values = values,
             };
 
             var response = await _mediator.Send(command);
@@ -219,7 +218,7 @@ namespace ManagementApi.Controllers
             var command = new DeleteCallContext.DeleteCallContextCommand
             {
                 CallId = callId,
-                PrivacyLevel = privacyLevel
+                PrivacyLevel = privacyLevel,
             };
 
             var response = await _mediator.Send(command);

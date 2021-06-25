@@ -1,10 +1,10 @@
+using System;
 using Ardalis.Specification;
 using Domain.Enums;
-using System;
 
 namespace Application.Call.Specifications
 {
-    public class CallGetByMeetingIdSpecification: Specification<Domain.Entities.Call>
+    public class CallGetByMeetingIdSpecification : Specification<Domain.Entities.Call>
     {
         public CallGetByMeetingIdSpecification(string meetingId)
         {
@@ -13,7 +13,6 @@ namespace Application.Call.Specifications
             Query.Where(x => x.MeetingId == meetingId
                 && (x.State == CallState.Establishing || x.State == CallState.Established)
                 && x.CreatedAt > today).OrderByDescending(x => x.CreatedAt);
-          
         }
     }
 }

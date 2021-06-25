@@ -8,9 +8,9 @@ using static Application.Service.Commands.StopServiceInfrastructure;
 namespace Application.Service
 {
     /// <summary>
-    ///     Mapping Profile for AutoMapper
+    ///     Mapping Profile for AutoMapper.
     /// </summary>
-    public class MappingProfile: Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {

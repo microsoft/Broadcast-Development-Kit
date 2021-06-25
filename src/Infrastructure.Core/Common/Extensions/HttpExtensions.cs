@@ -1,24 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using Application.Exceptions;
 using Application.Exceptions.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Core.Common.Extensions
 {
     public static class HttpExtensions
     {
-        /// <summary>
-        /// Creates the request message asynchronous.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns>Http Request Message.</returns>
         public static HttpRequestMessage CreateRequestMessage(this HttpRequest request)
         {
             var displayUri = request.GetDisplayUrl();
@@ -42,12 +37,6 @@ namespace Infrastructure.Core.Common.Extensions
             return httpRequest;
         }
 
-        /// <summary>
-        /// Creates the HTTP response.
-        /// </summary>
-        /// <param name="response">The response.</param>
-        /// <param name="httpResponse">The HTTP response.</param>
-        /// <returns>The populated <see cref="HttpResponse"/>.</returns>
         public static async Task<HttpResponse> CreateHttpResponseAsync(this HttpResponseMessage response, HttpResponse httpResponse)
         {
             httpResponse.StatusCode = (int)response.StatusCode;
@@ -170,6 +159,7 @@ namespace Infrastructure.Core.Common.Extensions
                 return response;
             }
         }
+
         public static async Task<T> GetAsync<T>(this HttpClient client, Uri requestUri, IDictionary<string, string> headers)
         {
             using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri))
@@ -189,6 +179,7 @@ namespace Infrastructure.Core.Common.Extensions
                 return JsonConvert.DeserializeObject<T>(responseStringContent);
             }
         }
+
         private static async Task<HttpResponseMessage> RequestAsync(HttpClient client, HttpRequestMessage httpRequestMessage, IDictionary<string, string> headers = null, string content = null)
         {
             if (headers != null)

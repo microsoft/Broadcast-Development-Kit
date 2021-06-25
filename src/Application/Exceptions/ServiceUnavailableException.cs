@@ -10,11 +10,13 @@ namespace Application.Exceptions
         {
         }
 
-        public ServiceUnavailableException(string message) : base(message)
+        public ServiceUnavailableException(string message)
+            : base(message)
         {
         }
 
-        protected ServiceUnavailableException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected ServiceUnavailableException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

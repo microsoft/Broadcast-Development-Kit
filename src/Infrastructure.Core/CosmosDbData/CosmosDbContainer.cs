@@ -5,13 +5,14 @@ namespace Infrastructure.Core.CosmosDbData
 {
     public class CosmosDbContainer : ICosmosDbContainer
     {
-        public Container Container { get; }
-        
-        public CosmosDbContainer(CosmosClient cosmosClient,
+        public CosmosDbContainer(
+            CosmosClient cosmosClient,
             string databaseName,
             string containerName)
         {
-            this.Container = cosmosClient.GetContainer(databaseName, containerName);
+            Container = cosmosClient.GetContainer(databaseName, containerName);
         }
+
+        public Container Container { get; }
     }
 }

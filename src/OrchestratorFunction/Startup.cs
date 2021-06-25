@@ -1,3 +1,4 @@
+using System.Reflection;
 using Application;
 using Application.Common.Config;
 using Application.Interfaces.Common;
@@ -15,20 +16,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using System.Reflection;
 
 [assembly: FunctionsStartup(typeof(BotOrchestrator.Startup))]
+
 namespace BotOrchestrator
 {
-    public class Startup: FunctionsStartup
+    public class Startup : FunctionsStartup
     {
         private IConfigurationRoot _configuration;
 
         public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
         {
-
-            _configuration = builder.ConfigurationBuilder.Build(); 
+            _configuration = builder.ConfigurationBuilder.Build();
         }
+
         public override void Configure(IFunctionsHostBuilder builder)
         {
             var appConfiguration = new FunctionAppConfiguration(_configuration);
@@ -37,10 +38,11 @@ namespace BotOrchestrator
             var hostEnvironment = new HostEnvironment(isAzureFunction: true);
             builder.Services.AddSingleton<IHostEnvironment>(hostEnvironment);
 
-            builder.Services.AddCosmosDb(appConfiguration.CosmosDbConfiguration.EndpointUrl,
-                                   appConfiguration.CosmosDbConfiguration.PrimaryKey,
-                                   appConfiguration.CosmosDbConfiguration.DatabaseName,
-                                   hostEnvironment);
+            builder.Services.AddCosmosDb(
+                appConfiguration.CosmosDbConfiguration.EndpointUrl,
+                appConfiguration.CosmosDbConfiguration.PrimaryKey,
+                appConfiguration.CosmosDbConfiguration.DatabaseName,
+                hostEnvironment);
 
             builder.Services.AddScoped<ICallRepository, CallRepository>();
             builder.Services.AddScoped<IServiceRepository, ServiceRepository>();

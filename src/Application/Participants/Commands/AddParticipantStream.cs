@@ -1,12 +1,11 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Config;
 using Application.Common.Models;
 using Application.Interfaces.Persistance;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Participant.Commands
 {
@@ -17,53 +16,36 @@ namespace Application.Participant.Commands
             public ParticipantStreamModel Participant { get; set; }
         }
 
-        /// <summary>
-        ///     Command Response
-        /// </summary>
         public class AddParticipantStreamCommandResponse
         {
-            /// <summary>
-            ///     Item Id
-            /// </summary>
             public string Id { get; set; }
         }
 
-        //TODO: Analyze if we should add a validator
-
-        /// <summary>
-        /// 
-        /// </summary>
+        // TODO: Analyze if we should add a validator
         public class AddParticipantStreamCommandHandler : IRequestHandler<AddParticipantStreamCommand, AddParticipantStreamCommandResponse>
         {
-            private readonly IParticipantStreamRepository participantStreamRepository;
-            private readonly IMapper mapper;
-            private readonly IAppConfiguration appConfiguartion;
+            private readonly IParticipantStreamRepository _participantStreamRepository;
+            private readonly IMapper _mapper;
+            private readonly IAppConfiguration _appConfiguartion;
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="participantStreamRepository"></param>
-            /// <param name="mapper"></param>
-            /// <param name="appConfiguartion"></param>
-            /// <param name="logger"></param>
-            public AddParticipantStreamCommandHandler(IParticipantStreamRepository participantStreamRepository,
+            public AddParticipantStreamCommandHandler(
+                IParticipantStreamRepository participantStreamRepository,
                 IMapper mapper,
-                IAppConfiguration appConfiguartion
-                )
+                IAppConfiguration appConfiguartion)
             {
-                this.participantStreamRepository = participantStreamRepository;
-                this.mapper = mapper;
-                this.appConfiguartion = appConfiguartion;
+                _participantStreamRepository = participantStreamRepository;
+                _mapper = mapper;
+                _appConfiguartion = appConfiguartion;
             }
 
             public async Task<AddParticipantStreamCommandResponse> Handle(AddParticipantStreamCommand request, CancellationToken cancellationToken)
             {
                 AddParticipantStreamCommandResponse response = new AddParticipantStreamCommandResponse();
 
-                var entity = mapper.Map<ParticipantStream>(request.Participant);
-                entity.PhotoUrl = $"https://{appConfiguartion.BotConfiguration.MainApiUrl}/api/participant/photo/{entity.AadId}";
+                var entity = _mapper.Map<ParticipantStream>(request.Participant);
+                entity.PhotoUrl = $"https://{_appConfiguartion.BotConfiguration.MainApiUrl}/api/participant/photo/{entity.AadId}";
 
-                await participantStreamRepository.AddItemAsync(entity);
+                await _participantStreamRepository.AddItemAsync(entity);
 
                 response.Id = entity.Id;
 
