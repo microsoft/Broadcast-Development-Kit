@@ -1,4 +1,4 @@
-# Project
+# Project (WIP)
 
 > This repo has been populated by an initial template to help get you started. Please
 > make sure to update the content to build a great experience for community-building.
@@ -9,6 +9,19 @@ As the maintainer of this project, please make a few updates:
 - Updating SUPPORT.MD with content about this project's support experience
 - Understanding the security reporting process in SECURITY.MD
 - Remove this section from the README
+
+## About
+
+{{PENDING}}
+
+## Getting Started
+
+This section will guide you through the process of configuring the solution to run it locally and/or in azure.
+
+
+- [Prerequisites](docs/prerequisites/readme.md)
+- [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
+- [Running the solution in Azure](docs/running_the_solution_in_azure/README.md)
 
 ## Contributing
 
