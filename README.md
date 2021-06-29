@@ -1,4 +1,25 @@
-# Project
+# Project (WIP)
+
+TBC
+
+## Exploring the repository
+
+The repository is structured in the following directories:
+- **src**: Contains the source code of the application.
+    - **BotService**: Contains the core component that connects to the meeting and extracts and injects media feeds from and to the meeting.
+    - **ManagementApi**: Contains the main API that is used to interact with the service.
+    - **OrchestratorFunction**: Contains the Azure function in charge of managing the status of the VMs.
+- **docs**: Contains the documentation on the solution (TBC).
+
+## License
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Licensed under the [MIT](LICENSE) license.
+
+---
+
+# Original README - Things to review
 
 > This repo has been populated by an initial template to help get you started. Please
 > make sure to update the content to build a great experience for community-building.
