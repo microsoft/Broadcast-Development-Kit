@@ -47,9 +47,9 @@ Below there is a json file template with placeholders values you need to complet
     },
   "Settings": {
     "GraphClientConfiguration": {
-      "TenantId": "{{tenantIdBotChannelsAppRegistration}}",
-      "ClientId": "{{clientIdBotChannelsAppRegistration}}",
-      "ClientSecret": "{{clientSecretBotChannelsAppRegistration}}"
+      "TenantId": "{{tenantIdAzureBotAppRegistration}}",
+      "ClientId": "{{clientIdAzureBotAppRegistration}}",
+      "ClientSecret": "{{clientSecretAzureBotAppRegistration}}"
     },
     "CosmosDbConfiguration": {
       "EndpointUrl": "{{cosmosDbEndpointUrl}}",
@@ -60,17 +60,16 @@ Below there is a json file template with placeholders values you need to complet
       "ServiceDnsName": "{{virtualMachineDnsCname}}",
       "ServiceCname": "{{virtualMachineDnsCname}}",
       "PlaceCallEndpointUrl": "https://graph.microsoft.com/beta",
-      "AadAppId": "{{clientIdBotChannelsAppRegistration}}",
-      "AadAppSecret": "{{clientSecretBotChannelsAppRegistration}}",
+      "AadAppId": "{{clientIdAzureBotAppRegistration}}",
+      "AadAppSecret": "{{clientSecretAzureBotAppRegistration}}",
       "NumberOfMultiviewSockets": 3,
       "InstanceInternalPort": 8445,
       "InstancePublicPort": 8445,
       "ServiceFqdn": "{{virtualMachineDnsCname}}",
       "CertificatePassword": "{{pfxCertificatePassword}}",
       "CertificateThumbprint":"{{pfxCertificateThumbprint}}",
-      "SRTPort": 8888,
       "MainApiUrl":"{{managementApiURl}}",
-      "VirtualMachineDnsCname": "{{virtualMachineUrl}}"
+      "VirtualMachineName": "{{virtualMachineName}}"
     }
   },
   "APPINSIGHTS_INSTRUMENTATIONKEY": "{{appInsigtsKey}}"
@@ -80,16 +79,16 @@ Below there is a json file template with placeholders values you need to complet
 
 | Placeholder                            | Description                                                                                                                                                                                                                                                               |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TenantIdBotChannelsAppRegistration     | Tenant Id of bot channels registration.                                                                                                                                                                                                                                   |
-| ClientIdBotChannelsAppRegistration     | Client Id of the bot channels app registration.                                                                                                                                                                                                                           |
-| ClientSecretBotChannelsAppRegistration | Client secret of the bot channels app registration.                                                                                                                                                                                                                       |
-| CosmosDbEndpointUrl                    | Endpoint URL of the cosmos db created.                                                                                                                                                                                                        |
-| CosmosDbPrimareyKey                    | Primary key of the cosmos db created.                                                                                                                                                                                                         |
-| CosmosDbDatabaseName                   | Database name of the cosmos db created.                                                                                                                                                                                                       |
-| VirtualMachineDnsCname                 | Full domain name assigned to the virtual machine where the bot service is hosted. E.g.: If your wildcard certificate is for *.teamstx.co and you added the cname botservicevm to the IP address of the virtual machine, the domain name will be botservicevm.teamstx.co. |
+| tenantIdBotChannelsAppRegistration     | Tenant Id of bot channels registration.                                                                                                                                                                                                                                   |
+| clientIdBotChannelsAppRegistration     | Client Id of the bot channels app registration.                                                                                                                                                                                                                           |
+| clientSecretBotChannelsAppRegistration | Client secret of the bot channels app registration.                                                                                                                                                                                                                       |
+| cosmosDbEndpointUrl                    | Endpoint URL of the cosmos db created.                                                                                                                                                                                                        |
+| cosmosDbPrimareyKey                    | Primary key of the cosmos db created.                                                                                                                                                                                                         |
+| cosmosDbDatabaseName                   | Database name of the cosmos db created.                                                                                                                                                                                                       |
+| virtualMachineDnsCname                 | Full domain name assigned to the virtual machine where the bot service is hosted. E.g.: If your wildcard certificate is for *.teamstx.co and you added the cname botservicevm to the IP address of the virtual machine, the domain name will be botservicevm.teamstx.co. |
 | PfxCertificatePassword                 | Password of the wildcard certificate uploaded to the storage account.                                                                                                                                                                                                     |
-| PfxCertificateThumbprint               | Thumbprint of the wildcard certificate uploaded to the storage account.                                                                                                                                                                                                   |
-| ManagementApiURl                       | Url of the management API (without https:// prefix).                                                                                                                                                                                                                      |
-| AppInsigtsKey                          | Application Insights key of the application insights resource.                                                                                                                                                                        |
+| pfxCertificateThumbprint               | Thumbprint of the wildcard certificate uploaded to the storage account.                                                                                                                                                                                                   |
+| managementApiURl                       | Url of the management API (without https:// prefix).                                                                                                                                                                                                                      |
+| appInsigtsKey                          | Application Insights key of the application insights resource.                                                                                                                                                                        |
 
-[← Back to How to Running the solution in Azure](README.md#running-the-solution-in-azure)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

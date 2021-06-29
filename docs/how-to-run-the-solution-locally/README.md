@@ -80,7 +80,7 @@ Once the window to edit the environment variable is open, click on the `new` but
 
 To run the solution locally we will need to use [Ngrok](https://dashboard.ngrok.com/signup) so it is necessary to create a free account and [download](https://www.ngrok.com/download) it.
 
-Once downloaded, unzip the exe file in a new directory `C:\ngrok`
+Once downloaded, unzip the exe file in a new directory `C:\ngrok`.
 
 Login to Ngrok account and in the left menu, in the `Getting Started` section, select the option `Your Authtoken` and copy it. We will use this token to configure our instance of ngrok.
 
@@ -88,9 +88,25 @@ Login to Ngrok account and in the left menu, in the `Getting Started` section, s
 |:--:|
 |*Copy the Ngrok Authtoken*|
 
-Go to the directory `C:\ngrok` where we unzipped ngrok and create a new file named `ngrok.yml`
+Go to the directory `C:\ngrok` where we unzipped ngrok and create a new file named `ngrok.yml`. To create the config file you can use your editor of preference, in this example we will use [Visual Studio Code (vscode)](https://code.visualstudio.com/).
 
-Copy the following configuration into the yml file and replace the text `{{PUT YOUR AUTHTOKEN HERE}}` with the value of the authtoken copied earlier from the Ngrok dashboard.
+### Creating config file
+
+1. Open vscode
+2. Go to File -> New file (or press Ctrl+N)
+
+
+|![Ngrok Config File](images/ngrok_create_config_file_1.png)|
+|:--:|
+|*Create new file*|
+
+3. Select yaml as language
+
+|![Ngrok Config File](images/ngrok_create_config_file_2.png)|
+|:--:|
+|*Select language*|
+
+4. Copy the following configuration into the yaml file and replace the text `{{PUT YOUR AUTHTOKEN HERE}}` with the value of the authtoken copied earlier from the Ngrok dashboard.
 
 ```json
 authtoken: {{PUT YOUR AUTHTOKEN HERE}}
@@ -103,9 +119,25 @@ tunnels:
   proto: tcp
 ```
 
+|![Ngrok Config File](images/ngrok_create_config_file_3.png)|
+|:--:|
+|*Config file example*|
+
+5. Go to File -> Save (or press Ctrl+S), enter the name of your file (ngrok.yml in this example) and save it in ngrok's folder
+
+|![Ngrok Config File](images/ngrok_create_config_file_4.png)|
+|:--:|
+|*Save file*|
+
+|![Ngrok Config File](images/ngrok_create_config_file_5.png)|
+|:--:|
+|*Example result*|
+
 >You only need to perform this initial configuration of ngrok the first time you configure the solution, then you do not need to repeat it again.
 
-To run ngrok, go to the `C:\ngrok` directory and open a console in that location and run the following command:
+### Running Ngrok
+
+To run ngrok, go to the `C:\ngrok` directory and open a console in that location and run the following command (or open your terminal of preference and navigate to the ngrok's folder):
 
 `ngrok start --all --config ngrok.yml`
 
@@ -219,15 +251,11 @@ Go to the `src\ManagementApi\Properties` directory of the solution and create a 
         "ASPNETCORE_ENVIRONMENT": "local",
         "BROADCASTER_ENVIRONMENT": "local"
       },
-      "applicationUrl": "https://localhost:{{managementApiHttpsPort}};http://localhost:{{managementApiHttpPort}}"
+      "applicationUrl": "https://localhost:8442;http://localhost:8441"
     }
   }
 }
 ```
-Placeholder | Description 
----------|----------
-managementApiHttpsPort | The port on which the Management Api is going to operate over HTTPS
-managementApiHttpPort | The port on which the Management Api is going to operate over HTTP
 
 Go to the `src\ManagementApi` directory of the solution and create a new configuration file with the name `appsettings.local.json` and copy the following configuration into it.
 
@@ -287,7 +315,7 @@ Go to the `src\BotService\Properties` directory of the solution and create a new
         "CERTIFICATE_FILE_NAME": "{{certificateName}}",
         "GST_DEBUG": "3"
       },
-      "applicationUrl": "https://localhost:{{botServiceHttpsPort}};http://localhost:{{botServiceHttpPort}}"
+      "applicationUrl": "https://localhost:9442;http://localhost:9441"
     }
   }
 }
@@ -295,9 +323,7 @@ Go to the `src\BotService\Properties` directory of the solution and create a new
 
 Placeholder | Description
 ---------|----------
-certificateName | Name of the installed Certificate (ex: `certificate.co.pfx`) 
-botServiceHttpsPort | The port on which the botService is going to operate over HTTPS
-botServiceHttpPort | The port on which the botService is going to operate over HTTP
+certificateName | Name of the installed Certificate (e.g: `certificate.co.pfx`) 
 
 Go to the `src\BotService` directory of the solution and create a new configuration file with the name `appsettings.local.json` and copy the following configuration into it.
 
@@ -315,12 +341,12 @@ Go to the `src\BotService` directory of the solution and create a new configurat
     "Endpoints": {
       "Http": {
         "Host": "localhost",
-        "Port": {{botServiceHttpsPort}},
+        "Port": 9441,
         "Scheme": "http"
       },
       "Https": {
         "Host": "localhost",
-        "Port": {{botServiceHttpPort}},
+        "Port": 9442,
         "Scheme": "https"
       }
     }
@@ -348,8 +374,7 @@ Go to the `src\BotService` directory of the solution and create a new configurat
       "ServiceFqdn": "{{serviceFqdn}}",
       "CertificatePassword": "{{certificatePassword}}",
       "CertificateThumbprint": "{{certificateThumbprint}}",
-      "SRTPort": 8888,
-      "MainApiUrl": "localhost:{{managementApiHttpsPort}}"
+      "MainApiUrl": "localhost:8442"
     }
   },
   "APPINSIGHTS_INSTRUMENTATIONKEY": "{{appInsightInstrumentationKey}}"
@@ -381,9 +406,9 @@ tenantIdAppRegistration | Tenant Id of the [app registration](../prerequisites/a
 
 Placeholder | Description
 |-|-|
-ngrokUrl | Fill both values of NgrokHttp with the red marked value (1) from the ngrok console (Example: `66c0b316671d.ngrok.io`)
-instancePublicPort | Complete with the value of the port marked in yellow (2) in the ngrok console (Example: `16186`)
-serviceFqdn | Complete with value with value marked with green (3) in the ngrok console and the [domain](../common/dns_domain_name.md) name. (Example: `4.domain.co`) It is necessary to  add a DNS record pointing to ngrok's TCP Url. (Ex: 4.domain.co -> 4.tcp.ngrok.io)
+ngrokUrl | Fill both values of NgrokHttp with the red marked value (1) from the ngrok console (e.g: `66c0b316671d.ngrok.io`)
+instancePublicPort | Complete with the value of the port marked in yellow (2) in the ngrok console (e.g: `16186`)
+serviceFqdn | Complete with value with value marked with green (3) in the ngrok console and the domain name. (e.g: `4.domain.co`) It is necessary to  add a DNS record pointing to ngrok's TCP Url. (e.g: 4.domain.co -> 4.tcp.ngrok.io)
 
 > Since we use a free ngrok account, you will need to update the Ngrok settings in this file every time you start a new instance of ngrok.
 

@@ -9,4 +9,4 @@ To organize the different components of the solution we recommend creating two *
 
 To create the resource groups, check the [Create resource groups](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#create-resource-groups) documentation.
 
-[← Back to Running the solution in Azure](README.md#running-the-solution-in-azure)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

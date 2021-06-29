@@ -1,8 +1,11 @@
-# How to Install and configure NGINX with RTMP module on Windows
+# How to Install and configure NGINX with RTMP module on Windows (DRAFT)
+
+# TODO: 
+-[ ] Review NGINX configuration
 
 ## Getting Started
 
-The objective of this guide is to explain how to correctly install and configure NGINX with the RTMP module in Windows, how to inject a live broadcast locally, and how to run NGINX as a Windows service.
+To support RTMP injection in {{insert the name of the solution}} we need to configure NGINX in the host machine. The objective of this guide is to explain how to correctly install and configure NGINX with the RTMP module in Windows, how to inject a live broadcast locally, and how to run NGINX as a Windows service.
 
 >  **NOTE**: We are going to use NGINX version 1.14.1. It has not been tested with recent versions.
 
@@ -10,7 +13,16 @@ The objective of this guide is to explain how to correctly install and configure
 
 Download as a zip NGINX with RTMP module from the following [GitHub repository](https://github.com/illuspas/nginx-rtmp-win32).
 
-![Nginix GitHub repository](../images/running_solution_in_azure/nginx_repository.png)
+|![Nginx GitHub repository](images/nginx_repository.png)|
+|:--:|
+|*NGINX with RTMP module repository*|
+
+
+Before editing the `nginx.config` file, to support RTMPS we must copy the SSL certificate (we've mentioned as prerequisite [here](../prerequisites/readme.md)) and its key into the host machine. (e.g.: C:\certs)
+
+| ![Certs](images/cert-files.png)|
+|:--:|
+|*Example certs*|
 
 After that, unzip the file in a location of preference (e.g: C:\), open `nginx.config` file with your text editor of preferences and replace its content with the following code snippet:
 
@@ -20,7 +32,7 @@ error_log  logs/error.log;
 error_log  logs/error.log  notice;
 error_log  logs/error.log  info;
 pid        logs/nginx.pid;
-#pcre_jit on;
+
 events {
     worker_connections  8192;
     # max value 32768, nginx recycling connections+registry optimization =
@@ -36,12 +48,10 @@ stream {
     server {
         listen 2936 ssl;        # additional port for publishing
         proxy_pass publish;
-        ssl_certificate c:\\certs\\fullchain.pem;
-        ssl_certificate_key c:\\certs\\privkey.pem;
+        ssl_certificate c:\\certs\\fullchain.pem; #root path where your certificate is located e.g.: C:\certs\fullchain.pem
+        ssl_certificate_key c:\\certs\\privkey.pem; #root path where your certificate key is located e.g.: C:\certs\privkey.pem
 
-       # allow 190.55.159.5;        # allow publish from this IP
-        #allow 192.0.2.0/24;     # -- also supports CIDR notation!
-        allow all;               # deny publish from the rest
+        allow all;
     }
 
     upstream live {
@@ -50,8 +60,8 @@ stream {
     server {
         listen 2935 ssl;        # standard RTMP(S) port
         proxy_pass live;
-        ssl_certificate c:\\certs\\fullchain.pem;
-        ssl_certificate_key c:\\certs\\privkey.pem;
+        ssl_certificate c:\\certs\\fullchain.pem; #root path where your certificate is located e.g.: C:\certs\fullchain.pem
+        ssl_certificate_key c:\\certs\\privkey.pem; #root path where your certificate key is located e.g.: C:\certs\privkey.pem
 
         allow all;              # this is public (this is also the default)
     }
@@ -123,7 +133,7 @@ http {
 
 To start testing the NGINX server, we must open the command line, navigate to the NGINX root folder and execute `nginx.exe`.
 
-![Open Nginx](../images/running_solution_in_azure/open_nginx.png)
+![Open Nginx](images/open_nginx.png)
 
 Once the server is running, we are going to locally test the RTMP endpoint by injecting content with GStreamer.
 
@@ -135,11 +145,11 @@ gst-device-monitor-1.0
 
 ### List of found devices
 
-![Nginx gst device monitor](../images/running_solution_in_azure/nginx_device_monitor.png)
+![Nginx gst device monitor](images/nginx_device_monitor.png)
 
 The command will prompt you with a list of input and output multimedia devices. We must identify the audio input device we will be using. We must search for a device with **Audio/Source** class where its **device.api** property equals to **wasapi**, and copy the value of **device.strid**.
 
-![wasapi device](../images/running_solution_in_azure/nginx_wasapi_device.png)
+![wasapi device](images/nginx_wasapi_device.png)
 
 Once we identified the device and copied its id value, we need to run the following command (GStreamer CLI pipeline) to start capturing the video from your webcam and the audio of the selected device, and process it so we can inject it as an RTMP stream into the RTMP server.
 
@@ -156,13 +166,13 @@ Copy the value of **device.strid** and replace it in the command given above. Th
 ```bash
 gst-launch-1.0 rtmpsrc location=rtmp://{your-local-ip}:1935/injection/1 ! decodebin name=decoder ! queue ! videoconvert ! autovideosink decoder. ! queue ! audioconvert ! audioresample ! autoaudiosink
 ```
-![Using GStreamer](../images/running_solution_in_azure/nginx_using_gstreamer.png)
+![Using GStreamer](images/nginx_using_gstreamer.png)
 
 **Ffplay**
 ```bash
 ffplay.exe rtmp://{your-local-ip}:1935/injection/1
 ```
-![Ffplay](../images/running_solution_in_azure/nginx_ffplay.png)
+![Ffplay](images/nginx_ffplay.png)
 
 **VLC Player**
 
@@ -172,7 +182,7 @@ Once VLC is installed, follow these steps:
 1. Open VLC's ***Media*** menu and click **Open Network Stream**, or simply hold down **CTRL** and press **N**.
 
 1. Paste the URL of the stream you want to watch, with the following format: `rtmp://{your-local-ip}:1935/injection/1` in the **Please enter a network URL** box.  
-![](../images/running_solution_in_azure/nginx_vlc_player.png)
+![](images/nginx_vlc_player.png)
 
 1. Click the **Play** button.
 
@@ -183,8 +193,8 @@ To do so, we can use the [nssm](https://nssm.cc/) tool and execute it in the PC 
 
 Once the tool is open, set the path for the NGINX executable file and click on the **Install Service** button. After receiving the confirmation message the service is ready to start.
 
-![Install nginx](../images/running_solution_in_azure/install_nginx.png)
+![Install nginx](images/install_nginx.png)
 
 The first time, the service does not run automatically. We must initialize the service from the Windows services manager or, restart the machine.
 
-![](../images/running_solution_in_azure/nginx_as_windows_service.png)
+![](images/nginx_as_windows_service.png)

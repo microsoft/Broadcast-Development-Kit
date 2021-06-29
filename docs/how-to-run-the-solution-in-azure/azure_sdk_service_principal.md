@@ -19,6 +19,6 @@ You will need the id and secret of this service principal to [configure the Pipe
 ### Assign Contributor Role
 For the time being, Broadcaster for Teams core needs to interact with the virtual machine where the BotService API is hosted (to turn on/turn off the virtual machine), so we have to go to the resource group where the virtual machine was created and through Access Control (IAM) assign contributor role to the application (check [How to assign a role to an application](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#assign-a-role-to-the-application)).
 
-![Assign Contributor Role](../images/running_solution_in_azure/assign_contributor_role.png)
+![Assign Contributor Role](./images/assign_contributor_role.png)
 
-[← Back to Running the solution in Azure](README.md#running-the-solution-in-azure)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

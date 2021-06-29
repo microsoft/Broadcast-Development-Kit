@@ -18,7 +18,18 @@ A Web App and App Service Plan for it must be created to host the Management API
 One the Web App with the corresponding App service plan was successful created, we can deploy the solution build into it. 
 
 To deploy the Management API into the Web App Service created we can follow this steps:
-1. Open the solution in Visual Studio.
-1. In Solution Explorer, right-click in the project `ManagementApi` node and choose Publish.
+
+1. Open the solution in **Visual Studio**.
+1. In Solution Explorer, right-click in the project `ManagementApi` node and choose **Publish**.
+1. In **Publish**, select **Azure** and then **Next**.  
+![image]()
+1. Choose in the **specific destination** the option Azure App Service (Windows).  
+![image]()
+1. Select your subscription and in the **Function Apps** panel, select the Function App that was created from the Azure Portal, and click **Finish**.  
+![image]()
+1. In the **Publish** page, select **Publish**. Visual Studio builds, packages, and publishes the app to Azure, and then launches the app in the default browser.
+
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)
+
 
 

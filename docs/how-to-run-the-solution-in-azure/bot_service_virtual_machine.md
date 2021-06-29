@@ -14,8 +14,8 @@ While creating the virtual machine, consider the following settings:
 - ***Virtual Machine Name:*** A meaningful name for the VM.
 - ***Image:*** Windows 10 Pro, Version 20H2.
 - ***Size:***
-    - Standard_F8s_v2 - 8 vcpus, 16 GiB memory for qa/demo environments.
-    - Standard_F4s_v2 - 4 vcpus, 8 GiB memory for dev/sandbox environments.
+    - Standard_F4s_v2 - 4 vcpus, 8 GiB memory. recommended for testing purpose.
+    - Standard_F8s_v2 - 8 vcpus, 16 GiB memory. Recommended for Production environments.
 - ***Username:*** A meaningful username.
 - ***Password:*** A meaningful password.
 
@@ -56,17 +56,17 @@ At the moment,  there isn't automated deployment for the Bot Service API so, you
 
 Go to the Solution Explorer, right-click on BotService project and click **Publish**.
 
-![Publish Bot Service](../images/running_solution_in_azure/publish_bot_service.png)
+![Publish Bot Service](./images/publish_bot_service.png)
 
 In the publish tab, configure the Target Location, and edit the following settings:
 - ***Configuration:*** Release
 - ***Target Framework:*** net472
 - ***Target Runtime:*** win7-x64
 
-![Configuration to Publish Bot Service](../images/running_solution_in_azure/configuration_to_publish_bot_service.png)
+![Configuration to Publish Bot Service](./images/configuration_to_publish_bot_service.png)
 
 Check the configuration and to finish publishing, press the **Save** button.
-![Configuration to Publish Bot Service](../images/running_solution_in_azure/save_publish_from_bot_service.png)
+![Configuration to Publish Bot Service](./images/save_publish_from_bot_service.png)
 
 After that, we can publish the project, and copy the files into the virtual machine. Later, we will explain how to run it from the command line or as a Windows Service.
 
@@ -81,9 +81,9 @@ In order to run the bot, we need to configure some environment variables that th
 - ***CERTIFICATE_NAME:*** Name of the certificate that the bot will use to authenticate with the media platform.
 - ***APP_SETTINGS_FILE_NAME:*** Name of the bot app settings.
 
-![Set Environment Variables](../images/running_solution_in_azure/set_environment_variables.png)
+![Set Environment Variables](./images/set_environment_variables.png)
 
-![Set Systema Variables](../images/running_solution_in_azure/set_system_variables.png)
+![Set Systema Variables](./images/set_system_variables.png)
 
 > **NOTE**: The `BLOB_SAS_QUERY` must include the '?'. This token has an expiration date, be aware of this date to renew the access token.
 
@@ -108,8 +108,8 @@ $env:APP_SETTINGS_FILE_NAME = '{{envfile}}'
 #### As a Windows Service
 To run the bot every time the virtual machine is turned on, we configure it as a Windows Service. Before configuring it, we must validate that the group **ALL APPLICATION PACKAGES** has special permissions in the bot folder (right-click in the bot folder, click on **properties**, select the **security** tab). If the group doesn't have permissions, we must add it by clicking on **Advance** → **Add** → **Select a Principal**.
 
-![As a Windows Service](../images/running_solution_in_azure/configure_windows_service.png)
-![Permission entry bot service](../images/running_solution_in_azure/permission_entry_bot_service.png)
+![As a Windows Service](./images/configure_windows_service.png)
+![Permission entry bot service](../images/permission_entry_bot_service.png)
 
 Finally, we must run the following Powershell command:
 
@@ -119,4 +119,4 @@ New-Service -Name "Bot-Service" -BinaryPathName '"C:\{bot-service-path}\BotServi
 
 >Note: we must restart the VM the first time to run the Bot Service the next time the VM start or start it manually from the Windows Services App. 
 
-[← Back to Running the solution in Azure](README.md#running-the-solution-in-azure)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

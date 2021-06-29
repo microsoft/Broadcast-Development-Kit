@@ -19,4 +19,4 @@ Leave the rest of the settings as-is. Once the account is created, browse to the
 - Throughput: Manual – 400 RU/s. 
     > Note: To keep the costs down for this PoC we are setting the RU to the lowest amount possible. 
 
-[← Back to How Running the solution in Azure](README.md#running-the-solution-in-azure)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

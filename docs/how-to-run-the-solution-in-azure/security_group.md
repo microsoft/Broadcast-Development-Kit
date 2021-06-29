@@ -15,4 +15,4 @@ To create the **Security Group** and **add members**, review the following Micro
 > NOTE: This is not an application but an Azure AD security group. Only people added as a **member** of this group will be able to operate the solution through the Management API. 
 
 
-[← Back to How to Running the solution in Azure](README.md#running-the-solution-in-azure)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

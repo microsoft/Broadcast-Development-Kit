@@ -1,4 +1,5 @@
 # App Registrations
+
 ## Getting Started
 
 To enable authentication in the solution, we must create the different **app registrations**, and apply some configuration settings between them in Azure Active Directory.
@@ -12,7 +13,7 @@ We need to create app registrations for the following items:
 To create the necessary app registrations, review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) that will explain how to do it, and consider the following settings for each of them:
 
 - **Name:** Meaningful name.
-- **Supported account types**: Accounts in any organizational directory (Any Azure AD directory - Multitenant).
+- **Supported account types**: Accounts in any organizational directory (Any Azure AD directory - Single tenant).
 
 Once you've registered the app registration you must [add a client secret](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-a-client-secret), copy its value and save it together with the application client id in a secure place, we will need it for future steps.
 
@@ -34,7 +35,7 @@ This section explains how to configure the BotService API application registrati
 **Manifest**
 In the BotService API Application Manifest editor, we need to change the value [accessTokenAcceptedVersion] field from null (which defaults to: 1) to 2 (for v2.0 tokens).
 
-![Manifest Bot Service API](../images/running_solution_in_azure/manifest_botservice_api.png)
+![Manifest Bot Service API](./images/manifest_botservice_api.png)
 
 Finally, click on the **Save** button.
 
@@ -44,7 +45,7 @@ Finally, click on the **Save** button.
 
 From the BotService API application registration view, go to the App roles option that is in the resource blade, click the **Create app role** button. The values shown in the following image will be entered.
 
-![App Roles](../images/running_solution_in_azure/create_role_bot_service_api.png)
+![App Roles](./images/create_role_bot_service_api.png)
 
 Finally, click on the Save button.
 
@@ -60,15 +61,15 @@ This section explains how to configure the BotService Client application registr
 **API permissions**
 From the BotService Client application registration view, go to the **API permissions** option that is in the resource blade, click the **Add a permission** button and then ensure that the **APIs my organization** uses tab is selected. Search for **BotService API** and click on the search result.
 
-![Search API permissions](../images/running_solution_in_azure/search_api_permissions.png)
+![Search API permissions](./images/search_api_permissions.png)
 
 Then inside BotService select **AccessAll** and click on **Add permissions**.
 
-![Request API permissions.png](../images/running_solution_in_azure/request_api_permissions.png)
+![Request API permissions.png](./images/request_api_permissions.png)
 
 > **NOTE**: If your user does not have the necessary permissions to enable the add-on permission. You must ask a user with the required permission to enable it.
 
-![Add permissions](../images/running_solution_in_azure/bot_service_client_enabled_permissions.png)
+![Add permissions](./images/running_solution_in_azure/bot_service_client_enabled_permissions.png)
 
 ### How to Setup Management API application registration
 **IMPORTANT**: it's necessary to have already created Management API application registration.
@@ -78,11 +79,11 @@ This section explains how to configure the Management API application registrati
 **API Graph permissions**
 From the API application registration view, go to the **API permissions** option that is in the resource blade, click the **Add a permission** button and then ensure that the **Microsoft APIs** tab is selected.
 
-![API Graph permissions](../images/running_solution_in_azure/appi_graph_permissions.png)
+![API Graph permissions](./images/appi_graph_permissions.png)
 
 In the Commonly used Microsoft APIs section, click on **Microsoft Graph**. Then click in the **Delegated permissions** section and ensure that the right permissions are checked (`User.Read` and `offline_access`) and click the **Add permissions** button.
 
-![Add Graph permissions](../images/running_solution_in_azure/add_graph_permissions.png)
+![Add Graph permissions](./images/add_graph_permissions.png)
 
 **Expose an API**
 
@@ -99,11 +100,11 @@ From the resource blade of the application registration view, go to the **Expose
 - **User consent description**: enter a meaningful description.
 - **State**: Enabled
 
-![Add Scope](../images/running_solution_in_azure/management_api_add_scope.png)
+![Add Scope](./images/management_api_add_scope.png)
 
 **Manifest**
 
-To configure authentication with the security group used for RBAC, we must modify the manifest so the application accepts a specific RBAC group (as mentioned at the beginning of the document, to complete the configuration of the application registration, it is necessary to create an RBAC group).
+To configure authentication with the security group used for RBAC, we must modify the manifest so the application includes the security groups in the token.
 
 From the resource blade of the application registration view, go to the **Manifest** option. We need to modify the manifest and add/modify the following key-values:
 
@@ -125,8 +126,8 @@ From the resource blade of the application registration view, go to the **Manife
   "saml2Token":[]
 }
 ```
-![Add Scope](../images/running_solution_in_azure/management_api_optional_claims_of_manifest.png)
+![Add Scope](./images/management_api_optional_claims_of_manifest.png)
 
 Click the **Save** button to finish
 
-[← Back to How to Running the solution in Azure](README.md#running-the-solution-in-azure)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)
