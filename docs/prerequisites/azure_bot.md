@@ -55,7 +55,7 @@ To continue with the registration of the calling bot, we must create an [Azure B
 * `Microsoft App ID:` Click on `Use existing app registration`, then input the client ID and client secret that were created for the bot application registration. 
 * Leave the rest of the settings as-is. 
 
-Once the Bot Channel Registration is created, apply the following changes to the resource: 
+Once the Azure Bot is created, apply the following changes to the resource: 
 
 1. In the resource blade, click `Channels`, then go to the `Connect to channels` section and click edit on the `Microsoft Teams` channel. If this channel is not already added by default, add the `Microsoft Teams` channel first using the options in this page. 
 
