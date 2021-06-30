@@ -7,6 +7,8 @@ we must configure an event grid subscription to execute an Azure Function that u
 
 ## Getting Started
 
+> **NOTE**: To complete the configuration of the Event Grid, the **Azure Function** used for the **Bot Orchestrator** must be deployed.
+
 To start configuring Event Grid events, we must create an Event Grid Topic resource.
 
 1. Sign in to [Azure portal](https://portal.azure.com/).

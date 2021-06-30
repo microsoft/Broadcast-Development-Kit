@@ -4,11 +4,11 @@
 
 This instance will be used to log all the events happening in the solution. Create a new **Application Insights** resource in the resource group with the following settings: 
 
-### Seetings:
+### Settings:
 
-- Name: a meaningfull name. 
-- Region: same region as the rest of the resources. 
-- Resource mode: Classic.
+- ***Name:*** a meaningful name. 
+- ***Region:*** same region as the rest of the resources. 
+- ***Resource mode:*** Classic.
 
 To create the Application Insights, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource).
 

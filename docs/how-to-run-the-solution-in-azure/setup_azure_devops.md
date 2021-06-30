@@ -61,9 +61,9 @@ This group should contain information that is specific to an environment.
 | azServicePrincipalTenantId       | The tenant id of the Azure subscription where the service principal was created (the azure subscription we are using). |
 | azVmName                         | The name of the virtual machine we created to host the Bot Service.                                                    |
 | azVmResourceGroup                | The name of the resource group we created to use with the Bot Service virtual machine.                                 |
-| graphClientClientId              | The id o the bot channels registration.                                                                                |
-| graphClientClientSecret          | The client secret of the bot channels registration.                                                                    |
-| graphClientTenantId              | The tenant id where the bot channels registration was created.                                                         |
+| graphClientClientId              | The id o the Azure Bot.                                                                                |
+| graphClientClientSecret          | The client secret of the Azure Bot.                                                                    |
+| graphClientTenantId              | The tenant id where the Azure Bot was created.                                                         |
 
 ### Pipelines Definitions
 

@@ -12,15 +12,15 @@ We need to create app registrations for the following items:
 
 To create the necessary app registrations, review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) that will explain how to do it, and consider the following settings for each of them:
 
-- **Name:** Meaningful name.
-- **Supported account types**: Accounts in any organizational directory (Any Azure AD directory - Single tenant).
+- ***Name:*** Meaningful name.
+- ***Supported account types:*** Accounts in this organizational directory only (`your-organization` only - Single tenant).
 
 Once you've registered the app registration you must [add a client secret](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-a-client-secret), copy its value and save it together with the application client id in a secure place, we will need it for future steps.
 
 > **NOTE**: You'll need this secret later to configure the project. This key value will not be displayed again, nor retrievable by any other means, so record it as soon as it is visible from the Azure portal.
 
 ## Authentication Setup
-With the **Security Group** and the **App Registrations** created in the previous steps, we must proceed we the setup of each of them. While doing so, take into consideration that there are some dependencies between some application registrations and the resources.
+With the **App Registrations** created in the previous steps, we must proceed we the setup of each of them. While doing so, take into consideration that there are some dependencies between some application registrations and the resources.
 
 - [How to Setup Bot Service API application registration](#how-to-setup-bot-service-api-application-registration)
 - [How to Setup Bot Service Client application registration](#how-to-setup-bot-service-client-application-registration)
@@ -69,7 +69,7 @@ Then inside BotService select **AccessAll** and click on **Add permissions**.
 
 > **NOTE**: If your user does not have the necessary permissions to enable the add-on permission. You must ask a user with the required permission to enable it.
 
-![Add permissions](./images/running_solution_in_azure/bot_service_client_enabled_permissions.png)
+![Add permissions](./images/bot_service_client_enabled_permissions.png)
 
 ### How to Setup Management API application registration
 **IMPORTANT**: it's necessary to have already created Management API application registration.
@@ -104,13 +104,12 @@ From the resource blade of the application registration view, go to the **Expose
 
 **Manifest**
 
-To configure authentication with the security group used for RBAC, we must modify the manifest so the application includes the security groups in the token.
+In order to enable RBAC through a security group, it is necessary modify the application registration manifest to allow the application to include in the token all the security groups the user belongs to.
 
 From the resource blade of the application registration view, go to the **Manifest** option. We need to modify the manifest and add/modify the following key-values:
 
 ```json
 "groupMembershipClaims": "SecurityGroup",
-"knownClientApplications": [],
 "optionalClaims":{
   "idToken": [
     {

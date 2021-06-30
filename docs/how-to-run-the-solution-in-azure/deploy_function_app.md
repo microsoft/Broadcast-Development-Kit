@@ -1,8 +1,8 @@
-# Deploy the Function App into the Web App Service.
+# Deploy the Function App into the Azure Function App Service.
 
 Once the Function App with the corresponding App service plan was successful created, we can deploy the solution build into it. 
 
-To deploy the Function App into the Web App Service created we can follow this steps:
+To deploy the Function App into the Azure Function App Service created we can follow this steps:
 1. Open the solution in **Visual Studio**.
 1. In Solution Explorer, right-click in the project `BotOrchestrator` node and choose **Publish**.
 1. In **Publish**, select **Azure** and then **Next**.  

@@ -2,12 +2,12 @@
 
 ## Getting Started
 
-This document shows how to create and configure the Atorage Account for the solution core components. This Storage Account will be used to store the environment settings in **JSON** format, the wildcard SSL certificate in **PFX** format, and the queues that are consumed by the Azure Functions. 
+This document shows how to create and configure the Storage Account for the solution core components. This Storage Account will be used to store the environment settings in **JSON** format, the wildcard SSL certificate in **PFX** format, and the queues that are consumed by the Azure Functions. 
 
 To create a Storage Account in Azure, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal).
 
 Create this storage account with the following settings:
-- ***Name***: a meaningfull name.
+- ***Name***: a meaningful name.
 - ***Region***: same region as the rest of the resources.
 - ***Performance***: Standard.
 - ***Redundancy***: Locally-redundant storage (LRS).
@@ -79,9 +79,9 @@ Below there is a json file template with placeholders values you need to complet
 
 | Placeholder                            | Description                                                                                                                                                                                                                                                               |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| tenantIdBotChannelsAppRegistration     | Tenant Id of bot channels registration.                                                                                                                                                                                                                                   |
-| clientIdBotChannelsAppRegistration     | Client Id of the bot channels app registration.                                                                                                                                                                                                                           |
-| clientSecretBotChannelsAppRegistration | Client secret of the bot channels app registration.                                                                                                                                                                                                                       |
+| tenantIdBotChannelsAppRegistration     | Tenant Id of Azure Bot.                                                                                                                                                                                                                                   |
+| clientIdBotChannelsAppRegistration     | Client Id of the Azure Bot app registration.                                                                                                                                                                                                                           |
+| clientSecretBotChannelsAppRegistration | Client secret of the Azure Bot app registration.                                                                                                                                                                                                                       |
 | cosmosDbEndpointUrl                    | Endpoint URL of the cosmos db created.                                                                                                                                                                                                        |
 | cosmosDbPrimareyKey                    | Primary key of the cosmos db created.                                                                                                                                                                                                         |
 | cosmosDbDatabaseName                   | Database name of the cosmos db created.                                                                                                                                                                                                       |

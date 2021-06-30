@@ -2,24 +2,25 @@
 
 ## Introduction
 
-This document describes the resources that must be created and configured to running the solution in Azure. This includes:
+This document describes the resources that must be created and configured to run the solution in Azure. This includes:
+
 - App Registrations for authentication in different components in Azure AD tenant:
-    - App Registrations:
-        - Bot Service API.
-        - Bot Service Client.
-        - Azure VM Management.
-        - Management API.
-    - Security Group.
+    - [App Registrations](app_registrations.md#app-registrations):
+        - [Bot Service API](app_registrations.md#how-to-setup-bot-service-api-application-registration).
+        - [Bot Service Client](app_registrations.md#how-to-setup-bot-service-client-application-registration).
+        - [Azure SDK Service Principal](azure_sdk_service_principal.md).
+        - [Management API](app_registrations.md#how-to-setup-management-api-application-registration).
+    - [Security Group](security_group.md).
 - Resource groups used to deploy and configure the solution: 
     - Virtual Machine resource group:
-        - Virtual Machine.
-        - Event Grid.
+        - [Virtual Machine](bot_service_virtual_machine.md).
+        - [Event Grid](configure_event_grid.md).
     - Architecture resource group:
-        - Application Insights.
-        - Storage account.
-        - Web App and App service plan.
-        - Fucntion App and App service plan.
-        - Cosmos DB.
+        - [Application Insights](application_insights.md).
+        - [Storage account](storage_account.md).
+        - [Web App and App service plan](web_app_and_app_service_plan.md).
+        - [Function App and App service plan](function_app_and_app_service_plan.md).
+        - [Cosmos DB](cosmos_db.md).
 
 ## App Registrations for authentication in different components in Azure AD tenant
 To secure and connect several of the resources used for the solution, we need to create several app registrations, each with its own permissions and settings. Several of the following instructions include creating application credentials. We recommend creating a Key Vault resource in Azure to store these credentials securely. We also recommend keeping track of the application IDs generated for each app registration to simplify the configuration of the applications during the project.  
@@ -47,7 +48,7 @@ The following resources are used to manage the application and the bot. All thes
 - [Application Insights](application_insights.md).
 - [Storage account](storage_account.md).
 - [Web App and App service plan](web_app_and_app_service_plan.md).
-- [Function App and App service plan](function_app_and_app_service_plan).
+- [Function App and App service plan](function_app_and_app_service_plan.md).
 - [Cosmos DB](cosmos_db.md#cosmos-db-database).
 
 ### Virtual Machine resource group

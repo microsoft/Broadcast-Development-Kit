@@ -75,15 +75,17 @@ In order to run the bot, we need to configure some environment variables that th
 
 > **IMPORTANT** Before performing these steps, the storage account with the bot configurations must be already created to set the environment's variables.
 
-- ***STORAGE_ACCOUNT:*** Name of the storage account where the files are being stored.
-- ***BLOB_CONTAINER:*** Name of the storage account where the files are being stored.
-- ***BLOB_SAS_QUERY:*** SAS key to get access to the container files.
-- ***CERTIFICATE_NAME:*** Name of the certificate that the bot will use to authenticate with the media platform.
-- ***APP_SETTINGS_FILE_NAME:*** Name of the bot app settings.
-
 ![Set Environment Variables](./images/set_environment_variables.png)
 
 ![Set Systema Variables](./images/set_system_variables.png)
+
+| **Placer**              | **Description**                                                      |
+|-------------------------|----------------------------------------------------------------------|
+| storage account         | Name of the [storage account](app_registrations.md) where the files are being stored.    |
+| blob container          | Name the container of [storage account](app_registrations.md).                           |
+| blob sas query          | SAS key to get access to the container files of [storage account](app_registrations.md). |
+| settings json file name | Name of the bot app settings.                                        |
+
 
 > **NOTE**: The `BLOB_SAS_QUERY` must include the '?'. This token has an expiration date, be aware of this date to renew the access token.
 
@@ -109,7 +111,7 @@ $env:APP_SETTINGS_FILE_NAME = '{{envfile}}'
 To run the bot every time the virtual machine is turned on, we configure it as a Windows Service. Before configuring it, we must validate that the group **ALL APPLICATION PACKAGES** has special permissions in the bot folder (right-click in the bot folder, click on **properties**, select the **security** tab). If the group doesn't have permissions, we must add it by clicking on **Advance** → **Add** → **Select a Principal**.
 
 ![As a Windows Service](./images/configure_windows_service.png)
-![Permission entry bot service](../images/permission_entry_bot_service.png)
+![Permission entry bot service](./images/permission_entry_bot_service.png)
 
 Finally, we must run the following Powershell command:
 
