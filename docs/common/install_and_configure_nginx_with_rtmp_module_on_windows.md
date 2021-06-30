@@ -1,7 +1,5 @@
 # How to Install and configure NGINX with RTMP module on Windows (DRAFT)
 
-# TODO: 
--[ ] Review NGINX configuration
 
 ## Getting Started
 
@@ -76,7 +74,7 @@ rtmp {
             live on;
             record off;
 
-	    on_publish http://localhost/api/bot/validate-stream-key;
+	        on_publish http://localhost/api/bot/validate-stream-key;
 
             allow publish 127.0.0.1;  # publishing through rtmps://rtmp.example.com:1936
             allow play 127.0.0.1;     # for the pull from rtmp://localhost:19351/live
@@ -104,7 +102,11 @@ rtmp {
             live on;
             record off;
 	    
-	    on_publish http://localhost/api/bot/validate-stream-key;
+	        on_publish http://localhost/api/bot/validate-stream-key;
+        }
+        application test-endpoint {
+            live on;
+            record off;
         }
     }
 }
@@ -131,7 +133,10 @@ http {
 
 ## Test NGINX server configuration
 
-To start testing the NGINX server, we must open the command line, navigate to the NGINX root folder and execute `nginx.exe`.
+>  **NOTE**: To test the NGINX server we will use GStreamer to create a pipeline that captures the audio and video of our PC and pushes it into the NGINX server. If you want to use other tool like OBS, feel free to skip this section.
+
+
+To start testing the NGINX server, we must open a terminal window, navigate to the NGINX root folder and execute `nginx.exe`.
 
 ![Open Nginx](images/open_nginx.png)
 
@@ -154,23 +159,29 @@ The command will prompt you with a list of input and output multimedia devices. 
 Once we identified the device and copied its id value, we need to run the following command (GStreamer CLI pipeline) to start capturing the video from your webcam and the audio of the selected device, and process it so we can inject it as an RTMP stream into the RTMP server.
 
 ```bash
-gst-launch-1.0 wasapisrc device="your-audio-device-input" ! audioconvert ! avenc_aac ! aacparse ! queue ! mux. autovideosrc ! video/x-raw, format=YUY2, width=320, height=180, framerate=30/1 ! videoconvert ! x264enc tune=zerolatency key-int-max=60 bitrate=2500 ! queue ! mux. flvmux name=mux streamable=true latency=500000000 ! rtmpsink location=rtmp://localhost:1935/injection/1
+gst-launch-1.0 wasapisrc device="{{device-strid}}" ! audioconvert ! avenc_aac ! aacparse ! queue ! mux. autovideosrc ! "video/x-raw, format=YUY2, width=320, height=180, framerate=30/1" ! videoconvert ! x264enc tune=zerolatency key-int-max=60 bitrate=2500 ! queue ! mux. flvmux name=mux streamable=true latency=500000000 ! rtmpsink location=rtmp://localhost:1936/test-endpoint/1
 ```
+> **NOTE:** Replace the placheholder **{{device-strid}}** with the **device.strid** value we copied before.
 
 To validate the server and GStreamer are correctly working, we must start consuming the live endpoint with a player.
-
-Copy the value of **device.strid** and replace it in the command given above. This command will start the injection of audio and video to the RTMP server, it only remains to start consuming it with a player.
 
 **Using GStreamer**
 
 ```bash
-gst-launch-1.0 rtmpsrc location=rtmp://{your-local-ip}:1935/injection/1 ! decodebin name=decoder ! queue ! videoconvert ! autovideosink decoder. ! queue ! audioconvert ! audioresample ! autoaudiosink
+gst-launch-1.0 rtmpsrc location=rtmp://localhost:1936/test-endpoint/1 ! decodebin name=decoder ! queue ! videoconvert ! autovideosink decoder. ! queue ! audioconvert ! audioresample ! autoaudiosink
 ```
+Or
+
+
+```bash
+gst-launch-1.0 playbin uri=rtmp://localhost:1936/test-endpoint/1
+```
+
 ![Using GStreamer](images/nginx_using_gstreamer.png)
 
 **Ffplay**
 ```bash
-ffplay.exe rtmp://{your-local-ip}:1935/injection/1
+ffplay.exe rtmp://localhost:1936/test-endpoint/1
 ```
 ![Ffplay](images/nginx_ffplay.png)
 
@@ -181,7 +192,7 @@ ffplay.exe rtmp://{your-local-ip}:1935/injection/1
 Once VLC is installed, follow these steps:
 1. Open VLC's ***Media*** menu and click **Open Network Stream**, or simply hold down **CTRL** and press **N**.
 
-1. Paste the URL of the stream you want to watch, with the following format: `rtmp://{your-local-ip}:1935/injection/1` in the **Please enter a network URL** box.  
+1. Paste the URL of the stream you want to watch, with the following format: `rtmp://localhost:1936/test-endpoint/1` in the **Please enter a network URL** box.  
 ![](images/nginx_vlc_player.png)
 
 1. Click the **Play** button.
