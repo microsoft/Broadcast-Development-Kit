@@ -353,9 +353,9 @@ Go to the `src\BotService` directory of the solution and create a new configurat
   },
   "Settings": {
     "GraphClientConfiguration": {
-      "TenantId": "{{tenantIdAppRegistration}}",
-      "ClientId": "{{clientIdAppRegistration}}",
-      "ClientSecret": "{{clientSecretAppRegistration}}"
+      "TenantId": "{{tenantIdAzureBotAppRegistration}}",
+      "ClientId": "{{clientIdAzureBotAppRegistration}}",
+      "ClientSecret": "{{clientSecretAzureBotAppRegistration}}"
     },
     "CosmosDbConfiguration": {
       "EndpointUrl": "https://localhost:8081",
@@ -385,18 +385,14 @@ Placeholder | Description
 |-|-|
 botServiceHttpsPort | BotService Https port configured in botService launchsettings
 botServiceHttpPort | BotService Http port configured in botService launchsettings
-tenantIdAppRegistration | Tenant Id of the [app registration](../prerequisites/azure_bot.md).
- clientIdAppRegistration | Client Id of the [app registration](../prerequisites/azure_bot.md).
- clientSecretAppRegistration | Client secret of the [app registration](../prerequisites/azure_bot.md).
- cosmosDbEndpointUrl | Endpoint URL of the cosmos db created by the Api release pipeline.
- cosmosDbPrimaryKey | Primary key of the cosmos db created by the Api release pipeline.
- cosmosDbDatabaseName | Name to be given to the database that the solution will create in Cosmos DB (Use the same DB name in all settings)
- clientIdAzureBotAppRegistration | App Id of the Azure Bot app registration
- AadAppSecret | App secret of the Azure Bot app registration
- certificatePassword | Password of the  installed certificate.
- certificateThumbprint | Thumbprint of the installed certificate.
- managementApiHttpsPort | ManagementApi Https port configured in ManagementApi launchsettings
- appInsightInstrumentationKey | ***`Optional:`*** by default leave it empty or if you have an instance of Application Insights you can store the log messages by entering an instrumentation key.
+tenantIdAzureBotAppRegistration | Tenant Id of the [app registration](../prerequisites/azure_bot.md).
+clientIdAzureBotAppRegistration | Client Id of the [app registration](../prerequisites/azure_bot.md).
+clientSecretAzureBotAppRegistration | Client secret of the [app registration](../prerequisites/azure_bot.md).
+cosmosDbPrimaryKey | Azure Cosmos DB Emulator primary key, can be found in the data explorer of the emulator.
+cosmosDbDatabaseName | Name to be given to the database that the solution will create in Cosmos DB (Use the same DB name in all settings) 
+certificatePassword | Password of the  installed certificate.
+certificateThumbprint | Thumbprint of the installed certificate.
+appInsightInstrumentationKey | ***`Optional:`*** by default leave it empty or if you have an instance of Application Insights you can store the log messages by entering an instrumentation key.
 
  To finish configuring the configuration file we will use ngrok. The following image serves as a guide to know in a simple way where to take the values.
 
