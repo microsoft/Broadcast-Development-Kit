@@ -45,7 +45,7 @@ It is necessary to create the following application settings:
     | Settings:AzureAdConfiguration:TenantId                               | Tenant Id of Azure AD.                                                 |
     | Settings:BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the Bot Service Api app registration.                     |
     | Settings:BotServiceAuthenticationConfiguration:ClientId              | Client Id of the Bot Service Client app registration.                  |
-    | Settings:BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Api Client app registration.          |
+    | Settings:BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Client app registration.          |
     | Settings:BuildVersion                                                | 0.3.3-configurable-rtmp-stream-key                                     |
     | Settings:CosmosDbConfiguration:DatabaseName                          | Database name of the cosmos db created.                                |
     | Settings:CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the cosmos db created.                                 |
@@ -55,7 +55,7 @@ It is necessary to create the following application settings:
     | Settings:GraphClientConfiguration:TenantId                           | Tenant  Id of the Azure Bot app registration.                          |
     | Settings:StorageConfiguration:AccountKey                             | Key of the Storage created where the config is stored.                 |
     | Settings:StorageConfiguration:AccountName                            | Name of the Storage created where the config is stored.                |
-    | Settings:StorageConfiguration:ConfigContainer                        | Key of the Storage created where the config is stored.                 |
+    | Settings:StorageConfiguration:ConfigContainer                        | Key 1 of the Storage created where the config is stored.                 |
     | Settings:StorageConfiguration:ConnectionString                       | Connection string of the Storage created where the config is stored.   |
     | Settings:StorageConfiguration:SasTokenLifetimeMinutes                | 1                                                                      |
     | SnapshotDebugger_EXTENSION_VERSION                                   | disabled                                                               |

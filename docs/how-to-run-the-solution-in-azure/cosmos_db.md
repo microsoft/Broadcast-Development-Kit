@@ -7,22 +7,25 @@ To create the Azure Cosmos DB, please review the following Microsoft [documentat
 
 ### Settings:
 
-- ***For the API selection, choose Core (SQL)***. 
-- ***Name***: a meaningful name. 
-- ***Region***: same region as the rest of the resources. 
+- ***Select API option:*** choose Core (SQL).
+- ***Resource Group:*** Select the resource group created for the solution architecture.
+- ***Account Name***: a meaningful name. 
+- ***Location***: same region as the rest of the resources. 
 - ***Capacity mode***: Provisioned throughput. 
 - ***Apply Free Tier Discount***: Apply only if there is no other Cosmos DB using it in the subscription.
 
-Leave the rest of the settings as-is. Once the account is created, browse to the **Data Explorer** menu in the account configuration and create a new Database with the following settings: 
+Leave the rest of the settings as-is.
+
+Once the account is created, browse to the **Data Explorer** in the left panel of the account configuration and create a new database with the following settings: 
 
 - Database Id: A meaningful name. 
 - Throughput: Manual – 400 RU/s. 
-    > Note: To keep the costs down, we are setting the RU to the lowest amount possible. 
+    > Note: To keep the costs down, we are setting the RU to the lowest amount possible.
+
+Click on **OK** button to create the database.
 
 After the database is created, it is necessary to add all the containers needed by the solution. The following list shows the name of the containers to be created and the corresponding partition key name:
 
-- ***Audit***
-    - Partition Key: /EntityId
 - ***Call***
     - Partition Key: /id
 - ***ParticipantStream***
@@ -37,11 +40,10 @@ To create those containers, please follow the next steps:
 1. In the `Data explorer` view for Cosmos DB in the Azure Portal, select `New Container`.
 1. Fill the `New Container` blade displayed with the following values:
     - ***Database id***: Check use existing and select the one created in the previous step.
-    - ***Container id***: Write the name of the container (e.g. *Audit*).
-    - ***Indexing***: Automatic.
-    - ***Partition key***: Write the name of the partition key (e.g. for Audit container the partition key name is /EntityId).
+    - ***Container id***: Write the name of the container (e.g. *Call*).
+    - ***Partition key***: Write the name of the partition key (e.g. for Call container the partition key name is /id).
     - ***Provision dedicated throughput for this container***: Keep unchecked to share the database throughput between all the containers created.
-1. Click OK button to create the container.
+1. Click **OK** button to create the container.
 
 The images below show the steps from the Azure Portal.
 

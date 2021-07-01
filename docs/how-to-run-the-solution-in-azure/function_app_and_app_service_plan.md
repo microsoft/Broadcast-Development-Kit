@@ -3,7 +3,7 @@
 ## Introduction
 A Function App and App Service Plan for it must be created to host the Azure VM Management. This document is intend to show, how to create a Function App in the resource group and fill the fields in the creation wizard with the following information:
 
- ***Resource Group:*** The resource group create in a previous step.
+- ***Resource Group:*** Select the resource group created for the solution architecture.
 - ***Name:*** A meaningful name.
 - ***Publish:*** Code.
 - ***Runtime stack:*** .NET Core 3.1 (LTS).

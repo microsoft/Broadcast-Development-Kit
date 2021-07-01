@@ -5,10 +5,11 @@ A Web App and App Service Plan for it must be created to host the Management API
 
 This document is intend to show, how to create a Web App in the resource group and fill the fields in the creation wizard with the following information: 
 
-- ***Resource Group:*** The resource group create in a previous step.
+- ***Resource Group:*** Select the resource group created for the solution architecture.
 - ***Name:*** A meaningful name.
 - ***Publish:*** Code.
 - ***Runtime stack:*** .NET Core 3.1 (LTS).
+- ***Operating System:*** Windows.
 - ***Region:*** Same region as the rest of the resources.
 - ***App Service Plan:*** For the service plan, please select create a new one with the following values:
     - ***Name:*** Change the name to something meaningful.

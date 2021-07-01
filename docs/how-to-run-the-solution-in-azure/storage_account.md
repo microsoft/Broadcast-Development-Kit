@@ -2,19 +2,24 @@
 
 ## Getting Started
 
-This document shows how to create and configure the Storage Account for the solution core components. This Storage Account will be used to store the environment settings in **JSON** format, the wildcard SSL certificate in **PFX** format, and the queues that are consumed by the Azure Functions. 
+This document shows how to create and configure the Storage Account for the solution core components. This Storage Account will be used to store the environment settings in `json` format, the wildcard SSL certificate in `pfx` format, and the queues that are consumed by the Azure Functions. 
 
 To create a Storage Account in Azure, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal).
 
 Create this storage account with the following settings:
-- ***Name***: a meaningful name.
-- ***Region***: same region as the rest of the resources.
+- ***Resource Group:*** Select the resource group created for the solution architecture.
+- ***Storage Account Name***: A meaningful name.
+- ***Region***: Same region as the rest of the resources.
 - ***Performance***: Standard.
 - ***Redundancy***: Locally-redundant storage (LRS).
 
-Leave the rest of the settings as-is. Once this Storage Account is created, create a new container in this storage account with the following settings: 
+Leave the rest of the settings as-is.
+
+Once this Storage Account is created, create a new container with the following settings: 
 - ***Name***: config.
 - ***Public access level***: private.
+
+To create a new Container, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal#create-a-container)
 
 Once the config container is created, upload the Bot Service settings and the wildcard SSL certificate files to it.
 
@@ -75,6 +80,8 @@ Below there is a json file template with placeholders values you need to complet
   "APPINSIGHTS_INSTRUMENTATIONKEY": "{{appInsigtsKey}}"
 }
 ```
+> **NOTE:** The Bot Service appsettings will be completed in later steps.
+
 ### Placeholder specification table
 
 | Placeholder                            | Description                                                                                                                                                                                                                                                               |

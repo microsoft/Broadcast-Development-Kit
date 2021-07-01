@@ -38,8 +38,9 @@ It is necessary to create the following application settings:
     | AzureAdConfiguration:TenantId                               | Tenant Id of Azure AD.                                                  |
     | AzVirtualMachineConfiguration:Name                          | Name of the virtual machine created.                                    |
     | AzVirtualMachineConfiguration:ResourceGroup                 | Name of the resource group where the created virtual machine is hosted. |
-    | BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the Bot Service Api Client app registration.               |
-    | BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Api Client app registration.           |
+    | BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the Bot Service Api app registration.               |
+    | BotServiceAuthenticationConfiguration:ClientId | Client Id of the Bot Service Client app registration.               |
+    | BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Client app registration.           |
     | BuildVersion                                                | 0.3.3-main                                                              |
      CosmosDbConfiguration:DatabaseName                          | Database name of the cosmos db created.                                 |
     | CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the cosmos db created.                                  |
