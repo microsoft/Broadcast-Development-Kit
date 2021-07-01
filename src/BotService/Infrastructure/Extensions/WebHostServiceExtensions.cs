@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System.ServiceProcess;
 using Microsoft.AspNetCore.Hosting;
 

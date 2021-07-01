@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using BotService.Application.Core;
 using BotService.Infrastructure.Core;

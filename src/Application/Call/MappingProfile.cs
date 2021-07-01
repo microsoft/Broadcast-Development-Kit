@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using Application.Call.Commands;
 using Application.Common.Models;
 using AutoMapper;

@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 namespace Domain.Entities.Parts
 {
     public class Infrastructure

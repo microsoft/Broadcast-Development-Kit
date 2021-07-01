@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 namespace BotService.Application.Core
 {
     public interface ISwitchingMediaExtractor : IMediaExtractor

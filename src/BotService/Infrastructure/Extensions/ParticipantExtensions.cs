@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System.Linq;
 using Microsoft.Graph;
 using Microsoft.Graph.Communications.Calls;

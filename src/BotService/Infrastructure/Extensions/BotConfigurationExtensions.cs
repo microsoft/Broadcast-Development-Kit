@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System.Net;
 using Application.Common.Config;
 using Microsoft.Skype.Bots.Media;

@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 namespace Application.Exceptions.Models
 {
     public class ExceptionDetails

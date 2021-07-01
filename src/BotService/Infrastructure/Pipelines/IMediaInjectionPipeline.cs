@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using BotService.Infrastructure.Common.Logging;
 using Gst;

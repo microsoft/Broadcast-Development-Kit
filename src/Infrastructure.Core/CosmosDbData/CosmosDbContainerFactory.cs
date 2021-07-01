@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using Infrastructure.Core.CosmosDbData.Interfaces;
 using Microsoft.Azure.Cosmos;

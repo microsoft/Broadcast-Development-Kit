@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using Application.Common.Config;
 using Microsoft.Extensions.Configuration;
