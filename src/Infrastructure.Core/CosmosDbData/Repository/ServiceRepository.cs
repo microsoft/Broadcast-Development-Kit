@@ -13,7 +13,7 @@ namespace Infrastructure.Core.CosmosDbData.Repository
         {
         }
 
-        public override string ContainerName => CosmosDbConstants.ServiceContainer;
+        public override string ContainerName => CosmosDbSchema.ServiceContainer;
 
         public override string GenerateId(Service entity) => Guid.NewGuid().ToString();
 

@@ -15,8 +15,8 @@ namespace Application.Service
         public MappingProfile()
         {
             CreateMap<Domain.Entities.Service, ServiceModel>();
-            CreateMap<Domain.Entities.Infrastructure, InfrastructureModel>();
-            CreateMap<Domain.Entities.ProvisioningDetails, ProvisioningDetailsModel>();
+            CreateMap<Domain.Entities.Parts.Infrastructure, InfrastructureModel>();
+            CreateMap<Domain.Entities.Parts.ProvisioningDetails, ProvisioningDetailsModel>();
             CreateMap<Domain.Entities.Service, StartServiceInfrastructureCommand>();
             CreateMap<Domain.Entities.Service, StopServiceInfrastructureCommand>();
             CreateMap<Domain.Entities.Service, StartingServiceInfrastructureCommandResponse>();

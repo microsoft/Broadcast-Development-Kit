@@ -176,7 +176,6 @@ namespace ManagementApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseCors(_myAllowSpecificOrigins);
-                app.EnsureCosmosDbIsCreated();
             }
 
             app.ConfigureExceptionHandler(_logger, env.IsProduction());

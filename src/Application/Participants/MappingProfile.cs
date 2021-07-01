@@ -1,6 +1,7 @@
 using Application.Common.Models;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Parts;
 using static Application.Participant.Commands.UpdateParticipantMeetingStatus;
 
 namespace Application.Participants

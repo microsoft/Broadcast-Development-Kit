@@ -8,6 +8,7 @@ using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Parts;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;

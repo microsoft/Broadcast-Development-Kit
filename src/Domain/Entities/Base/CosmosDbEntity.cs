@@ -2,9 +2,9 @@ using Newtonsoft.Json;
 
 namespace Domain.Entities.Base
 {
-    public abstract class BaseEntity
+    public abstract class CosmosDbEntity
     {
         [JsonProperty(PropertyName = "id")]
-        public virtual string Id { get; set; }
+        public string Id { get; set; }
     }
 }

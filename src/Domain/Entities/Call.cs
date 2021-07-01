@@ -5,7 +5,7 @@ using Domain.Enums;
 
 namespace Domain.Entities
 {
-    public class Call : BaseEntity
+    public class Call : CosmosDbEntity
     {
         public string MeetingUrl { get; set; }
 

@@ -1,10 +1,11 @@
 using System;
 using Domain.Entities.Base;
+using Domain.Entities.Parts;
 using Domain.Enums;
 
 namespace Domain.Entities
 {
-    public class Stream : BaseEntity
+    public class Stream : CosmosDbEntity
     {
         public string CallId { get; set; }
 

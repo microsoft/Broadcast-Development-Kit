@@ -41,8 +41,7 @@ namespace BotOrchestrator
             builder.Services.AddCosmosDb(
                 appConfiguration.CosmosDbConfiguration.EndpointUrl,
                 appConfiguration.CosmosDbConfiguration.PrimaryKey,
-                appConfiguration.CosmosDbConfiguration.DatabaseName,
-                hostEnvironment);
+                appConfiguration.CosmosDbConfiguration.DatabaseName);
 
             builder.Services.AddScoped<ICallRepository, CallRepository>();
             builder.Services.AddScoped<IServiceRepository, ServiceRepository>();

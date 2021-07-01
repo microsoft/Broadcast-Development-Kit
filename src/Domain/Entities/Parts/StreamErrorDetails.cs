@@ -1,7 +1,6 @@
-using Domain.Entities.Base;
 using Domain.Enums;
 
-namespace Domain.Entities
+namespace Domain.Entities.Parts
 {
     public class StreamErrorDetails
     {

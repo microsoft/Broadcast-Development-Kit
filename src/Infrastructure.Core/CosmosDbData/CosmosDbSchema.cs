@@ -1,10 +1,10 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 namespace Infrastructure.Core.CosmosDbData
 {
-    public static class CosmosDbConstants
+    public static class CosmosDbSchema
     {
-        public const string AuditContainer = "Audit";
-        public const string AuditPartitionKey = "/EntityId";
-
         public const string CallContainer = "Call";
         public const string CallPartitionKey = "/id";
 
@@ -16,5 +16,13 @@ namespace Infrastructure.Core.CosmosDbData
 
         public const string ServiceContainer = "Service";
         public const string ServicePartitionKey = "/id";
+
+        public static readonly ReadOnlyDictionary<string, string> Containers = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
+        {
+            { CallContainer, CallPartitionKey },
+            { ParticipantStreamContainer, ParticipantStreamPartitionKey },
+            { StreamContainer, StreamPartitionKey },
+            { ServiceContainer, ServicePartitionKey },
+        });
     }
 }

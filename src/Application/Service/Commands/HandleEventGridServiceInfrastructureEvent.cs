@@ -79,7 +79,7 @@ namespace Application.Service.Commands
                     }
 
                     service.Infrastructure.PowerState = powerState;
-                    service.Infrastructure.ProvisioningDetails = new Domain.Entities.ProvisioningDetails
+                    service.Infrastructure.ProvisioningDetails = new Domain.Entities.Parts.ProvisioningDetails
                     {
                         State = provisioningState,
                     };

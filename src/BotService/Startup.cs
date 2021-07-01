@@ -131,7 +131,6 @@ namespace BotService
             else
             {
                 app.UseDeveloperExceptionPage();
-                app.EnsureCosmosDbIsCreated();
             }
 
             app.UseAuthentication();
