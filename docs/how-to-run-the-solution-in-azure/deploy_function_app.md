@@ -11,34 +11,34 @@ To deploy the Function App into the Azure Function App Service created we can fo
 ![Select specific destination](./images/deploy_function_app_select_specific_destination.png)
 1. Select your subscription and in the **Function Apps** panel, select the Function App that was created from the Azure Portal, and click **Finish**.  
 ![Select Function App Created](./images/deploy_function_app_select_function_app_created.png)
-1. In the **Publish** page, select **Publish**. Visual Studio builds, packages, and publishes the app to Azure, and then launches the app in the default browser.
+1. In the **Publish** page, select **Publish**. Visual Studio builds, packages, and publishes the app to Azure.
 
 ## Configure app settings
 After deploying the **Function App**, it is necessary to set the configuration parameters. These are carried out by following the steps below:
 
 1. In the [Azure portal](http://portal.azure.com/), search for and select Function App, and then select your app.  
+
 ![Application settings](./images/function_app_search.png)
 1. Select in the app's left menu, select **Configuration** > **Application settings**.  
+
 ![New application setting](./images/function_app_configuration_application_settings.png)
 1. To add a setting in the portal, select **New application setting** and add the new key-value pair.  
 It is necessary to create the following application settings:
 
     | Name                                                        | Value                                                                   |
     |-------------------------------------------------------------|-------------------------------------------------------------------------|
-    | APPINSIGHTS_INSTRUMENTATIONKEY                              | Application Insights key of the application insights resource created.  |
-    | APPINSIGHTS_PROFILERFEATURE_VERSION                         | disabled                                                                |
     | APPINSIGHTS_SNAPSHOTFEATURE_VERSION                         | disabled                                                                |
     | ApplicationInsightsAgent_EXTENSION_VERSION                  | ~2                                                                      |
-    | AzServicePrincipalConfiguration:ApplicationClientId         | Client Id of the Azure Service Principal app registration.              |
-    | AzServicePrincipalConfiguration:ApplicationClientSecret     | Client secret of the Azure Service Principal app registration.          |
-    | AzServicePrincipalConfiguration:SubscriptionId              | Subscription Id of the Azure Service Principal app registration.        |
-    | AzServicePrincipalConfiguration:TenantId                    | Tenant Id of Azure Service Principal app registration.                  |
-    | AZURE_FUNCTIONS_ENVIRONMENT                                 | Development                                                             |
+    | AzServicePrincipalConfiguration:ApplicationClientId         | Client Id of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.              |
+    | AzServicePrincipalConfiguration:ApplicationClientSecret     | Client secret of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.          |
+    | AzServicePrincipalConfiguration:SubscriptionId              | Subscription Id of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.        |
+    | AzServicePrincipalConfiguration:TenantId                    | Tenant Id of [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.                  |
+    | AZURE_FUNCTIONS_ENVIRONMENT                                 | Development or Production                                                             |
     | AzureAdConfiguration:Instance                               | https://login.microsoftonline.com/                                      |
     | AzureAdConfiguration:TenantId                               | Tenant Id of Azure AD.                                                  |
-    | AzVirtualMachineConfiguration:Name                          | Name of the virtual machine created.                                    |
-    | AzVirtualMachineConfiguration:ResourceGroup                 | Name of the resource group where the created virtual machine is hosted. |
-    | BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the Bot Service Api app registration.               |
+    | AzVirtualMachineConfiguration:Name                          | Name of the [BotService virtual machine](bot_service_virtual_machine.md)created.                                    |
+    | AzVirtualMachineConfiguration:ResourceGroup                 | Name of the resource group where the [BotService virtual machine](bot_service_virtual_machine.md) is hosted. |
+    | BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the Bot Service API app registration.               |
     | BotServiceAuthenticationConfiguration:ClientId | Client Id of the Bot Service Client app registration.               |
     | BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Client app registration.           |
     | BuildVersion                                                | 0.3.3-main                                                              |

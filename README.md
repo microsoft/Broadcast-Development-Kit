@@ -21,7 +21,7 @@ This section will guide you through the process of configuring the solution to r
 
 - [Prerequisites](docs/prerequisites/readme.md)
 - [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
-- [Running the solution in Azure](docs/running_the_solution_in_azure/README.md)
+- [How to run the solution in Azure](docs/how-to-run-the-solution-in-azure/README.md)
 
 ## Contributing
 

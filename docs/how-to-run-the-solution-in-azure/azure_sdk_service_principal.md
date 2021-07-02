@@ -7,7 +7,7 @@ The solution has components that require interaction with Azure resources using 
 You will need the id and secret of this service principal to [configure the Pipeline's libraries]() for the deployments.
 
 ### Assign Contributor Role
-For the time being, the solution needs to interact with the virtual machine where the Bot Service API is hosted (to turn on/turn off the virtual machine), so we have to go to the resource group where the virtual machine was created and through Access Control (IAM) assign `Contributor` role to the application (check [How to assign a role to an application](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#assign-a-role-to-the-application)).
+For the time being, the solution needs to interact with the virtual machine where the Bot Service API is hosted (to turn on/turn off the virtual machine). To make this assignment, you must go to the **resource group** where the **virtual machine** was created and through **Access Control (IAM)** assign `Contributor` role to the application, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal?tabs=current).
 
 ![Assign Contributor Role](./images/assign_contributor_role.png)
 

@@ -39,12 +39,12 @@ Below there is a json file template with placeholders values you need to complet
 	"HttpServer":{
           "Endpoints":{
               "Http":{
-                  "Host": "localhost",
+                  "Host": "{{virtualMachineDnsCname}}",
                   "Port": 80,
                   "Scheme": "http"
               },
               "Https":{
-                  "Host": "localhost",
+                  "Host": "{{virtualMachineDnsCname}}",
                   "Port": 443,
                   "Scheme": "https"
               }
@@ -75,9 +75,16 @@ Below there is a json file template with placeholders values you need to complet
       "CertificateThumbprint":"{{pfxCertificateThumbprint}}",
       "MainApiUrl":"{{managementApiURl}}",
       "VirtualMachineName": "{{virtualMachineName}}"
+    },
+    "AzureAdConfiguration": {
+      "Instance": "https://login.microsoftonline.com/",
+      "TenantId": "{{tenantIdAzureBotServiceApiClientId}}"
+    },
+    "BotServiceAuthenticationConfiguration": {
+      "BotServiceApiClientId": "{{botServiceClientId}}",
     }
   },
-  "APPINSIGHTS_INSTRUMENTATIONKEY": "{{appInsigtsKey}}"
+  "APPINSIGHTS_INSTRUMENTATIONKEY": "{{appInsightsKey}}"
 }
 ```
 > **NOTE:** The Bot Service appsettings will be completed in later steps.
@@ -86,16 +93,42 @@ Below there is a json file template with placeholders values you need to complet
 
 | Placeholder                            | Description                                                                                                                                                                                                                                                               |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| tenantIdBotChannelsAppRegistration     | Tenant Id of Azure Bot.                                                                                                                                                                                                                                   |
-| clientIdBotChannelsAppRegistration     | Client Id of the Azure Bot app registration.                                                                                                                                                                                                                           |
-| clientSecretBotChannelsAppRegistration | Client secret of the Azure Bot app registration.                                                                                                                                                                                                                       |
+| virtualMachineDnsCname                 | Full domain name assigned to the virtual machine where the bot service is hosted. E.g.: If your wildcard certificate is for *.domain.co and you added the cname botservicevm to the IP address of the virtual machine, the domain name will be botservicevm.domain.co. |
+| tenantIdAzureBotAppRegistration        | Tenant Id of Azure Bot.                                                                                                                                                                                                                                   |
+| clientIdAzureBotAppRegistration        | Client Id of the Azure Bot app registration.                                                                                                                                                                                                                           |
+| clientIdAzureBotAppRegistration        | Client secret of the Azure Bot app registration.                                                                                                                                                                                                                       |
 | cosmosDbEndpointUrl                    | Endpoint URL of the cosmos db created.                                                                                                                                                                                                        |
 | cosmosDbPrimareyKey                    | Primary key of the cosmos db created.                                                                                                                                                                                                         |
 | cosmosDbDatabaseName                   | Database name of the cosmos db created.                                                                                                                                                                                                       |
-| virtualMachineDnsCname                 | Full domain name assigned to the virtual machine where the bot service is hosted. E.g.: If your wildcard certificate is for *.teamstx.co and you added the cname botservicevm to the IP address of the virtual machine, the domain name will be botservicevm.teamstx.co. |
-| PfxCertificatePassword                 | Password of the wildcard certificate uploaded to the storage account.                                                                                                                                                                                                     |
+| pfxCertificatePassword                 | Password of the wildcard certificate uploaded to the storage account.                                                                                                                                                                                                     |
 | pfxCertificateThumbprint               | Thumbprint of the wildcard certificate uploaded to the storage account.                                                                                                                                                                                                   |
 | managementApiURl                       | Url of the management API (without https:// prefix).                                                                                                                                                                                                                      |
+| tenantIdAzureBotServiceApiClientId     | Client Id of the app registration for the BotService API Client.                                                                                                                                         |
+| botServiceClientId                     | Client Id of the app registration for BotService API Client.                                                                                                                                         |
 | appInsigtsKey                          | Application Insights key of the application insights resource.                                                                                                                                                                        |
+
+## Upload file to container
+Here's explains how to upload the `json file` into the container that was created.
+
+1. From the container created, click on **Upload**.
+
+    ![Uplaoad container](images/container_upload.png)
+
+1. You must select the `json file` that we created in previous step, and then to finish the upload, click on **Upload**.
+
+    ![Select file](images/container_select_file.png)
+
+## Generate SAS Token
+ In order to get access to the container created from the Bot Service API we need to generate a Shared access signature, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/translator/document-translation/create-sas-tokens?tabs=Containers)
+
+Create this SAS tokens with the following settings:
+- ***Signing method*** Account key.
+- ***Signing key***: Key 1.
+- ***Permissions***: Read.
+- ***Start and expiry data/time***: Select the Time zone for the Start and Expiry date and time (default is Local).
+- ***Redundancy***: Locally-redundant storage (LRS).
+- ***Allowed protocols:*** HTTPS only.
+
+
 
 [← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

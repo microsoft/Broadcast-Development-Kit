@@ -87,7 +87,7 @@ In order to run the bot, we need to configure some environment variables that th
 | settings json file name | Name of the bot app settings.                                        |
 
 
-> **NOTE**: The `BLOB_SAS_QUERY` must include the '?'. This token has an expiration date, be aware of this date to renew the access token.
+> **NOTE**: The `BLOB_SAS_QUERY` must include the '?' at the beginning. This token has an expiration date, be aware of this date to renew the access token.
 
 ### Running the bot
 We have two alternatives to run the bot, from the command line and as a Windows Service. The first alternative is used when we want to see the logs in the terminal. There are some GStreamer and external libraries stdout/stderr we can't capture nor log them in application insights. The second alternative is used to run the Bot Service authomatically when the VM starts.
@@ -119,6 +119,8 @@ Finally, we must run the following Powershell command:
 New-Service -Name "Bot-Service" -BinaryPathName '"C:\{bot-service-path}\BotService.exe"'
 ```
 
->Note: we must restart the VM the first time to run the Bot Service the next time the VM start or start it manually from the Windows Services App. 
+After completing these steps, we must restart the virtual machine or start the Bot Service from the Windows Services app. 
+
+>**NOTE**: Before running the BotServie for the first time, we must complete the settings uploaded into the [Storage Account](storage_account.md#environment-json-file-settings-example). 
 
 [← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)
