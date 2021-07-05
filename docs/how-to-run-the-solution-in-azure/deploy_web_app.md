@@ -37,31 +37,24 @@ It is necessary to create the following application settings:
     | Settings:AzServicePrincipalConfiguration:SubscriptionId              | Subscription Id of the Azure Service Principal app registration.       |
     | Settings:AzServicePrincipalConfiguration:TenantId                    | Tenant Id of Azure Service Principal app registration.                 |
     | ASPNETCORE_ENVIRONMENT                                               | Development                                                            |
-    | Settings:AzureAdConfiguration:ClientId                               | Client Id of Azure AD.                                                 |
-    | Settings:AzureAdConfiguration:ClientSecret                           | Client secret of Azure AD.                                             |
-    | Settings:AzureAdConfiguration:Domain                                 | authDomain                                                             |
     | Settings:AzureAdConfiguration:GroupId                                | Group Id of Azure AD.                                                  |
     | Settings:AzureAdConfiguration:Instance                               | https://login.microsoftonline.com/                                     |
     | Settings:AzureAdConfiguration:TenantId                               | Tenant Id of Azure AD.                                                 |
     | Settings:BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the Bot Service Api app registration.                     |
     | Settings:BotServiceAuthenticationConfiguration:ClientId              | Client Id of the Bot Service Client app registration.                  |
-    | Settings:BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Client app registration.          |
-    | Settings:BuildVersion                                                | 0.3.3-configurable-rtmp-stream-key                                     |
+    | Settings:BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Client app registration.              |
+    | Settings:BuildVersion                                                | verision deployed e.g. 0.0.1-test                                      |
     | Settings:CosmosDbConfiguration:DatabaseName                          | Database name of the cosmos db created.                                |
     | Settings:CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the cosmos db created.                                 |
     | Settings:CosmosDbConfiguration:PrimaryKey                            | Primary key of the cosmos db created.                                  |
     | Settings:GraphClientConfiguration:ClientId                           | Client Id of the Azure Bot app registration.                           |
     | Settings:GraphClientConfiguration:ClientSecret                       | Client secret of the Azure Bot app registration.                       |
     | Settings:GraphClientConfiguration:TenantId                           | Tenant  Id of the Azure Bot app registration.                          |
-    | Settings:StorageConfiguration:AccountKey                             | Key of the Storage created where the config is stored.                 |
-    | Settings:StorageConfiguration:AccountName                            | Name of the Storage created where the config is stored.                |
-    | Settings:StorageConfiguration:ConfigContainer                        | Key 1 of the Storage created where the config is stored.                 |
     | Settings:StorageConfiguration:ConnectionString                       | Connection string of the Storage created where the config is stored.   |
-    | Settings:StorageConfiguration:SasTokenLifetimeMinutes                | 1                                                                      |
     | SnapshotDebugger_EXTENSION_VERSION                                   | disabled                                                               |
     | XDT_MicrosoftApplicationInsights_BaseExtensions                      | disabled                                                               |
     | XDT_MicrosoftApplicationInsights_Mode                                | recommended                                                            |
 1. Finally, click on the **Save** button.  
 ![Save new application settings](./images/web_app_save_new_application_settings.png)
 
-[← Back to Web App and App service plan](web_app_and_app_service_plan.md)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

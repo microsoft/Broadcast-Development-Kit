@@ -6,16 +6,33 @@ This document shows how to create and configure the Storage Account for the solu
 
 To create a Storage Account in Azure, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal).
 
+## Dependencies
+Although there are no dependencies with other Azure resources to create this resource, note that some configuration values from other resources will be required.
+
+The following list shows the resources required to complete the configuration of this Storage account .
+
+- [Azure Bot app registration](../prerequisites/azure_bot.md).
+- [Cosmos DB](cosmos_db.md).
+- [SSL Certificate](../prerequisites/readme.md).
+- [Azure Virtual Machine (where the bot service is hosted)](bot_service_virtual_machine.md).
+- [Management API](web_app_and_app_service_plan.md).
+- [Bot Service API app registration](app_registrations.md#how-to-setup-bot-service-api-app-registration).
+- [Application Insights](application_insights.md).
+
+### Settings.
 Create this storage account with the following settings:
-- ***Resource Group:*** Select the resource group created for the solution architecture.
+- ***Resource Group:*** Select the [resource group](readme.md#architecture-resource-group) created for the solution architecture.
 - ***Storage Account Name***: A meaningful name.
 - ***Region***: Same region as the rest of the resources.
 - ***Performance***: Standard.
 - ***Redundancy***: Locally-redundant storage (LRS).
 
+> **NOTE:** You will need the **Access keys** (`key1` and `Connection string`) later to configure the project, so register them as soon as it is visible from the Azure portal.
+
 Leave the rest of the settings as-is.
 
 Once this Storage Account is created, create a new container with the following settings: 
+
 - ***Name***: config.
 - ***Public access level***: private.
 
@@ -91,21 +108,21 @@ Below there is a json file template with placeholders values you need to complet
 
 ### Placeholder specification table
 
-| Placeholder                            | Description                                                                                                                                                                                                                                                               |
-|----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Placeholder                            | Description                                                                         |
+|----------------------------------------|-------------------------------------------------------------------------------------|
 | virtualMachineDnsCname                 | Full domain name assigned to the virtual machine where the bot service is hosted. E.g.: If your wildcard certificate is for *.domain.co and you added the cname botservicevm to the IP address of the virtual machine, the domain name will be botservicevm.domain.co. |
-| tenantIdAzureBotAppRegistration        | Tenant Id of Azure Bot.                                                                                                                                                                                                                                   |
-| clientIdAzureBotAppRegistration        | Client Id of the Azure Bot app registration.                                                                                                                                                                                                                           |
-| clientIdAzureBotAppRegistration        | Client secret of the Azure Bot app registration.                                                                                                                                                                                                                       |
-| cosmosDbEndpointUrl                    | Endpoint URL of the cosmos db created.                                                                                                                                                                                                        |
-| cosmosDbPrimareyKey                    | Primary key of the cosmos db created.                                                                                                                                                                                                         |
-| cosmosDbDatabaseName                   | Database name of the cosmos db created.                                                                                                                                                                                                       |
-| pfxCertificatePassword                 | Password of the wildcard certificate uploaded to the storage account.                                                                                                                                                                                                     |
-| pfxCertificateThumbprint               | Thumbprint of the wildcard certificate uploaded to the storage account.                                                                                                                                                                                                   |
-| managementApiURl                       | Url of the management API (without https:// prefix).                                                                                                                                                                                                                      |
-| tenantIdAzureBotServiceApiClientId     | Client Id of the app registration for the BotService API Client.                                                                                                                                         |
-| botServiceClientId                     | Client Id of the app registration for BotService API Client.                                                                                                                                         |
-| appInsigtsKey                          | Application Insights key of the application insights resource.                                                                                                                                                                        |
+| tenantIdAzureBotAppRegistration        | Tenant Id of the [Azure Bot](../prerequisites/azure_bot.md) app registration.       |
+| clientIdAzureBotAppRegistration        | Client Id of the [Azure Bot](../prerequisites/azure_bot.md) app registration.       |
+| clientIdAzureBotAppRegistration        | Client secret of the [Azure Bot](../prerequisites/azure_bot.md) app registration.   |
+| cosmosDbEndpointUrl                    | Endpoint URL of the [Cosmos DB](cosmos_db.md) created.                              |
+| cosmosDbPrimareyKey                    | Primary key of the [Cosmos DB](cosmos_db.md) created.                               |
+| cosmosDbDatabaseName                   | Database name of the [Cosmos DB](cosmos_db.md) created.                             |
+| pfxCertificatePassword                 | Password of the wildcard certificate uploaded to the Storage account.               |
+| pfxCertificateThumbprint               | Thumbprint of the wildcard certificate uploaded to the Storage account.             |
+| managementApiURl                       | URL of the [Management API](web_app_and_app_function.md) (without https:// prefix). |
+| tenantIdAzureBotServiceApiClientId     | Client Id of the app registration for the [Bot Service API Client](app_registrations.md#how-to-setup-bot-service-api-app-registration).          |
+| botServiceClientId                     | Client Id of the app registration for [Bot Service API Client](app_registrations.md#how-to-setup-bot-service-api-app-registration). |
+| appInsigtsKey                          | Application Insights key of the [Application Insights](application_insights.md) resource. |
 
 ## Upload file to container
 Here's explains how to upload the `json file` into the container that was created.
@@ -129,6 +146,6 @@ Create this SAS tokens with the following settings:
 - ***Redundancy***: Locally-redundant storage (LRS).
 - ***Allowed protocols:*** HTTPS only.
 
-
+> **NOTE:** You will need the `Blob SAS token` later to configure the project, so register it as soon as it is visible from the Azure portal.
 
 [← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

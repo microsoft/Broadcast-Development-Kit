@@ -27,31 +27,17 @@ It is necessary to create the following application settings:
 
     | Name                                                        | Value                                                                   |
     |-------------------------------------------------------------|-------------------------------------------------------------------------|
-    | APPINSIGHTS_SNAPSHOTFEATURE_VERSION                         | disabled                                                                |
-    | ApplicationInsightsAgent_EXTENSION_VERSION                  | ~2                                                                      |
     | AzServicePrincipalConfiguration:ApplicationClientId         | Client Id of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.              |
     | AzServicePrincipalConfiguration:ApplicationClientSecret     | Client secret of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.          |
     | AzServicePrincipalConfiguration:SubscriptionId              | Subscription Id of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.        |
     | AzServicePrincipalConfiguration:TenantId                    | Tenant Id of [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.                  |
-    | AZURE_FUNCTIONS_ENVIRONMENT                                 | Development or Production                                                             |
-    | AzureAdConfiguration:Instance                               | https://login.microsoftonline.com/                                      |
-    | AzureAdConfiguration:TenantId                               | Tenant Id of Azure AD.                                                  |
-    | AzVirtualMachineConfiguration:Name                          | Name of the [BotService virtual machine](bot_service_virtual_machine.md)created.                                    |
-    | AzVirtualMachineConfiguration:ResourceGroup                 | Name of the resource group where the [BotService virtual machine](bot_service_virtual_machine.md) is hosted. |
-    | BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the Bot Service API app registration.               |
-    | BotServiceAuthenticationConfiguration:ClientId | Client Id of the Bot Service Client app registration.               |
-    | BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Client app registration.           |
-    | BuildVersion                                                | 0.3.3-main                                                              |
-     CosmosDbConfiguration:DatabaseName                          | Database name of the cosmos db created.                                 |
-    | CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the cosmos db created.                                  |
-    | DevelopmentConfiguration:DefaultBotApiBaseUrl               | Endpoint URL of the BotApi created.                                     |
-    | Environment                                                 | qa                                                                      |
-    | StorageConfiguration:AccountKey                             | Key of the Storage created where the config is stored.                  |
-    | StorageConfiguration:AccountName                            | Name of the Storage created where the config is stored.                 |
-    | StorageConfiguration:ConfigContainer                        | Key of the Storage created where the config is stored.                  |
-    | StorageConfiguration:ConnectionString                       | Connection string of the Storage created where the config is stored.    |
-    | StorageConfiguration:SasTokenLifetimeMinutes                | 1                                                                       |
+    | AZURE_FUNCTIONS_ENVIRONMENT                                 | Development or Production                                               |
+    | BuildVersion                                                | Version number deployed e.g. 0.0.0-test                                 |
+    | CosmosDbConfiguration:DatabaseName                          | Database name of the cosmos database created.                           |
+    | CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the cosmos database created.                            |
+    | CosmosDbConfiguration:PrimaryKey                            | Primary key of the cosmos database created.                             |
+
 1. Finally, click on the **Save** button.  
 ![Save new application settings](./images/function_app_save_new_application_settings.png)
 
-[← Back to Function App and App service plan](function_app_and_app_service_plan.md)
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

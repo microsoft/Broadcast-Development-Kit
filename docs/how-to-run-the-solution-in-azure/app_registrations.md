@@ -25,9 +25,9 @@ Once you've registered the app registration you must [add a client secret](https
 
 With the **App Registrations** created in the previous steps, we must proceed we the setup of each of them. While doing so, take into consideration that there are some dependencies between some app registrations and the resources.
 
-- [How to Setup Bot Service API app registration](#how-to-setup-bot-service-api-application-registration)
-- [How to Setup Bot Service Client app registration](#how-to-setup-bot-service-client-application-registration)
-- [How to Setup Management API app registration](#how-to-setup-management-api-application-registration)
+- [How to Setup Bot Service API app registration](#how-to-setup-bot-service-api-app-registration)
+- [How to Setup Bot Service Client app registration](#how-to-setup-bot-service-client-app-registration)
+- [How to Setup Management API app registration](#how-to-setup-management-api-app-registration)
 
 ### How to Setup Bot Service API app registration
 
