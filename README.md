@@ -1,12 +1,12 @@
-# Broadcast Protocols for Teams (WIP)
+# Broadcast Development Kit (WIP)
 
-**Broadcast Protocols for Teams** is a software solution that allows organizations to use a Microsoft Teams meeting in their tenant as a source (and destination) to extract and inject media streams from the meeting (e.g. participants, screen share, etc.) and use them as sources for producing live content.
+**Broadcast Development Kit** is a software solution that allows organizations to use a Microsoft Teams meeting in their tenant as a source (and destination) to extract and inject media streams from the meeting (e.g. participants, screen share, etc.) and use them as sources for producing live content.
 
 > If you plan to use this solution to extract content for a Teams Meeting, please inform your attendees that you will be streaming their video and audio.
 
 ## Features
 
-**Broadcast Protocols for Teams** provides features both to extract and inject media from a Microsoft Teams meeting using either the SRT or the RTMP protocols. We recommed using the SRT protocols whenever possible, and just use RTMP (and RTMPS) if the system receiving / sending the feed does not support SRT.
+**Broadcast Development Kit** provides features both to extract and inject media from a Microsoft Teams meeting using either the SRT or the RTMP protocols. We recommed using the SRT protocols whenever possible, and just use RTMP (and RTMPS) if the system receiving / sending the feed does not support SRT.
 
 The solutions works by adding a media bot to the meeting where you want to use this solution and using that media bot to capture the streams from the meeting and injecting new streams into it.
 
@@ -22,7 +22,7 @@ The sources that can be used for extraction are:
 
 The solution supports multiple extractions at a time, allowing to stream any combination of the sources listed above (each as a individual stream) over SRT or RTMP to a video mixing solution of your choice.
 
-To provide the best possible experience during a meeting, Microsoft Teams automatically changes the frame size and frame rate of each participant stream based on the network conditions of the participant. However, this can cause issues with using those streams in streaming services of video production solutions. To avoid these issues **Broadcast Protocols for Teams** automatically upscales the video feed to **1080p at 30FPS**. This reduces the complexity of having to work with a variable frame size and frame rate.
+To provide the best possible experience during a meeting, Microsoft Teams automatically changes the frame size and frame rate of each participant stream based on the network conditions of the participant. However, this can cause issues with using those streams in streaming services of video production solutions. To avoid these issues **Broadcast Development Kit** automatically upscales the video feed to **1080p at 30FPS**. This reduces the complexity of having to work with a variable frame size and frame rate.
 
 Extraction of any of those streams can be done with the following configurations:
 - SRT in "caller" mode (you have a SRT listener waiting to receive a connection from this solution).
@@ -33,7 +33,7 @@ Extraction of any of those streams can be done with the following configurations
 
 A feed with audio and video can be injected to the Microsoft Teams meeting. Inside the meeting, the video will look like any other participant in the call. You can then using Microsoft Teams' spotlight functionality to focus the attention of the participants to the video that is being injected.
 
-**Broadcast Protocols for Teams** supports receiving video and audio in several resolutions and frame rates. It will automatically transform the video feed to **1080p and 30FPS** before injecting it into the Microsoft Teams call.
+**Broadcast Development Kit** supports receiving video and audio in several resolutions and frame rates. It will automatically transform the video feed to **1080p and 30FPS** before injecting it into the Microsoft Teams call.
 
 Injection is supported in the following configurations:
 - SRT in "caller" mode (you have an SRT listener waiting for a client to connect).
