@@ -11,7 +11,15 @@ To deploy the Function App into the Azure Function App Service created we can fo
 ![Select specific destination](./images/deploy_function_app_select_specific_destination.png)
 1. Select your subscription and in the **Function Apps** panel, select the Function App that was created from the Azure Portal, and click **Finish**.  
 ![Select Function App Created](./images/deploy_function_app_select_function_app_created.png)
-1. In the **Publish** page, select **Publish**. Visual Studio builds, packages, and publishes the app to Azure.
+1. Then in the **Service Dependencies** section, in the **Storage Account**, select the option **Configure**.
+![imagen](images/deploy_function_app_sa_config.png)
+1. Select your **Subscription** and the [Storage Account](storage_account.md) created in the previous steps, then press the **Next** button.
+![Configure Storage Account](images/deploy_function_app_sa_select.png)
+1. Then check the **Azure App Settings** option and click on the **Next** button.
+![Check Azure App Settings](images/deploy_function_app_sa_check.png)
+1. In this section uncheck the **three** Azure Storage options and click on the **Finish** button.
+![Uncheck thethre Azure Storage options](images/deploy_function_app_sa_uncheck.png)
+1. To finish, on the **Publish** page, select **Publish**. Visual Studio builds, packages, and publishes the app to Azure.
 
 ## Configure app settings
 After deploying the **Function App**, it is necessary to set the configuration parameters. These are carried out by following the steps below:

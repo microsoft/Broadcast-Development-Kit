@@ -24,6 +24,8 @@ This document describes the resources that must be created and configured to run
 - Components Deployment:
     - [Deploy the Web App into the Azure App Service](deploy_web_app.md).
     - [Deploy the Function App into the Azure Function App Service](deploy_function_app.md).
+- Testing the environment:
+    - [How to test the Management API](test_web_app.md)
 
 ## App Registrations for authentication in different components in Azure AD tenant
 To secure and connect several of the resources used for the solution, we need to create several app registrations, each with its own permissions and settings. Several of the following instructions include creating application credentials. We recommend creating a Key Vault resource in Azure to store these credentials securely. We also recommend keeping track of the application IDs generated for each app registration to simplify the configuration of the applications during the project.  

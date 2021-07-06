@@ -1,14 +1,16 @@
 # Cosmos DB Database
 
 ## Getting Started
-The **Azure Cosmos DB** database will be used to save the application status when the solution is being used in a call.
+
+The **Azure Cosmos DB** database will be used to store the application state when the solution is used in a call, as well as to store Service's state and Stream Injections data.
+
 
 To create the Azure Cosmos DB, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/cosmos-db/create-cosmosdb-resources-portal#create-an-azure-cosmos-db-account).
 
 ### Settings:
 
 - ***Select API option:*** choose Core (SQL).
-- ***Resource Group:*** Select the resource group created for the solution architecture.
+- ***Resource Group:*** Select the [resource group](resource_group.md) created for the solution architecture.
 - ***Account Name***: a meaningful name. 
 - ***Location***: same region as the rest of the resources. 
 - ***Capacity mode***: Provisioned throughput. 
@@ -16,11 +18,13 @@ To create the Azure Cosmos DB, please review the following Microsoft [documentat
 
 Leave the rest of the settings as-is.
 
-Once the account is created, browse to the **Data Explorer** in the left panel of the account configuration and create a new database with the following settings: 
+> **NOTE:**  The database and the container will be created when running the solution. However, the container has created without shared between them. To save cost, you can create this database (delete if was created) create manually, by following the steps below.
+
+Once the database is created, browse to the **Data Explorer** in the left panel of the account configuration and create a new database with the following settings: 
 
 - Database Id: A meaningful name. 
 - Throughput: Manual – 400 RU/s. 
-    > Note: To keep the costs down, we are setting the RU to the lowest amount possible.
+    > Note: To keep the costs down, you are setting the RU to the lowest amount possible.
 
 Click on **OK** button to create the database.
 
@@ -57,50 +61,6 @@ The images below show the steps from the Azure Portal.
 
 >NOTE: The steps described above can be done through the Microsoft Azure Storage explorer. 
 
-Once the containers are created, the service container must be populated with one document. 
-
-Below there is a json file template with placeholders values you need to complete to create the document in the service container before using the bot for the first time.
-
-```json
-{
-    "CallId": null,
-    "Name": "{{nameOfService}}",
-    "State": 1,
-    "CreatedAt": "{{dateOfServiceCreation}}",
-    "Infrastructure": {
-        "VirtualMachineName": "{{virtualMachineName}}",
-        "ResourceGroup": "{{virtualMachineResourceGroupName}}",
-        "SubscriptionId": "{{subscriptionId}}",
-        "Id": "{{virtualMachineId}}",
-        "PowerState": "{{powerState}}",
-        "IpAddress": "{{virtualMachineIp}}",
-        "Dns": "{{virtualMachineDnsName}}",
-        "ProvisioningDetails": {
-            "Message": "",
-            "State": {
-                "Id": 1,
-                "Name": "Provisioned"
-            }
-        }
-    },
-    "id": "{{serviceId}}"
-}
-```
-
-### Placeholder specification table
-
-| Placeholder                           | Description      |
-|---------------------------------------|------------------|
-| nameOfService                         | Name of the service e.g. Test environment.                                   |
-| dateOfServiceCreation                 | Date of the creation of the service e.g. `2021-06-08T16:17:37.5993824+00:00` |
-| virtualMachineName                    | Name of the virtual machine created.                                         |
-| virtualMachineResourceGroupName       | Name of the resource group where the virtual machine is hosted.              |
-| subscriptionId                        | Subscription Id where the virtual machine is hosted.                         |
-| virtualMachineId                      | the id of the virtual machine, /subscriptions/`{{subscriptionId}}`/resourceGroups/`{{virtualMachineResourceGroupName}}`/providers/Microsoft.Compute/virtualMachines/`virtualMachineName` |
-| powerState                            | Status of the virtual machine, e.g. `PowerState/running`                     |
-| virtualMachineIp                      | Current IP of the virtual machine                                            |
-| virtualMachineDnsName                 | Virtual machine DNS name asigned.                                            |
-| serviceId                             | UUID to identify the service e.g `00000000-0000-0000-0000-000000000000`.     |
 
 Finally, go to the resource blade on the left, go to the setting section click on Keys. Copy and save the `URI` and `PRIMARY KEY` from the values displayed. Those values are required along with the database name to complete the configuration of the Bot Service, Bot Orchestrator and Management API.
 

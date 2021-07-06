@@ -88,6 +88,10 @@ Then inside BotService select **AccessAll** and click on **Add permissions**.
 
 This section explains how to configure the Management API app registration to enable authentication.
 
+#### Manifest
+
+In the Management API Application Manifest editor, you need to apply the same change in the manifest as you did for the previous app registration. Change the `accessTokenAcceptedVersion` field from null (which defaults to: 1) to 2 (for v2.0 tokens).
+
 #### API Graph permissions
 
 From the API app registration view, go to the **API permissions** option that is in the resource blade, click the **Add a permission** button and then ensure that the **Microsoft APIs** tab is selected.
@@ -98,9 +102,24 @@ In the Commonly used Microsoft APIs section, click on **Microsoft Graph**. Th
 
 ![Add Graph permissions](./images/add_graph_permissions.png)
 
+#### App Roles
+
+> **NOTE**: Next, we will create a new Role, which will serve as a mechanism to demand authorization from other applications.
+
+From the Management API app registration view, go to the App roles option that is in the resource blade, click the **Create app role** button. Fill the following information with the values suggested.
+
+- ***Display name***: AccessAll.
+- ***Allowed member types***: Applications.
+- ***Values***: ManagementAPI.AccessAll.
+- ***Description***: Meaningful description e.g., Access to Management API.
+
+![App Roles](./images/create_role_management_api.png)
+
+Finally, click on the Apply button.
+
 #### Expose an API
 
-From the resource blade of the app registration view, go to the **Expose an API** option and click **Set** next to the Application ID URI to generate a URI that is unique for this app (in the form of api://{clientId}). Then click **Add scope**, complete the form following the parameters listed below, and finally click A**dd scope** button.
+From the resource blade of the app registration view, go to the **Expose an API** option and click **Set** next to the Application ID URI to generate a URI that is unique for this app (in the form of api://{clientId}). Then click **Add scope**, complete the form following the parameters listed below, and finally click **Add scope** button.
 
 #### Parameters
 

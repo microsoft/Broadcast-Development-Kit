@@ -2,14 +2,14 @@
 
 ## Getting Started
 
-This document shows how to create and configure the Storage Account for the solution core components. This Storage Account will be used to store the environment settings in `json` format, the wildcard SSL certificate in `pfx` format, and the queues that are consumed by the Azure Functions. 
+This document shows how to create and configure the Storage account for the solution core components. This Storage account will be used to store the environment settings in `json` format, the wildcard SSL certificate in `pfx` format, and the queues that are consumed by the Azure Functions. 
 
-To create a Storage Account in Azure, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal).
+To create a Storage account in Azure, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal).
 
 ## Dependencies
 Although there are no dependencies with other Azure resources to create this resource, note that some configuration values from other resources will be required.
 
-The following list shows the resources required to complete the configuration of this Storage account .
+The following list shows the resources required to complete the configuration of this Storage account:
 
 - [Azure Bot app registration](../prerequisites/azure_bot.md).
 - [Cosmos DB](cosmos_db.md).
@@ -22,7 +22,7 @@ The following list shows the resources required to complete the configuration of
 ### Settings.
 Create this storage account with the following settings:
 - ***Resource Group:*** Select the [resource group](readme.md#architecture-resource-group) created for the solution architecture.
-- ***Storage Account Name***: A meaningful name.
+- ***Storage account Name***: A meaningful name.
 - ***Region***: Same region as the rest of the resources.
 - ***Performance***: Standard.
 - ***Redundancy***: Locally-redundant storage (LRS).
@@ -31,7 +31,7 @@ Create this storage account with the following settings:
 
 Leave the rest of the settings as-is.
 
-Once this Storage Account is created, create a new container with the following settings: 
+Once this Storage account is created, create a new container with the following settings: 
 
 - ***Name***: config.
 - ***Public access level***: private.
