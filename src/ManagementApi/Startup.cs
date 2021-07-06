@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 using System.Net.Http;
 using System.Reflection;
@@ -163,7 +163,10 @@ namespace ManagementApi
                 {
                     options.AddPolicy("Producer", policyBuilder =>
                     {
-                        policyBuilder.RequireClaim("groups", appConfiguration.AzureAdConfiguration.GroupId);
+                        policyBuilder.RequireAssertion(authorizationHandlerContext =>
+                        {
+                            return authorizationHandlerContext.User.HasClaim("groups", appConfiguration.AzureAdConfiguration.GroupId) || authorizationHandlerContext.User.IsInRole("ManagementAPI.AccessAll");
+                        });
                     });
                 });
             }
