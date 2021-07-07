@@ -10,11 +10,14 @@ To verify that the **Management API** is running properly we will use [Postman](
 1. Once you have joined the meeting **copy** the invitation link from the meeting and we will use it to join the bot to that meeting.
 1. Open **Postman** and create a new POST request pointing to the following address: `https://{{webAppUrl}}/api/call/initialize-call`.
     > **NOTE:** Replace the placeholder `{{webAppUrl}}` with the URL of the [Web App](web_app_and_app_service_plan.md) created in previous steps.
-1. You must now obtain the token that allows validation to use the **Management API** endpoints. Check the following [documentation](), which explains how to obtain the token.
+1. You must now obtain the token that allows validation to use the **Management API** endpoints. Check the following [documentation](authorization_token.md), which explains how to obtain the token.
+1. Once the token is obtained, in the authorization tab, select `Bearer Token` for `Type` and add the authorization token in the corresponding input.
+
+    ![Auht Header](images/test_web_app_postman_add_service_auth_header.png)
 1. In the header tab, add (if it does not exist) a new key `Content-Type` with the value `application/json`.
 
     ![Postman Header](../how-to-run-the-solution-locally/images/postman_header.png)
-1. In the body tab select raw and complete by copying the following:
+1. In the **Body** tab select **raw** and complete by copying the following:
     ```json
     {
         "MeetingUrl": "{{microsoftTeamsInviteLink}}"

@@ -43,9 +43,11 @@ Open `Postman` and create a new `POST` request pointing to the following endpoin
 |----------------------------------------|-------------------------------------------------------------------------------------|
 | webAppUrl                              | This is the [Web App](web_app_and_app_service_plan.md) service in Azure URL where the Management API was deployed      |
 
-In the authorization tab, select `Bearer Token` for `Type` and add the authorization token in the corresponding input.
+In the authorization tab, select `Bearer Token` for `Type` and add the authorization token in the corresponding `Token` input.
 
 ![Postman authorization header](./images/postman_add_service_auth_header.png)
+
+To get the authorization token for the Management API resource you can follow the steps described in this [document](authorization_token.md).
 
 In the header tab, add (if it does not exist) a new key `Content-Type` with the value `application/json`.
 
@@ -54,3 +56,5 @@ In the body tab select raw and complete by copying the following
 ![Postman select body type](./images/postman_add_service_payload.png)
 
 Click on send to configure/register the service. 
+
+[← Back to How to Run the Solution in Azure](README.md#how-to-run-the-solution-in-azure)

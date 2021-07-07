@@ -98,7 +98,7 @@ Below there is a json file template with placeholders values you need to complet
       "TenantId": "{{tenantIdAzureBotServiceApiClientId}}"
     },
     "BotServiceAuthenticationConfiguration": {
-      "BotServiceApiClientId": "{{botServiceClientId}}",
+      "BotServiceApiClientId": "{{botServiceApiClientId}}",
     }
   },
   "APPINSIGHTS_INSTRUMENTATIONKEY": "{{appInsightsKey}}"
@@ -120,8 +120,8 @@ Below there is a json file template with placeholders values you need to complet
 | pfxCertificatePassword                 | Password of the wildcard certificate uploaded to the Storage account.               |
 | pfxCertificateThumbprint               | Thumbprint of the wildcard certificate uploaded to the Storage account.             |
 | managementApiURl                       | URL of the [Management API](web_app_and_app_function.md) (without https:// prefix). |
-| tenantIdAzureBotServiceApiClientId     | Client Id of the app registration for the [Bot Service API Client](app_registrations.md#how-to-setup-bot-service-api-app-registration).          |
-| botServiceClientId                     | Client Id of the app registration for [Bot Service API Client](app_registrations.md#how-to-setup-bot-service-api-app-registration). |
+| tenantIdAzureBotServiceApiClientId     | Tenant Id of the app registration for the [Bot Service API](app_registrations.md#how-to-setup-bot-service-api-app-registration).          |
+| botServiceApiClientId                     | Client Id of the app registration for the [Bot Service API](app_registrations.md#how-to-setup-bot-service-api-app-registration). |
 | appInsigtsKey                          | Application Insights key of the [Application Insights](application_insights.md) resource. |
 
 ## Upload file to container

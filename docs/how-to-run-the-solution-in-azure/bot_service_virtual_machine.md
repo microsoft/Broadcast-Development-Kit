@@ -79,12 +79,13 @@ In order to run the bot, we need to configure some environment variables that th
 
 ![Set Systema Variables](./images/set_system_variables.png)
 
-| **Placer**              | **Description**                                                      |
-|-------------------------|----------------------------------------------------------------------|
-| storage account         | Name of the [storage account](app_registrations.md) where the files are being stored.    |
-| blob container          | Name the container of [storage account](app_registrations.md).                           |
-| blob sas query          | SAS key to get access to the container files of [storage account](app_registrations.md). |
-| settings json file name | Name of the bot app settings.                                        |
+| **Placer**                | **Description**                                                      |
+|---------------------------|----------------------------------------------------------------------|
+| storage account           | Name of the [Storage account](app_registrations.md) where the files are being stored.    |
+| blob container            | Name the container of [Storage account](app_registrations.md).                           |
+| blob sas query            | SAS key to get access to the container files of [Storage account](app_registrations.md). |
+| settings json file name   | Name of the bot app settings file uploaded into the config container in the [Storage account](app_registrations.md).  |
+| certificate pfx file name | Name of `.pfx` [wilcard certificate](../prerequisites/readme.md) for the domain.  |
 
 
 > **NOTE**: The `BLOB_SAS_QUERY` must include the '?' at the beginning. This token has an expiration date, be aware of this date to renew the access token.
@@ -95,17 +96,21 @@ We have two alternatives to run the bot, from the command line and as a Windows 
 > **NOTE**: The first time we configure the environment, we recommend running it from the command line so windows prompts the firewall rule and we can accept and enable it.
 
 #### From command line
-In this scenario, we generally create a Powershell script in the root folder of the bot. Below we give you a sample script where we override the default environment variables for other ones if necessary.
+In this scenario, you can run the Bot Service by executing the command `.\BotService.exe --console` in a terminal window from the path where the Bot Service is located.
 
-> **NOTE**: Enable remote signed script for Powershell `set-executionpolicy remotesigned`.
+If you want to override the environment settings, 
+you can create a Powershell script in the root folder of the bot. Below there is a sample of the script to override the default environment variables with other values if necessary.
 
 ```bash
 $env:BLOB_SAS_QUERY = '?{{sasQuery}}'
-$env:STORAGE_ACCOUNT = 'projectcanyonbot'
-$env:BLOB_CONTAINER = 'config'
-$env:APP_SETTINGS_FILE_NAME = '{{envfile}}'
+$env:STORAGE_ACCOUNT = '{{storageAccountName}}'
+$env:BLOB_CONTAINER = '{{containerName}}'
+$env:APP_SETTINGS_FILE_NAME = '{{envFileName}}'
+$env:CERTIFICATE_FILE_NAME = '{{certFileName}}'
 .\BotService.exe --console
 ```
+
+> **NOTE**: Enable remote signed script for Powershell `set-executionpolicy remotesigned`.
 
 #### As a Windows Service
 To run the bot every time the virtual machine is turned on, we configure it as a Windows Service. Before configuring it, we must validate that the group **ALL APPLICATION PACKAGES** has special permissions in the bot folder (right-click in the bot folder, click on **properties**, select the **security** tab). If the group doesn't have permissions, we must add it by clicking on **Advance** → **Add** → **Select a Principal**.

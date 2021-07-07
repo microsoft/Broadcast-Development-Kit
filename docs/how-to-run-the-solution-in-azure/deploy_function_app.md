@@ -41,9 +41,9 @@ It is necessary to create the following application settings:
     | AzServicePrincipalConfiguration:TenantId                    | Tenant Id of [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.                  |
     | AZURE_FUNCTIONS_ENVIRONMENT                                 | Development or Production                                               |
     | BuildVersion                                                | Version number deployed e.g. 0.0.0-test                                 |
-    | CosmosDbConfiguration:DatabaseName                          | Database name of the cosmos database created.                           |
-    | CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the cosmos database created.                            |
-    | CosmosDbConfiguration:PrimaryKey                            | Primary key of the cosmos database created.                             |
+    | CosmosDbConfiguration:DatabaseName                          | Database name of the [Cosmos DB](cosmos_db.md) created.                           |
+    | CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the [Cosmos DB](cosmos_db.md) created.                            |
+    | CosmosDbConfiguration:PrimaryKey                            | Primary key of the [Cosmos DB](cosmos_db.md) created.                             |
 
 1. Finally, click on the **Save** button.  
 ![Save new application settings](./images/function_app_save_new_application_settings.png)

@@ -25,32 +25,33 @@ It is necessary to create the following application settings:
 
     | Name                                                                 | Value                                                                  |
     |----------------------------------------------------------------------|------------------------------------------------------------------------|
-    | APPINSIGHTS_INSTRUMENTATIONKEY                                       | Application Insights key of the application insights resource created. |
+    | APPINSIGHTS_INSTRUMENTATIONKEY                                       | Key of the [Application Insights](application_insights.md) resource created. |
     | APPINSIGHTS_PROFILERFEATURE_VERSION                                  | disabled                                                               |
     | APPINSIGHTS_SNAPSHOTFEATURE_VERSION                                  | disabled                                                               |
     | ApplicationInsightsAgent_EXTENSION_VERSION                           | ~2                                                                     |
     | DiagnosticServices_EXTENSION_VERSION                                 | disabled                                                               |
     | InstrumentationEngine_EXTENSION_VERSION                              | disabled                                                               |
     | Logging:LogLevel:Default                                             | Information                                                            |
-    | Settings:AzServicePrincipalConfiguration:ApplicationClientId         | Client Id of the Azure Service Principal app registration.             |
-    | Settings:AzServicePrincipalConfiguration:ApplicationClientSecret     | Client secret of the Azure Service Principal app registration.         |
-    | Settings:AzServicePrincipalConfiguration:SubscriptionId              | Subscription Id of the Azure Service Principal app registration.       |
-    | Settings:AzServicePrincipalConfiguration:TenantId                    | Tenant Id of Azure Service Principal app registration.                 |
-    | ASPNETCORE_ENVIRONMENT                                               | Development                                                            |
-    | Settings:AzureAdConfiguration:GroupId                                | Group Id of Azure AD.                                                  |
+    | Settings:AzServicePrincipalConfiguration:ApplicationClientId         | Client Id of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.             |
+    | Settings:AzServicePrincipalConfiguration:ApplicationClientSecret     | Client secret of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.         |
+    | Settings:AzServicePrincipalConfiguration:SubscriptionId              | Subscription Id of the [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.       |
+    | Settings:AzServicePrincipalConfiguration:TenantId                    | Tenant Id of [Azure SDK Service Principal](azure_sdk_service_principal.md) app registration.                 |
+    | ASPNETCORE_ENVIRONMENT                                               | Development or Production                                                           |
+    | Settings:AzureAdConfiguration:ClientId                                | Id of the [Management API](app_registration.md) app registration created in Azure  AD.                                                  |
+    | Settings:AzureAdConfiguration:GroupId                                | Id of the [Security Group](security_group.md) created in Azure  AD.                                                  |
     | Settings:AzureAdConfiguration:Instance                               | https://login.microsoftonline.com/                                     |
     | Settings:AzureAdConfiguration:TenantId                               | Tenant Id of Azure AD.                                                 |
-    | Settings:BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the Bot Service Api app registration.                     |
-    | Settings:BotServiceAuthenticationConfiguration:ClientId              | Client Id of the Bot Service Client app registration.                  |
-    | Settings:BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the Bot Service Client app registration.              |
+    | Settings:BotServiceAuthenticationConfiguration:BotServiceApiClientId | Client Id of the [Bot Service API](app_registrations.md) app registration.                     |
+    | Settings:BotServiceAuthenticationConfiguration:ClientId              | Client Id of the [Bot Service Client](app_registrations.md) app registration.                  |
+    | Settings:BotServiceAuthenticationConfiguration:ClientSecret          | Client secret of the [Bot Service Client](app_registrations.md) app registration.              |
     | Settings:BuildVersion                                                | verision deployed e.g. 0.0.1-test                                      |
-    | Settings:CosmosDbConfiguration:DatabaseName                          | Database name of the cosmos db created.                                |
-    | Settings:CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the cosmos db created.                                 |
-    | Settings:CosmosDbConfiguration:PrimaryKey                            | Primary key of the cosmos db created.                                  |
-    | Settings:GraphClientConfiguration:ClientId                           | Client Id of the Azure Bot app registration.                           |
-    | Settings:GraphClientConfiguration:ClientSecret                       | Client secret of the Azure Bot app registration.                       |
-    | Settings:GraphClientConfiguration:TenantId                           | Tenant  Id of the Azure Bot app registration.                          |
-    | Settings:StorageConfiguration:ConnectionString                       | Connection string of the Storage created where the config is stored.   |
+    | Settings:CosmosDbConfiguration:DatabaseName                          | Database name of the [Cosmos DB](cosmos_db.md) created.                                |
+    | Settings:CosmosDbConfiguration:EndpointUrl                           | Endpoint URL of the [Cosmos DB](cosmos_db.md) created.                                 |
+    | Settings:CosmosDbConfiguration:PrimaryKey                            | Primary key of the [Cosmos DB](cosmos_db.md) created.                                  |
+    | Settings:GraphClientConfiguration:ClientId                           | Client Id of the [Azure Bot](../prerequisites/azure_bot.md) app registration.                           |
+    | Settings:GraphClientConfiguration:ClientSecret                       | Client secret of the [Azure Bot](../prerequisites/azure_bot.md) app registration.                       |
+    | Settings:GraphClientConfiguration:TenantId                           | Tenant  Id of the [Azure Bot](../prerequisites/azure_bot.md) app registration.                          |
+    | Settings:StorageConfiguration:ConnectionString                       | Connection string of the [Storage account](storage_account.md) created where the config is stored.   |
     | SnapshotDebugger_EXTENSION_VERSION                                   | disabled                                                               |
     | XDT_MicrosoftApplicationInsights_BaseExtensions                      | disabled                                                               |
     | XDT_MicrosoftApplicationInsights_Mode                                | recommended                                                            |
