@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -88,7 +90,7 @@ namespace Application.Service.Commands
                 string resourceId = Constants.EnvironmentDefaults.VirtualMachineResourceId;
                 string ipAddress = Constants.EnvironmentDefaults.IpAddress;
                 string powerState = PowerState.Running.Value;
-                var provisioningDetails = new Domain.Entities.ProvisioningDetails
+                var provisioningDetails = new Domain.Entities.Parts.ProvisioningDetails
                 {
                     State = ProvisioningStateType.Provisioned,
                     Message = string.Empty,
@@ -118,7 +120,7 @@ namespace Application.Service.Commands
                     Name = request.FriendlyName,
                     CreatedAt = DateTime.Now,
                     State = ServiceState.Unknown,
-                    Infrastructure = new Domain.Entities.Infrastructure
+                    Infrastructure = new Domain.Entities.Parts.Infrastructure
                     {
                         Id = resourceId,
                         IpAddress = ipAddress,

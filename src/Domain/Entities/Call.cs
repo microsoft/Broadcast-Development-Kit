@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using System.Collections.Generic;
 using Domain.Entities.Base;
@@ -5,7 +7,7 @@ using Domain.Enums;
 
 namespace Domain.Entities
 {
-    public class Call : BaseEntity
+    public class Call : CosmosDbEntity
     {
         public string MeetingUrl { get; set; }
 

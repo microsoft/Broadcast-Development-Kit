@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using System.Runtime.Serialization;
 
@@ -20,8 +22,8 @@ namespace Domain.Exceptions
         {
         }
 
-        public EntityNotFoundException(string name, object key)
-            : base($"Entity \"{name}\" ({key}) was not found.")
+        public EntityNotFoundException(string name, string id)
+            : base($"An {name} entity with key \"{id}\" was not found.")
         {
         }
 

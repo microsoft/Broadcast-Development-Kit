@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System.Threading.Tasks;
 using Ardalis.Result;
 using Microsoft.Azure.Management.Compute.Fluent;

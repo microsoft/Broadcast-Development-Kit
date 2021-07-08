@@ -1,7 +1,5 @@
-// <copyright file="SampleObserver.cs" company="Microsoft Corporation">
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-// </copyright>
 
 namespace BotService.Infrastructure.Common.Logging
 {

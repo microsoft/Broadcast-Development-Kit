@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +9,7 @@ using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Parts;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;

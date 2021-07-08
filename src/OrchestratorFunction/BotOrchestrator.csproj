@@ -1,8 +1,11 @@
+<!-- Copyright (c) Microsoft Corporation. -->
+<!-- Licensed under the MIT license. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
     <UserSecretsId>a22b53e6-2379-4c8c-80c9-24560028fcc4</UserSecretsId>
+    <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.3.0" />

@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using BotService.Application.Core;
 using BotService.Infrastructure.Common.Logging;
 using BotService.Infrastructure.Pipelines;

@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System.Reflection;
 using Application;
 using Application.Common.Config;
@@ -131,7 +133,6 @@ namespace BotService
             else
             {
                 app.UseDeveloperExceptionPage();
-                app.EnsureCosmosDbIsCreated();
             }
 
             app.UseAuthentication();

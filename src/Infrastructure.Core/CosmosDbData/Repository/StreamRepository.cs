@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using Application.Interfaces.Persistance;
 using Domain.Entities;
@@ -13,7 +15,7 @@ namespace Infrastructure.Core.CosmosDbData.Repository
         {
         }
 
-        public override string ContainerName => CosmosDbConstants.StreamContainer;
+        public override string ContainerName => CosmosDbSchema.StreamContainer;
 
         public override string GenerateId(Stream entity) => $"{Guid.NewGuid()}";
 

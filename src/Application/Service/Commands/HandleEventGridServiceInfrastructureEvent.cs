@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -79,7 +81,7 @@ namespace Application.Service.Commands
                     }
 
                     service.Infrastructure.PowerState = powerState;
-                    service.Infrastructure.ProvisioningDetails = new Domain.Entities.ProvisioningDetails
+                    service.Infrastructure.ProvisioningDetails = new Domain.Entities.Parts.ProvisioningDetails
                     {
                         State = provisioningState,
                     };

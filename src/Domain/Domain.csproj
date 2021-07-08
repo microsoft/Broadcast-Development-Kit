@@ -1,7 +1,10 @@
+<!-- Copyright (c) Microsoft Corporation. -->
+<!-- Licensed under the MIT license. -->
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

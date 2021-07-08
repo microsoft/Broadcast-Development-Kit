@@ -1,6 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Infrastructure.Core.CosmosDbData.Interfaces;
 using Microsoft.Azure.Cosmos;
 
@@ -10,42 +10,21 @@ namespace Infrastructure.Core.CosmosDbData
     {
         private readonly CosmosClient _cosmosClient;
         private readonly string _databaseName;
-        private readonly Dictionary<string, string> _containerDictionary;
 
         public CosmosDbContainerFactory(CosmosClient cosmosClient, string databaseName)
         {
             _databaseName = databaseName ?? throw new ArgumentNullException(nameof(databaseName));
             _cosmosClient = cosmosClient ?? throw new ArgumentNullException(nameof(cosmosClient));
-
-            // Populate container dictionary
-            _containerDictionary = new Dictionary<string, string>
-            {
-                { CosmosDbConstants.AuditContainer, CosmosDbConstants.AuditPartitionKey },
-                { CosmosDbConstants.CallContainer, CosmosDbConstants.CallPartitionKey },
-                { CosmosDbConstants.ParticipantStreamContainer, CosmosDbConstants.ParticipantStreamPartitionKey },
-                { CosmosDbConstants.StreamContainer, CosmosDbConstants.StreamPartitionKey },
-                { CosmosDbConstants.ServiceContainer, CosmosDbConstants.ServicePartitionKey },
-            };
         }
 
-        public ICosmosDbContainer GetContainer(string containerName)
+        public Container GetContainer(string containerName)
         {
-            if (!_containerDictionary.ContainsKey(containerName))
+            if (!CosmosDbSchema.Containers.ContainsKey(containerName))
             {
-                throw new ArgumentException($"Unable to find container: {containerName}");
+                throw new ArgumentException($"Unknown container: {containerName}", nameof(containerName));
             }
 
-            return new CosmosDbContainer(_cosmosClient, _databaseName, containerName);
-        }
-
-        public async Task EnsureDbSetupAsync()
-        {
-            DatabaseResponse database = await _cosmosClient.CreateDatabaseIfNotExistsAsync(_databaseName);
-
-            foreach (var container in _containerDictionary)
-            {
-                await database.Database.CreateContainerIfNotExistsAsync(container.Key, container.Value);
-            }
+            return _cosmosClient.GetContainer(_databaseName, containerName);
         }
     }
 }

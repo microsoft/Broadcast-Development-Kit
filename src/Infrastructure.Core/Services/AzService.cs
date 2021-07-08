@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using Application.Common.Config;
 using Application.Interfaces.Common;
 using Microsoft.Azure.Management.Fluent;

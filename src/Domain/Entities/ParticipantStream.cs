@@ -1,10 +1,13 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System;
 using Domain.Entities.Base;
+using Domain.Entities.Parts;
 using Domain.Enums;
 
 namespace Domain.Entities
 {
-    public class ParticipantStream : BaseEntity
+    public class ParticipantStream : CosmosDbEntity
     {
         public string AadId { get; set; }
 

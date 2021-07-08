@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,15 +33,18 @@ namespace Application.Service.Commands
         {
             private readonly IAzVirtualMachineService _azureVirtualMachineService;
             private readonly IServiceRepository _serviceRepository;
+            private readonly IHostEnvironment _environment;
             private readonly IMapper _mapper;
 
             public StopServiceInfrastructureCommandHandler(
                 IAzVirtualMachineService azureVirtualMachineService,
                 IServiceRepository serviceRepository,
+                IHostEnvironment environment,
                 IMapper mapper)
             {
                 _azureVirtualMachineService = azureVirtualMachineService ?? throw new System.ArgumentNullException(nameof(azureVirtualMachineService));
                 _serviceRepository = serviceRepository ?? throw new System.ArgumentNullException(nameof(serviceRepository));
+                _environment = environment ?? throw new System.ArgumentNullException(nameof(environment));
                 _mapper = mapper ?? throw new System.ArgumentNullException(nameof(mapper));
             }
 
@@ -53,8 +58,24 @@ namespace Application.Service.Commands
                     throw new EntityNotFoundException(nameof(Domain.Entities.Service), request.Id);
                 }
 
-                var result = await _azureVirtualMachineService.StopAsync(service.Infrastructure.Id);
-                ProcessResult(service, result);
+                // TODO: Review
+                if (_environment.IsLocal())
+                {
+                    service.State = ServiceState.Stopped;
+                    service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Deprovisioned;
+                    service.Infrastructure.ProvisioningDetails.Message = $"Deprovisioned service {service.Name}.";
+                    service.Infrastructure.PowerState = PowerState.Deallocated.Value;
+                }
+                else
+                {
+                    var result = await _azureVirtualMachineService.StopAsync(service.Infrastructure.Id);
+
+                    // At this point, the VM might be up and running and the bot service might have already register itself as available in the database.
+                    // Therefore, we need to retrieve the latest entity of the VM again.
+                    // TODO: Improve this to react to collisions using ETag validation
+                    service = await _serviceRepository.GetItemAsync(request.Id);
+                    ProcessResult(service, result);
+                }
 
                 await _serviceRepository.UpdateItemAsync(service.Id, service);
 

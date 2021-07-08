@@ -1,9 +1,12 @@
+<!-- Copyright (c) Microsoft Corporation. -->
+<!-- Licensed under the MIT license. -->
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <UserSecretsId>019a9d6b-92c1-4624-b860-e3ef639bb6a2</UserSecretsId>
+    <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
