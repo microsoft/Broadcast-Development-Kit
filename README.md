@@ -79,15 +79,11 @@ This solution currently has some limitations:
 
 - There are some restrictions on using this solution to record content from a Microsoft Teams meeting, which are inherited from the [Graph Communications Bot Media SDK](https://microsoftgraph.github.io/microsoft-graph-comms-samples/docs/bot_media/index.html#accompanying-documentation). Check the documentation of the SDK for more information.
 
-## Getting started
+## Getting Started
 
-TBC
+This section will guide you through the process of configuring the solution to run it locally and/or in azure.
 
-## Understanding the architecture
-
-TBC
-
-## Exploring the repository
+### Exploring the repository
 
 The repository is structured in the following directories:
 - **src**: Contains the source code of the application.
@@ -95,6 +91,21 @@ The repository is structured in the following directories:
     - **ManagementApi**: Contains the main API that is used to interact with the service.
     - **OrchestratorFunction**: Contains the Azure function in charge of managing the status of the VMs.
 - **docs**: Contains the documentation on the solution (TBC).
+
+
+### How to run the solution
+- [Prerequisites](docs/prerequisites/readme.md)
+- [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
+- [How to run the solution in Azure](docs/how-to-run-the-solution-in-azure/README.md)
+
+## Understanding the architecture
+
+TBC
+
+## About
+
+{{PENDING}}
+
 
 ## Contributing
 
