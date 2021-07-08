@@ -1,10 +1,17 @@
 # Application Insights
 
 ## Getting Started
+This instance will be used to log all the events happening in the solution.
 
-This instance will be used to log all the events happening in the solution. Create a new **Application Insights** resource in the resource group with the following settings: 
+## Dependencies
+To continue with the Application Insights, the following dependencies need to be created:
 
-### Settings:
+- [Resource Group](resource_group.md).
+
+### Settings.
+
+Create this Application Insights with the following settings:
+
 - ***Resource Group:*** Select the resource group created for the solution architecture.
 - ***Name:*** A meaningful name. 
 - ***Region:*** Same region as the rest of the resources. 

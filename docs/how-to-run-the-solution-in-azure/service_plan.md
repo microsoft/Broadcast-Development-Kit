@@ -3,6 +3,11 @@
 ## Introduction
 An App Service Plan for it must be created to define the set of processing resources for the Apps services to execute.
 
+## Dependencies
+To continue with the App Service Plan, the following dependencies need to be created:
+
+- [Resource Group](resource_group.md).
+
 ### Settings
 Fill the fields in the creation wizard with the following information:
 

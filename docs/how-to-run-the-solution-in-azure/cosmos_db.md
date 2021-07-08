@@ -2,10 +2,15 @@
 
 ## Getting Started
 
-The **Azure Cosmos DB** database will be used to store the application state when the solution is used in a call, as well as to store Service's state and Stream Injections data.
+We use **Azure Cosmos DB** database store the `Broadcast Development Kit` data. In this document, we will explain you step by step how to create the Azure resource and how to configure it.
 
 
 To create the Azure Cosmos DB, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/cosmos-db/create-cosmosdb-resources-portal#create-an-azure-cosmos-db-account).
+
+## Dependencies
+To continue with the Cosmos DB documentation, the following dependencies need to be created:
+
+- [Resource Group](resource_group.md).
 
 ### Settings:
 
@@ -18,7 +23,7 @@ To create the Azure Cosmos DB, please review the following Microsoft [documentat
 
 Leave the rest of the settings as-is.
 
-> **NOTE:**  The database and the container will be created when running the solution. However, the container has created without shared between them. To save cost, you can create this database (delete if was created) create manually, by following the steps below.
+> **NOTE:**  The backend components already create the database and containers when they run for the first time. However, the containers aren't going to havea shared throughput. To save cost, we recommend you to continue with this guide and create database manually.
 
 Once the database is created, browse to the **Data Explorer** in the left panel of the account configuration and create a new database with the following settings: 
 

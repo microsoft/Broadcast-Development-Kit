@@ -2,6 +2,11 @@
 
 Once the Function App with the corresponding App service plan was successful created, we can deploy the solution build into it. 
 
+## Dependencies
+To continue with the Deploy the Function App into the Azure Function App Service documentation, the following dependencies need to be created:
+
+- [Function App](function_app_and_app_service_plan.md).
+
 To deploy the Function App into the Azure Function App Service created we can follow this steps:
 1. Open the solution in **Visual Studio**.
 1. In Solution Explorer, right-click in the project `BotOrchestrator` node and choose **Publish**.

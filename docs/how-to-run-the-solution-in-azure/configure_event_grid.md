@@ -5,9 +5,13 @@
 To keep the state of the bot service virtual machine consistent is Cosmos DB, we
 we must configure an event grid subscription to execute an Azure Function that updates its register in Cosmos DB, every time that it is being started/stopped from an external event, e.g.: A user starts/stops the virtual machine from Azure Portal or has scheduled auto-shutdown.
 
-## Getting Started
+## Dependencies
+To continue with the Virtual Event Grid documentation, the following dependencies need to be created:
 
-> **NOTE**: To complete the configuration of the Event Grid, the **Azure Function** used for the **Bot Orchestrator** must be deployed.
+- [Cosmos DB](cosmos_db.md).
+- [BotOrchestrator deployed](deploy_function_app.md).
+
+## Getting Started
 
 To start configuring Event Grid events, we must create an Event Grid Topic resource.
 

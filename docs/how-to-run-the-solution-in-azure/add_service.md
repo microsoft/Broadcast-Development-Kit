@@ -6,8 +6,8 @@ In order to start using the Azure environment once all the components have been 
 ## Dependencies
 To configure/register the service, the following dependencies need to be created:
 
-- [Web App](web_app_and_app_service.md).
-- [Function App](function_app_and_app_service.md).
+- [Management API ](deploy_web_app.md).
+- [BotOrchestrator deployed](deploy_function_app.md).
 - [Cosmos DB](cosmos_db.md).
 
 >**NOTE**: The Web and the Function Apps not only need to be created but also both components (Management API and Orchestrator Function) need to be deployed and configured.

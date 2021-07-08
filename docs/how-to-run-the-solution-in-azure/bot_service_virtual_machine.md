@@ -4,9 +4,15 @@
 
 This document explains how to create the virtual machine where the Bot Service API is going to be hosted, and how to configure it.
 
+## Dependencies
+To continue with the Virtual Machine documentation, the following dependencies need to be created:
+
+- [Storage Account](storage_account.md).
+- [SSL Certificate](../prerequisites/readme.md).
+
 ## Create the virtual machine in Azure
 
-To create the virtual machine, check the following document [Create a Windows Virtual Machine in the Azure Portal](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/quick-create-portal).
+To create the Virtual Machine, check the following document [Create a Windows Virtual Machine in the Azure Portal](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/quick-create-portal).
 
 While creating the virtual machine, consider the following settings:
 - ***Subscription:*** The azure subscription where you want to create the VM.
