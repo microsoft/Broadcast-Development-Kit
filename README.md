@@ -83,6 +83,11 @@ This solution currently has some limitations:
 
 This section will guide you through the process of configuring the solution to run it locally and/or in azure.
 
+### How to run the solution
+- [Prerequisites](docs/prerequisites/readme.md)
+- [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
+- [How to run the solution in Azure](docs/how-to-run-the-solution-in-azure/README.md)
+
 ### Exploring the repository
 
 The repository is structured in the following directories:
@@ -92,20 +97,9 @@ The repository is structured in the following directories:
     - **OrchestratorFunction**: Contains the Azure function in charge of managing the status of the VMs.
 - **docs**: Contains the documentation on the solution (TBC).
 
+## Architecture
 
-### How to run the solution
-- [Prerequisites](docs/prerequisites/readme.md)
-- [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
-- [How to run the solution in Azure](docs/how-to-run-the-solution-in-azure/README.md)
-
-## Understanding the architecture
-
-TBC
-
-## About
-
-{{PENDING}}
-
+![](docs/common/images/architecture.png)
 
 ## Contributing
 
