@@ -6,7 +6,7 @@
 
 ## Features
 
-**Broadcast Development Kit** provides features both to extract and inject media from a Microsoft Teams meeting using either the SRT or the RTMP protocols. We recommed using the SRT protocols whenever possible, and just use RTMP (and RTMPS) if the system receiving / sending the feed does not support SRT.
+**Broadcast Development Kit** provides features both to extract and inject media from a Microsoft Teams meeting using either the SRT or the RTMP protocols. We recommend using the SRT protocols whenever possible, and just use RTMP (and RTMPS) if the system receiving / sending the feed does not support SRT.
 
 The solutions works by adding a media bot to the meeting where you want to use this solution and using that media bot to capture the streams from the meeting and injecting new streams into it.
 
@@ -16,7 +16,7 @@ The sources that can be used for extraction are:
 
 - **A participant**: any participant that has their camera on can be extracted as an individual media stream.
 
-- **The primary speaker**: this is a media stream that automatically switches to the paticipant that is speaking at that time in the call. This allows to switch between participants automatically during a conversation. Only one participant is captured at a time.
+- **The primary speaker**: this is a media stream that automatically switches to the participant that is speaking at that time in the call. This allows to switch between participants automatically during a conversation. Only one participant is captured at a time.
 
 - **The screen share**: If a participant is sharing their screen, that feed can also be extracted as an individual stream too.
 
@@ -26,7 +26,7 @@ To provide the best possible experience during a meeting, Microsoft Teams automa
 
 Extraction of any of those streams can be done with the following configurations:
 - SRT in "caller" mode (you have a SRT listener waiting to receive a connection from this solution).
-- SRT in "listnener" mode (the solution will wait for a SRT caller to connect and get the content).
+- SRT in "listener" mode (the solution will wait for a SRT caller to connect and get the content).
 - RTMP / RTMPS in "push" mode (you have a RTMP URL you want to push the stream to.)
 
 ### Injection
@@ -45,7 +45,7 @@ The audio can be muted and unmuted though the API.
 
 ## Scenarios
 
-The necesities of each organization are different and how they can use this solution depends on what the organization needs to do. Below are some short examples on how this solution can be used in different scenarios.
+The necessities of each organization are different and how they can use this solution depends on what the organization needs to do. Below are some short examples on how this solution can be used in different scenarios.
 
 ### Sharing a real-time conversation in a streaming platform
 
@@ -87,6 +87,13 @@ This section will guide you through the process of configuring the solution to r
 - [Prerequisites](docs/prerequisites/readme.md)
 - [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
 - [How to run the solution in Azure](docs/how-to-run-the-solution-in-azure/README.md)
+
+### Adding an UI
+
+This solution doesn't include any UI that can be used to operate the application. However, you can find two UI samples in the following repositories that you can use either locally or in Azure to interact with the solution.
+
+- [Web UI for the Broadcast Development Kit](https://github.com/microsoft/Broadcast-Development-Kit-Web-UI)
+- [Teams App for the Broadcast Development Kit](https://github.com/microsoft/Broadcast-Development-Kit-Meeting-App)
 
 ### Exploring the repository
 
