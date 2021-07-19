@@ -55,7 +55,7 @@ After GStreamer installation, add the GStreamer bin folder path to the path envi
 Download [VCRedist](https://aka.ms/vs/16/release/vc_redist.x64.exe) and install it.
 
 #### NGINX
-Follow this guide [How to Install and configure NGINX with RTMP module on Windows](install_and_configure_nginx_with_rtmp_module_on_windows.md) to install and configure NGINX with RTMP module on windows, and configure it as a Windows service.
+Follow this guide [How to Install and configure NGINX with RTMP module on Windows](../common/install_and_configure_nginx_with_rtmp_module_on_windows.md) to install and configure NGINX with RTMP module on windows, and configure it as a Windows service.
 
 ### Bot Service
 At the moment,  there isn't automated deployment for the Bot Service API so, you need to use Visual Studio to publish the BotService project into a local folder.

@@ -1,4 +1,4 @@
-# How to Install and configure NGINX with RTMP module on Windows (DRAFT)
+# How to Install and configure NGINX with RTMP module on Windows
 
 
 ## Getting Started

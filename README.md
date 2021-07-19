@@ -1,4 +1,6 @@
-> NOTICE: This is a PRE-RELEASE project and is still in development. The code in this repository is provided "AS IS", without any warranty of any kind. Check the [LICENSE](LICENSE) for more information.
+# Notice
+
+This is a PRE-RELEASE project and is still in development. The code in this repository is provided "AS IS", without any warranty of any kind. Check the [LICENSE](LICENSE) for more information.
 
 # Broadcast Development Kit
 
@@ -131,12 +133,6 @@ This project may contain trademarks or logos for projects, products, or services
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
 
-## License
-
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Licensed under the [MIT](LICENSE) license.
-
 ## Acknowledgments
 
 This project was implemented using the samples in the [Microsoft Graph Communications API and Samples](https://github.com/microsoftgraph/microsoft-graph-comms-samples) repository as a base. 
@@ -144,3 +140,9 @@ This project was implemented using the samples in the [Microsoft Graph Communica
 The architecture used in the solution was inspired by the samples in [Azure-Samples/PartitionedRepository](https://github.com/Azure-Samples/PartitionedRepository) and [ShawnShiSS/clean-architecture-azure-cosmos-db](https://github.com/ShawnShiSS/clean-architecture-azure-cosmos-db).
 
 The media processing pipelines were creating using [GStreamer](https://gstreamer.freedesktop.org/), and open source multimedia framework.
+
+## License
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Licensed under the [MIT](LICENSE) license.
