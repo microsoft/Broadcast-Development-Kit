@@ -9,5 +9,7 @@ namespace Application.Common.Models
         public int Latency { get; set; }
 
         public SrtMode Mode { get; set; }
+
+        public KeyLengthValues KeyLength { get; set; }
     }
 }

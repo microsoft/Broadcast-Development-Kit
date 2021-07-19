@@ -15,7 +15,9 @@ namespace Infrastructure.Core.CosmosDbData.Extensions
             string databaseName)
         {
             CosmosClient client = new CosmosClient(endpointUrl, primaryKey);
-            CosmosDbSetup.SetupDatabaseAsync(client, databaseName).Wait();
+
+            CosmosDbSetup cosmosDbSetup = new CosmosDbSetup(client, databaseName);
+            services.AddSingleton<ICosmosDbSetup>(cosmosDbSetup);
 
             CosmosDbContainerFactory cosmosDbClientFactory = new CosmosDbContainerFactory(client, databaseName);
             services.AddSingleton<ICosmosDbContainerFactory>(cosmosDbClientFactory);

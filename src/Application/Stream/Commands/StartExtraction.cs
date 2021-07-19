@@ -89,6 +89,7 @@ namespace Application.Stream.Commands
                             participant.Details.Latency = srtExtractionResponse.Latency;
                             participant.Details.StreamKey = srtExtractionResponse.Passphrase;
                             participant.Details.StreamUrl = srtExtractionResponse.Url;
+                            participant.Details.KeyLength = srtExtractionResponse.KeyLength;
 
                             break;
                         case Protocol.RTMP:

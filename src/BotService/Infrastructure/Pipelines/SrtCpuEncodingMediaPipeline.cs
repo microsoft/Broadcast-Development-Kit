@@ -118,6 +118,7 @@ namespace BotService.Infrastructure.Pipelines
             _sink.SetProperty("mode", new GLib.Value((int)_protocolSettings.Mode));
             _sink.SetProperty("latency", new GLib.Value(_protocolSettings.Latency));
             _sink.SetProperty("passphrase", new GLib.Value(_protocolSettings.Passphrase));
+            _sink.SetProperty("pbkeylen", new GLib.Value((int)_protocolSettings.KeyLength));
             _sink.SetProperty("wait-for-connection", new GLib.Value(false));
 
             // Video processing elements

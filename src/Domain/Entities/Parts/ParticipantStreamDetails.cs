@@ -12,6 +12,8 @@ namespace Domain.Entities.Parts
 
         public string StreamKey { get; set; }
 
+        public KeyLengthValues KeyLength { get; set; }
+
         public int Latency { get; set; }
 
         public string PreviewUrl { get; set; }

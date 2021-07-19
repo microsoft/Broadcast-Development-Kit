@@ -119,6 +119,7 @@ namespace BotService.Infrastructure.Pipelines
             if (!string.IsNullOrEmpty(srtSettings.Passphrase))
             {
                 srtSrc.SetProperty("passphrase", new GLib.Value(srtSettings.Passphrase));
+                srtSrc.SetProperty("pbkeylen", new GLib.Value((int)srtSettings.KeyLength));
             }
 
             if (srtSettings.Latency > 0)

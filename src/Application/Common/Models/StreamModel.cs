@@ -18,6 +18,8 @@ namespace Application.Common.Models
 
         public int Latency { get; set; }
 
+        public KeyLengthValues KeyLength { get; set; }
+
         public StreamState State { get; set; }
 
         public DateTime StartingAt { get; set; }

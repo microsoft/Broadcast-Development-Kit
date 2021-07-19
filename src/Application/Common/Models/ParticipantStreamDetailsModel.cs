@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+
+using Domain.Enums;
+
 namespace Application.Common.Models
 {
     public class ParticipantStreamDetailsModel
@@ -9,6 +12,8 @@ namespace Application.Common.Models
         public bool AudioDemuxed { get; set; }
 
         public string Passphrase { get; set; }
+
+        public KeyLengthValues KeyLength { get; set; }
 
         public int Latency { get; set; }
 

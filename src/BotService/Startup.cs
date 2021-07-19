@@ -64,9 +64,19 @@ namespace BotService
             services.AddSingleton(sampleObserver);
             services.AddSingleton<PipelineBusObserver>();
 
-            var clientBuilder = new GraphCommunicationsClientBuilder(appConfiguration, graphLogger, _logger);
-            var communicationClient = clientBuilder.Build();
-            services.AddSingleton<ICommunicationsClient>(communicationClient);
+            services.AddSingleton<ICommunicationsClient>(x =>
+            {
+                var appConfiguration = x.GetService<IAppConfiguration>();
+                var graphLogger = x.GetService<IGraphLogger>();
+                var loggerFactory = x.GetService<ILoggerFactory>();
+
+                var clientBuilder = new GraphCommunicationsClientBuilder(
+                    appConfiguration,
+                    graphLogger,
+                    loggerFactory.CreateLogger<GraphCommunicationsClientBuilder>());
+
+                return clientBuilder.Build();
+            });
 
             if (!environment.IsLocal())
             {
@@ -122,9 +132,7 @@ namespace BotService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
-            IHostEnvironment env,
-            IBot bot,
-            IAppConfiguration appConfiguration)
+            IHostEnvironment env)
         {
             if (env.IsProduction())
             {
@@ -138,7 +146,6 @@ namespace BotService
             app.UseAuthentication();
             app.ConfigureExceptionHandler(_logger, env.IsProduction(), "BotServiceApi");
             app.UseMvc();
-            bot.RegisterServiceAsync(appConfiguration.BotConfiguration.VirtualMachineName).Wait();
         }
     }
 }

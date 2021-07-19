@@ -197,6 +197,7 @@ namespace BotService.Infrastructure.Core
                         Latency = srtStreamBody.Latency,
                         Mode = srtStreamBody.Mode,
                         Passphrase = srtStreamBody.StreamKey,
+                        KeyLength = srtStreamBody.KeyLength,
                         Url = srtStreamBody.StreamUrl,
                     };
 
@@ -239,6 +240,7 @@ namespace BotService.Infrastructure.Core
                         Url = srtSettings.Url,
                         Latency = srtSettings.Latency,
                         Passphrase = srtSettings.Passphrase,
+                        KeyLength = srtSettings.KeyLength,
                         AudioFormat = srtSettings.AudioFormat,
                         TimeOverlay = srtSettings.TimeOverlay,
                     };
@@ -509,8 +511,9 @@ namespace BotService.Infrastructure.Core
                         Passphrase = srtStreamBody.StreamKey,
                         Port = port,
                         Url = srtStreamBody.Mode == SrtMode.Caller ? srtStreamBody.StreamUrl : $"srt://{_config.ServiceFqdn}:{port}?mode=caller",
-                        AudioFormat = streamBody.AudioFormat,
-                        TimeOverlay = streamBody.TimeOverlay,
+                        AudioFormat = srtStreamBody.AudioFormat,
+                        TimeOverlay = srtStreamBody.TimeOverlay,
+                        KeyLength = srtStreamBody.KeyLength,
                     };
 
                     break;

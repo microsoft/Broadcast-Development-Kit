@@ -8,7 +8,7 @@ namespace Application.Service.Specifications
     {
         public ServiceGetByInfrastructureIdSpecification(string id)
         {
-            Query.Where(x => x.Infrastructure.Id == id);
+            Query.Where(x => x.Infrastructure.Id == id.ToLower());
         }
     }
 }

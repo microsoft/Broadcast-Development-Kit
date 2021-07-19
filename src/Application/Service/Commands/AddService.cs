@@ -99,7 +99,7 @@ namespace Application.Service.Commands
                 if (!_environment.IsLocal())
                 {
                     virtualMachine = await CheckIfResourceExistsInAzure(request);
-                    resourceId = virtualMachine.Id;
+                    resourceId = virtualMachine.Id.ToLower();
                     var publicIpAddress = virtualMachine.GetPrimaryPublicIPAddress();
                     ipAddress = publicIpAddress.IPAddress;
                     powerState = virtualMachine.PowerState.Value;

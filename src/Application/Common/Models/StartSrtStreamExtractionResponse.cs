@@ -13,5 +13,7 @@ namespace Application.Common.Models
         public string Passphrase { get; set; }
 
         public int Latency { get; set; }
+
+        public KeyLengthValues KeyLength { get; set; }
     }
 }

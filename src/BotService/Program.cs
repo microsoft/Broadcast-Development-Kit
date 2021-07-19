@@ -31,7 +31,7 @@ namespace BotService
         private const string AppSettingsNameEnvVariableKey = "APP_SETTINGS_FILE_NAME";
         private const string CertificateNameEnvVariableKey = "CERTIFICATE_FILE_NAME";
         private const string DefaultAppSettingsFileName = "appsettings.json";
-        private const string DefaultCertificateFileName = "teamstx.co.pfx";
+        private const string DefaultCertificateFileName = "certificate.pfx";
         private const string LocalEnvironment = "local";
 
         private static IConfigurationRoot _configuration;
@@ -59,10 +59,12 @@ namespace BotService
 
             if (isService)
             {
-                host.RunAsService();
+                host.RunAsCustomService();
             }
             else
             {
+                // When running as a console app we have time to run this part of the setup before starting the web host.
+                host.SetupAndRegisterBotService();
                 host.Run();
             }
         }
@@ -135,12 +137,12 @@ namespace BotService
         {
             var cloudConfigurationService = GetCloudConfigurationService();
             var appSettingsStream = await cloudConfigurationService.GetAppSettingsAsStreamAsync();
-            var certificateStream = await cloudConfigurationService.GetCertificateAsync();
 
             builder.AddJsonStream(appSettingsStream);
             _configuration = builder.Build();
             var appConfiguration = _configuration.GetSection("Settings").Get<AppConfiguration>();
-            _certificate = InstallCertificate(certificateStream, appConfiguration.BotConfiguration.CertificatePassword);
+
+            _certificate = await InstallCertificateIfMissing(appConfiguration, cloudConfigurationService);
         }
 
         private static CloudConfigurationService GetCloudConfigurationService()
@@ -160,6 +162,24 @@ namespace BotService
             var cloudConfigurationService = new CloudConfigurationService(cloudConfigSettings);
 
             return cloudConfigurationService;
+        }
+
+        private static async Task<X509Certificate2> InstallCertificateIfMissing(AppConfiguration appConfiguration, CloudConfigurationService cloudConfigurationService)
+        {
+            try
+            {
+                return GetCertificateFromStore(appConfiguration.BotConfiguration.CertificateThumbprint);
+            }
+            catch (CertificateNotFoundException)
+            {
+                // TODO: Send this log to application insights
+                Console.WriteLine("No certificate was found in the machine. The service will attempt to download the certificate and install it in the machine.");
+            }
+
+            // We didn't found the certificate, so we will try to download it and install it in the machine.
+            var certificateStream = await cloudConfigurationService.GetCertificateAsync();
+
+            return InstallCertificate(certificateStream, appConfiguration.BotConfiguration.CertificatePassword);
         }
 
         private static X509Certificate2 InstallCertificate(Stream certificateStream, string password)

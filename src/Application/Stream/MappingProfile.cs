@@ -34,6 +34,13 @@ namespace Application.Stream
                         opts.MapFrom(src => (src as SrtStreamInjectionBody).Latency);
                     })
                 .ForPath(
+                    dest => dest.Details.KeyLength,
+                    opts =>
+                    {
+                        opts.Condition(src => (src.Source.Protocol == Domain.Enums.Protocol.SRT));
+                        opts.MapFrom(src => (src as SrtStreamInjectionBody).KeyLength);
+                    })
+                .ForPath(
                     dest => dest.Details.EnableSsl,
                     opts =>
                     {
@@ -66,7 +73,11 @@ namespace Application.Stream
                 .ForPath(
                     dest => dest.Latency,
                     opts => opts.MapFrom(
-                        src => src.Details.Latency));
+                        src => src.Details.Latency))
+                .ForPath(
+                    dest => dest.KeyLength,
+                    opts => opts.MapFrom(
+                        src => src.Details.KeyLength));
         }
     }
 }
