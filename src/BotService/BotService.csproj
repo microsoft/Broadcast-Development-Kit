@@ -4,6 +4,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
     <LangVersion>8.0</LangVersion>
     <UserSecretsId>019a9d6b-92c1-4624-b860-e3ef639bb6a2</UserSecretsId>
     <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
