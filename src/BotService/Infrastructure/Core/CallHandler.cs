@@ -585,8 +585,8 @@ namespace BotService.Infrastructure.Core
                 // for now we want the bot to only subscribe to "real" participants
                 try
                 {
-                    _logger.LogInformation("[CallHandler] Adding participant with graph id {id}.", participant.Id);
-                    if (participant.IsUser() || participant.IsGuestUser() || participant.IsLiveEventBot())
+                    _logger.LogInformation("[CallHandler] Adding participant with graph id {id} - Participant: {participant}.", participant.Id, participant.ToJson());
+                    if (participant.IsAnAllowedParticipant())
                     {
                         var callId = Call.ScenarioId.ToString();
                         _logger.LogInformation("[CallHandler] Participant to be added: {participant}", participant.ToJson());
