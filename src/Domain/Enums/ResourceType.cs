@@ -7,5 +7,8 @@ namespace Domain.Enums
         Participant = 2,
         PrimarySpeaker = 1,
         Vbss = 0,
+        TogetherMode = 3,
+        LargeGallery = 4,
+        LiveEvent = 5,
     }
 }

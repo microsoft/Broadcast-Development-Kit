@@ -88,6 +88,9 @@ namespace BotService.Infrastructure.Core
             switch (streamExtraction.ResourceType)
             {
                 case ResourceType.Participant:
+                case ResourceType.LargeGallery:
+                case ResourceType.TogetherMode:
+                case ResourceType.LiveEvent:
                     response = StartParticipantStreamExtraction(streamExtraction);
                     break;
                 case ResourceType.PrimarySpeaker:
@@ -108,6 +111,9 @@ namespace BotService.Infrastructure.Core
             switch (streamExtraction.ResourceType)
             {
                 case ResourceType.Participant:
+                case ResourceType.LargeGallery:
+                case ResourceType.TogetherMode:
+                case ResourceType.LiveEvent:
                     StopParticipantStreamExtraction(streamExtraction);
                     break;
                 case ResourceType.PrimarySpeaker:

@@ -34,7 +34,7 @@ namespace BotService.Application.Participant
                  .ForMember(
                     dest => dest.Type,
                     opts => opts.MapFrom(
-                        src => ResourceType.Participant))
+                        src => src.GetResourceType()))
                  .ForMember(
                     dest => dest.State,
                     opts => opts.MapFrom(
