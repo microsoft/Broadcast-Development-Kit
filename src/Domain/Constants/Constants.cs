@@ -74,6 +74,12 @@ namespace Domain.Constants
             public const string ScreenShare = "Screen Share";
         }
 
+        public static class MicrosoftTeamsBotApplicationType
+        {
+            public const string TogetherMode = "TogetherMode";
+            public const string LargeGallery = "LargeGallery";
+        }
+
         public static class Messages
         {
             public static class StartExtraction
