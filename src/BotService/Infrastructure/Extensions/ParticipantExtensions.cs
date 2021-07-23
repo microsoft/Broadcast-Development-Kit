@@ -1,14 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 using System.Linq;
+using Application.Common.Models;
 using Microsoft.Graph;
 using Microsoft.Graph.Communications.Calls;
+using static Domain.Constants.Constants;
 
 namespace BotService.Infrastructure.Extensions
 {
     public static class ParticipantExtensions
     {
         private const string GuestKey = "guest";
+        private const string ApplicationTypeKey = "ApplicationType";
         private const string LiveEventBot = "live";
 
         public static bool IsParticipantCapableToSendVideo(this IParticipant participant)
@@ -68,24 +71,89 @@ namespace BotService.Infrastructure.Extensions
             return isLiveEventBot;
         }
 
-        public static Identity GetUserIdentity(this IParticipant participant)
+        public static bool IsTogetherModeBot(this IParticipant participant)
         {
+            bool isTogetherModeBot = IsMeetingBot(participant, MicrosoftTeamsBotApplicationType.TogetherMode);
+
+            return isTogetherModeBot;
+        }
+
+        public static bool IsLargeGalleryBot(this IParticipant participant)
+        {
+            bool isLargeGalleryBot = IsMeetingBot(participant, MicrosoftTeamsBotApplicationType.LargeGallery);
+
+            return isLargeGalleryBot;
+        }
+
+        public static bool IsAnAllowedParticipant(this IParticipant participant)
+        {
+            bool isAnAllowedParticipant = participant.IsUser() ||
+                participant.IsGuestUser() ||
+                participant.IsLiveEventBot() ||
+                participant.IsTogetherModeBot() ||
+                participant.IsLargeGalleryBot();
+
+            return isAnAllowedParticipant;
+        }
+
+        public static ResourceIdentity GetUserIdentity(this IParticipant participant)
+        {
+            ResourceIdentity identity = new ResourceIdentity();
             if (participant.IsUser())
             {
-                return participant.Resource.Info.Identity.User;
+                var userIdentity = participant.Resource.Info.Identity.User;
+                identity.Id = userIdentity.Id;
+                identity.DisplayName = userIdentity.DisplayName;
             }
 
             if (participant.IsGuestUser())
             {
-                return participant.Resource.Info.Identity.AdditionalData[GuestKey] as Identity;
+                var guestUserIdentity = participant.Resource.Info.Identity.AdditionalData[GuestKey] as Identity;
+                identity.Id = guestUserIdentity.Id;
+                identity.DisplayName = guestUserIdentity.DisplayName;
             }
 
             if (participant.IsLiveEventBot())
             {
-                return participant.Resource.Info.Identity.Application;
+                var liveEventBotIdentity = participant.Resource.Info.Identity.Application;
+                identity.Id = liveEventBotIdentity.Id;
+                identity.DisplayName = liveEventBotIdentity.DisplayName;
             }
 
-            return null;
+            if (participant.IsTogetherModeBot())
+            {
+                var togetherModeBotIdentity = participant.Resource.Info.Identity.Application;
+                identity.Id = togetherModeBotIdentity.Id;
+                identity.DisplayName = "Together Mode";
+            }
+
+            if (participant.IsLargeGalleryBot())
+            {
+                var largeGalleryBotIdentity = participant.Resource.Info.Identity.Application;
+                identity.Id = largeGalleryBotIdentity.Id;
+                identity.DisplayName = "Large Gallery";
+            }
+
+            return identity;
+        }
+
+        private static bool IsMeetingBot(IParticipant participant, string type)
+        {
+            bool isAnApplication = participant.Resource.Info.Identity.Application != null
+               && participant.Resource.Info.Identity.Application.AdditionalData.ContainsKey(ApplicationTypeKey);
+
+            if (!isAnApplication)
+            {
+                return false;
+            }
+
+            var applicationType = participant.Resource.Info.Identity.Application.AdditionalData[ApplicationTypeKey] as string;
+
+            // Together mode and Large gallery mode have two bots, one of them doesn't have the capability to send video
+            // so we don't want to add it as a participant.
+            bool isMeetingBot = applicationType == type && participant.IsParticipantCapableToSendVideo();
+
+            return isMeetingBot;
         }
     }
 }
