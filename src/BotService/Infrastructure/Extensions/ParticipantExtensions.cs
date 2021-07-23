@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 using System.Linq;
 using Application.Common.Models;
+using Domain.Enums;
 using Microsoft.Graph;
 using Microsoft.Graph.Communications.Calls;
 using static Domain.Constants.Constants;
@@ -135,6 +136,26 @@ namespace BotService.Infrastructure.Extensions
             }
 
             return identity;
+        }
+
+        public static ResourceType GetResourceType(this IParticipant participant)
+        {
+            if (participant.IsLargeGalleryBot())
+            {
+                return ResourceType.LargeGallery;
+            }
+
+            if (participant.IsTogetherModeBot())
+            {
+                return ResourceType.TogetherMode;
+            }
+
+            if (participant.IsLiveEventBot())
+            {
+                return ResourceType.LiveEvent;
+            }
+
+            return ResourceType.Participant;
         }
 
         private static bool IsMeetingBot(IParticipant participant, string type)
