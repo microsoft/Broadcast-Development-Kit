@@ -23,25 +23,27 @@ namespace BotService.Infrastructure.Pipelines
         private const int VideoHeight = 1080;
         private const string VideoFrameRate = "30000/1001";
 
-        private readonly object videoSrcLock = new object();
-        private readonly object audioSrcLock = new object();
+        private readonly object _videoSrcLock = new object();
+        private readonly object _audioSrcLock = new object();
 
         private readonly Pipeline _pipeline;
         private readonly RtmpSettings _protocolSettings;
+        private readonly ulong _baseTimestamp;
+
         private AppSrc _videoSrc, _audioSrc;
         private Element _muxer, _sinkQueue, _sink;
         private Element _audioQueue, _audioConvert, _audioConvertFilter, _audioResample, _audioResampleFilter, _audioEncoder, _audioParse;
         private Element _videoOverlay, _videoParse;
         private Element _videoQueue, _videoDecoder, _videoConvert, _colorimetryFilter, _videoScale, _videoScaleFilter, _videoRate, _videoRateFilter, _videoEncoder;
-
-        // Test Media Platform timestamps
-        private ulong _baseTimestamp;
         private Element _audioIdentity, _videoIdentity;
 
-        public RtmpCpuEncodingMediaPipeline(RtmpSettings protocolSettings)
+        public RtmpCpuEncodingMediaPipeline(
+            GstreamerClockProvider clockProvider,
+            RtmpSettings protocolSettings)
         {
             _pipeline = new Pipeline();
             _protocolSettings = protocolSettings;
+            _baseTimestamp = clockProvider.BaseTime;
 
             if (!BuildPipeline())
             {
@@ -49,14 +51,18 @@ namespace BotService.Infrastructure.Pipelines
             }
 
             Bus = _pipeline.Bus;
+
+            var clock = clockProvider.Clock;
+            _pipeline.SetClock(clock);
+            _pipeline.UseClock(clock);
+            _pipeline.StartTime = Gst.Constants.CLOCK_TIME_NONE;
+            _pipeline.BaseTime = _baseTimestamp;
         }
 
         public Bus Bus { get; set; }
 
         public StateChangeReturn Play()
         {
-            _baseTimestamp = (ulong)((System.DateTime.UtcNow - new System.DateTime(1900, 1, 1)).Ticks * 100);
-
             return _pipeline.SetState(State.Playing);
         }
 
@@ -69,12 +75,12 @@ namespace BotService.Infrastructure.Pipelines
         {
             var gstBuffer = new Gst.Buffer(null, (ulong)buffer.Length, Gst.AllocationParams.Zero);
             gstBuffer.Fill(0, buffer);
-            var referencedTimestamp = ((ulong)(timestamp * 100)) - _baseTimestamp;
 
+            var referencedTimestamp = ((ulong)(timestamp * 100)) - _baseTimestamp;
             gstBuffer.Pts = referencedTimestamp;
             gstBuffer.Dts = referencedTimestamp;
 
-            lock (audioSrcLock)
+            lock (_audioSrcLock)
             {
                 _audioSrc.PushBuffer(gstBuffer);
             }
@@ -84,14 +90,14 @@ namespace BotService.Infrastructure.Pipelines
 
         public void PushVideoBuffer(byte[] buffer, long timestamp, int width, int height)
         {
-            var gstBuffer = new Gst.Buffer(null, (ulong)buffer.Length, Gst.AllocationParams.Zero);
+            var gstBuffer = new Gst.Buffer(null, (ulong)buffer.Length, AllocationParams.Zero);
             gstBuffer.Fill(0, buffer);
-            var referencedTimestamp = ((ulong)(timestamp * 100)) - _baseTimestamp;
 
+            var referencedTimestamp = ((ulong)(timestamp * 100)) - _baseTimestamp;
             gstBuffer.Pts = referencedTimestamp;
             gstBuffer.Dts = referencedTimestamp;
 
-            lock (videoSrcLock)
+            lock (_videoSrcLock)
             {
                 _videoSrc.PushBuffer(gstBuffer);
             }
@@ -141,6 +147,7 @@ namespace BotService.Infrastructure.Pipelines
             _videoScaleFilter = ElementFactory.Make("capsfilter", "video_scale_filter");
             _videoScaleFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"video/x-raw, width={VideoWidth}, height={VideoHeight}, pixel-aspect-ratio=1/1")));
             _videoRate = ElementFactory.Make("videorate", "video_rate");
+            _videoRate.SetProperty("skip-to-first", new GLib.Value(true));
             _videoRateFilter = ElementFactory.Make("capsfilter", "video_rate_filter");
             _videoRateFilter.SetProperty("caps", new GLib.Value(Caps.FromString($"video/x-raw, framerate={VideoFrameRate}")));
             _videoOverlay = _protocolSettings.TimeOverlay ? ElementFactory.Make("timeoverlay", "time_overlay") : null;
