@@ -14,6 +14,7 @@ using Application.Service.Commands;
 using BotService.Application.Core;
 using BotService.Infrastructure.Common;
 using BotService.Infrastructure.Extensions;
+using BotService.Infrastructure.Pipelines;
 using BotService.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
@@ -35,17 +36,20 @@ namespace BotService.Infrastructure.Core
         private readonly ILoggerFactory _loggerFactory;
         private readonly BotConfiguration _config;
         private readonly ILogger<Bot> _logger;
+        private readonly GstreamerClockProvider _clockProvider;
 
         public Bot(
             ICommunicationsClient client,
             IMediatorService mediatorService,
             IMediaHandlerFactory mediaHandlerFactory,
             IAppConfiguration config,
+            GstreamerClockProvider clockProvider,
             ILoggerFactory loggerFactory)
         {
             _client = client;
             _mediatorService = mediatorService;
             _mediaHandlerFactory = mediaHandlerFactory;
+            _clockProvider = clockProvider;
             _loggerFactory = loggerFactory;
 
             _config = config.BotConfiguration;
@@ -253,7 +257,7 @@ namespace BotService.Infrastructure.Core
         {
             foreach (var call in args.AddedResources)
             {
-                var callHandler = new CallHandler(call, _config, _mediatorService, _mediaHandlerFactory, _loggerFactory);
+                var callHandler = new CallHandler(call, _config, _mediatorService, _mediaHandlerFactory, _loggerFactory, _clockProvider);
                 CallHandlers[call.Id] = callHandler;
             }
 

@@ -106,6 +106,7 @@ namespace BotService
 
             services.AddSingleton<IMediatorService, MediatorService>();
             services.AddSingleton<IMediaProcessorFactory, GStreamerMediaProcessorFactory>();
+            services.AddSingleton<GstreamerClockProvider>();
             services.AddSingleton<IMediaHandlerFactory, MediaHandlerFactory>();
             services.AddSingleton<IBot, Bot>();
 

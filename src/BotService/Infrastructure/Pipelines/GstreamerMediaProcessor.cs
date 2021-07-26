@@ -13,12 +13,17 @@ namespace BotService.Infrastructure.Pipelines
     {
         private readonly ILogger _logger;
         private readonly ProtocolSettings _protocolSettings;
+        private readonly GstreamerClockProvider _clockProvider;
         private IMediaExtractionPipeline _pipeline;
 
-        public GstreamerMediaProcessor(ProtocolSettings protocolSettings, ILoggerFactory loggerFactory)
+        public GstreamerMediaProcessor(
+            ProtocolSettings protocolSettings,
+            ILoggerFactory loggerFactory,
+            GstreamerClockProvider clockProvider)
         {
             _protocolSettings = protocolSettings ?? throw new ArgumentNullException(nameof(protocolSettings));
             _logger = loggerFactory.CreateLogger<GstreamerMediaProcessor>();
+            _clockProvider = clockProvider;
         }
 
         public void Play()
@@ -62,7 +67,7 @@ namespace BotService.Infrastructure.Pipelines
             }
         }
 
-        private static IMediaExtractionPipeline CreatePipeline(ProtocolSettings protocol)
+        private IMediaExtractionPipeline CreatePipeline(ProtocolSettings protocol)
         {
             IMediaExtractionPipeline mediaPipeline;
 
@@ -70,12 +75,12 @@ namespace BotService.Infrastructure.Pipelines
             {
                 case Protocol.SRT:
                     var srtProtocolSettings = protocol as SrtSettings;
-                    mediaPipeline = new SrtCpuEncodingMediaPipeline(srtProtocolSettings);
+                    mediaPipeline = new SrtCpuEncodingMediaPipeline(_clockProvider, srtProtocolSettings);
 
                     return mediaPipeline;
                 case Protocol.RTMP:
                     var rtmpProtocolSettings = protocol as RtmpSettings;
-                    mediaPipeline = new RtmpCpuEncodingMediaPipeline(rtmpProtocolSettings);
+                    mediaPipeline = new RtmpCpuEncodingMediaPipeline(_clockProvider, rtmpProtocolSettings);
 
                     return mediaPipeline;
                 default:

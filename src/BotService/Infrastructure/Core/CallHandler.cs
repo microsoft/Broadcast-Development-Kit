@@ -11,6 +11,7 @@ using Application.Exceptions;
 using BotService.Application.Core;
 using BotService.Infrastructure.Common;
 using BotService.Infrastructure.Extensions;
+using BotService.Infrastructure.Pipelines;
 using BotService.Infrastructure.Services;
 using Domain.Enums;
 using Microsoft.Extensions.Logging;
@@ -42,6 +43,7 @@ namespace BotService.Infrastructure.Core
         private readonly BotConfiguration _config;
         private readonly IMediatorService _mediatorService;
         private readonly IMediaHandlerFactory _mediaHandlerFactory;
+        private readonly GstreamerClockProvider _clockProvider;
 
         private ISwitchingMediaExtractor _screenShareMediaSocket;
         private IMediaInjector _mediaInjector;
@@ -57,13 +59,15 @@ namespace BotService.Infrastructure.Core
             BotConfiguration config,
             IMediatorService mediatorService,
             IMediaHandlerFactory mediaHandlerFactory,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            GstreamerClockProvider clockProvider)
             : base(TimeSpan.FromMinutes(10), statefulCall?.GraphLogger)
         {
             _config = config;
             _mediatorService = mediatorService;
             _mediaHandlerFactory = mediaHandlerFactory;
             _logger = loggerFactory.CreateLogger<CallHandler>();
+            _clockProvider = clockProvider;
 
             _availablePorts = new ConcurrentBag<int>(GetPorts(config.NumberOfMultiviewSockets));
 
@@ -167,6 +171,7 @@ namespace BotService.Infrastructure.Core
                 _mediaInjector.Stop();
             }
 
+            _clockProvider.ResetBaseTime();
             _mediaSocketPool.MainAudioSocket.DominantSpeakerChanged -= OnDominantSpeakerChanged;
             Call.OnUpdated -= CallOnUpdated;
             Call.Participants.OnUpdated -= ParticipantsOnUpdated;
