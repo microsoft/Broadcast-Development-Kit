@@ -218,6 +218,27 @@ After restarting the media sources in _OBS_, the highest desynchronization diffe
 
 After 38 minutes, we can see how the streams become desynchronized again. This time, the highest desynchronization difference was about 933 ms. If we compare the running time of the participant stream in _OBS_ (the one with the lowest running time) with the running time of _gst-play_, the latter is ahead in time.
 
+
+### Other results
+
+Here we show some examples with _VLC_ and _gst-play_ playing multiple streams at the same time. We can observe that running time difference is not constant, but it is below 300 ms.
+
+![Example of multiple streams with VLC](images/multiple-streams-example.png)|
+|:--:|
+|*Example of multiple streams with VLC (273 ms of difference)*|
+
+![Example of multiple streams with VLC](images/multiple-streams-example-2.png)|
+|:--:|
+|*Example of multiple streams with VLC (292 ms of difference)*|
+
+![Example of multiple streams with gst-play](images/multiple-streams-example-3.png)|
+|:--:|
+|*Example of multiple streams with gst-play (141 ms of difference)*|
+
+![Example of multiple streams with gst-play](images/multiple-streams-example-4.png)|
+|:--:|
+|*Example of multiple streams with gst-play (288 ms of difference)*|
+
 ### Findings
 * The results we shared above may vary between different executions, depending on factors like player, network condition, BDK virtual machine CPU consumption.
 * Using SRT and _OBS Studio_, we couldn't achieve the results we achieved with _gst-play_. We don't know how ffmpeg works under the hood, but we had to increase the latency of the streams and had to disable/enable the media sources to restart the streams to try to keep the streams synchronized. According to OBS users recomendations, we should add a filter delay to the required sources to synchronize the streams.
