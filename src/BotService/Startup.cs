@@ -115,6 +115,7 @@ namespace BotService
             services.AddSingleton<ITelemetryInitializer, CloudRoleNameTelemetryInitializer>();
 
             services.AddScoped<IInjectionUrlHelper, InjectionUrlHelper>();
+            services.AddScoped<IExtractionUrlHelper, ExtractionUrlHelper>();
 
             services.AddMvc(config =>
             {

@@ -30,6 +30,7 @@ namespace BotService.Infrastructure.Core
         /// </summary>
         private const uint PrimarySpeakerNone = DominantSpeakerChangedEventArgs.None;
         private const int DefaultSrtPort = 8888;
+        private const int DefaultRtmpPort = 29371;
 
         private readonly ILogger _logger;
         private readonly object _subscriptionLock = new object();
@@ -37,7 +38,10 @@ namespace BotService.Infrastructure.Core
         private readonly ConcurrentDictionary<string, IMediaExtractor> _currentMediaExtractors = new ConcurrentDictionary<string, IMediaExtractor>();
         private readonly IMediaSocketPool _mediaSocketPool;
 
+        private readonly int _numberOfMultiviewSockets;
+
         private readonly ConcurrentBag<int> _availablePorts;
+        private readonly ConcurrentBag<int> _availableRtmpPorts;
         private readonly ConcurrentDictionary<string, int> _currentAssignedPorts = new ConcurrentDictionary<string, int>();
 
         private readonly BotConfiguration _config;
@@ -69,7 +73,9 @@ namespace BotService.Infrastructure.Core
             _logger = loggerFactory.CreateLogger<CallHandler>();
             _clockProvider = clockProvider;
 
-            _availablePorts = new ConcurrentBag<int>(GetPorts(config.NumberOfMultiviewSockets));
+            _numberOfMultiviewSockets = config.NumberOfMultiviewSockets;
+            _availablePorts = new ConcurrentBag<int>(GetPorts(_numberOfMultiviewSockets, DefaultSrtPort));
+            _availableRtmpPorts = new ConcurrentBag<int>(GetPorts(_numberOfMultiviewSockets, DefaultRtmpPort));
 
             Call = statefulCall;
             Call.OnUpdated += CallOnUpdated;
@@ -183,13 +189,13 @@ namespace BotService.Infrastructure.Core
         }
 
         #region Private Methods
-        private static IList<int> GetPorts(int numberOfSockets)
+        private static IList<int> GetPorts(int numberOfSockets, int defaultPort)
         {
             List<int> ports = new List<int>();
 
             for (var i = 0; i < numberOfSockets + 1; i++)
             {
-                var port = DefaultSrtPort + i;
+                var port = defaultPort + i;
                 ports.Add(port);
             }
 
@@ -249,6 +255,7 @@ namespace BotService.Infrastructure.Core
                         Mode = srtSettings.Mode,
                         Protocol = Protocol.SRT,
                         Url = srtSettings.Url,
+                        Port = srtSettings.Port,
                         Latency = srtSettings.Latency,
                         Passphrase = srtSettings.Passphrase,
                         KeyLength = srtSettings.KeyLength,
@@ -263,8 +270,11 @@ namespace BotService.Infrastructure.Core
                     StartStreamExtractionResponse rtmpResponse = new StartRtmpStreamExtractionResponse
                     {
                         Protocol = Protocol.RTMP,
+                        Mode = rtmpSettings.Mode,
+                        EnableSsl = rtmpSettings.EnableSsl,
                         StreamKey = rtmpSettings.StreamKey,
                         StreamUrl = rtmpSettings.StreamUrl,
+                        Port = rtmpSettings.Port,
                         AudioFormat = rtmpSettings.AudioFormat,
                         TimeOverlay = rtmpSettings.TimeOverlay,
                     };
@@ -345,10 +355,15 @@ namespace BotService.Infrastructure.Core
                 {
                     mediaExtractor.Stop();
 
+                    _currentAssignedPorts.TryRemove(streamBody.ParticipantGraphId, out int port);
+
                     if (mediaExtractor.Protocol == Protocol.SRT)
                     {
-                        _currentAssignedPorts.TryRemove(streamBody.ParticipantGraphId, out int port);
                         _availablePorts.Add(port);
+                    }
+                    else
+                    {
+                        _availableRtmpPorts.Add(port);
                     }
 
                     _mediaSocketPool.ReleaseSocket(mediaExtractor.VideoSocket);
@@ -433,10 +448,15 @@ namespace BotService.Infrastructure.Core
                 if (_currentMediaExtractors.TryRemove(_primarySpeakerId, out IMediaExtractor mediaExtractor))
                 {
                     mediaExtractor.Stop();
+                    _currentAssignedPorts.TryRemove(_primarySpeakerId, out int port); // TODO: Verify if necessary to validate this case
+
                     if (mediaExtractor.Protocol == Protocol.SRT)
                     {
-                        _currentAssignedPorts.TryRemove(_primarySpeakerId, out int port); // TODO: Verify if necessary to validate this case
                         _availablePorts.Add(port);
+                    }
+                    else
+                    {
+                        _availableRtmpPorts.Add(port);
                     }
 
                     _mediaSocketPool.ReleaseSocket(mediaExtractor.VideoSocket);
@@ -480,10 +500,16 @@ namespace BotService.Infrastructure.Core
             lock (_subscriptionLock)
             {
                 _screenShareMediaSocket.Stop();
+
+                _currentAssignedPorts.TryRemove(streamExtraction.ParticipantGraphId, out int port);
+
                 if (_screenShareMediaSocket.Protocol == Protocol.SRT)
                 {
-                    _currentAssignedPorts.TryRemove(streamExtraction.ParticipantGraphId, out int port);
                     _availablePorts.Add(port);
+                }
+                else
+                {
+                    _availableRtmpPorts.Add(port);
                 }
 
                 _mediaSocketPool.ReleaseSocket(_screenShareMediaSocket.VideoSocket);
@@ -501,6 +527,13 @@ namespace BotService.Infrastructure.Core
         private MediaExtractionSettings GetMediaStreamSettings(uint msi, StartStreamExtractionBody streamBody)
         {
             ProtocolSettings protocolSettings;
+
+            if (_currentAssignedPorts.Count == _numberOfMultiviewSockets)
+            {
+                _logger.LogWarning("[Call Handler] Maximum number of extractions reached");
+                return null;
+            }
+
             switch (streamBody.Protocol)
             {
                 case Protocol.SRT:
@@ -521,7 +554,7 @@ namespace BotService.Infrastructure.Core
                         Mode = srtStreamBody.Mode,
                         Passphrase = srtStreamBody.StreamKey,
                         Port = port,
-                        Url = srtStreamBody.Mode == SrtMode.Caller ? srtStreamBody.StreamUrl : $"srt://{_config.ServiceFqdn}:{port}?mode=caller",
+                        Url = srtStreamBody.StreamUrl,
                         AudioFormat = srtStreamBody.AudioFormat,
                         TimeOverlay = srtStreamBody.TimeOverlay,
                         KeyLength = srtStreamBody.KeyLength,
@@ -529,9 +562,22 @@ namespace BotService.Infrastructure.Core
 
                     break;
                 case Protocol.RTMP:
+                    if (!_availableRtmpPorts.TryTake(out int rtmpPort))
+                    {
+                        _logger.LogWarning("[Call Handler] There are no ports available");
+
+                        // TODO: Throw custom exception
+                        return null;
+                    }
+
+                    _currentAssignedPorts.AddOrUpdate(streamBody.ParticipantGraphId, rtmpPort, (k, v) => rtmpPort);
+
                     var rtmpStreamBody = (RtmpStreamExtractionBody)streamBody;
                     protocolSettings = new RtmpSettings
                     {
+                        Mode = rtmpStreamBody.Mode,
+                        Port = rtmpPort,
+                        EnableSsl = rtmpStreamBody.EnableSsl,
                         StreamKey = rtmpStreamBody.StreamKey,
                         StreamUrl = rtmpStreamBody.StreamUrl,
                         AudioFormat = streamBody.AudioFormat,

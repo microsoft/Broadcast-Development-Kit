@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Models;
+using Application.Exceptions;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
 using Domain.Entities;
@@ -68,6 +70,9 @@ namespace Application.Stream.Commands
 
             public async Task<StartingExtractionCommandResponse> Handle(StartingExtractionCommand request, CancellationToken cancellationToken)
             {
+                var call = await _callRepository.GetItemAsync(request.Body.CallId);
+                request.Body.StreamKey = GetStreamKeyByProtocol(request.Body, call.PrivateContext);
+
                 StartingExtractionCommandResponse response = new StartingExtractionCommandResponse();
 
                 var command = new StartExtraction.StartExtractionCommand
@@ -81,7 +86,6 @@ namespace Application.Stream.Commands
                     throw new EntityNotFoundException(nameof(ParticipantStream), request.Body.ParticipantId);
                 }
 
-                var call = await _callRepository.GetItemAsync(request.Body.CallId);
                 var service = await _serviceRepository.GetItemAsync(call.ServiceId);
 
                 _botServiceClient.SetBaseUrl(service.Infrastructure.Dns);
@@ -110,6 +114,30 @@ namespace Application.Stream.Commands
 
                     throw;
                 }
+            }
+
+            private static string GetStreamKeyFromPrivateCallContext(Dictionary<string, string> privateCallContext)
+            {
+                if (!privateCallContext.TryGetValue("streamKey", out string streamKey))
+                {
+                    throw new StartStreamInjectionException("Stream key is not configured for this call, RTMP injection in push mode could not be initiated");
+                }
+
+                return streamKey;
+            }
+
+            private static string GetStreamKeyByProtocol(StartStreamExtractionBody startStreamExtractionBody, Dictionary<string, string> privateCallContext)
+            {
+                if (startStreamExtractionBody.Protocol == Protocol.RTMP)
+                {
+                    var rtmpStartStreamExtractionBody = startStreamExtractionBody as RtmpStreamExtractionBody;
+
+                    return rtmpStartStreamExtractionBody.Mode == RtmpMode.Pull ?
+                        GetStreamKeyFromPrivateCallContext(privateCallContext) :
+                        rtmpStartStreamExtractionBody.StreamKey;
+                }
+
+                return startStreamExtractionBody.StreamKey;
             }
         }
     }
