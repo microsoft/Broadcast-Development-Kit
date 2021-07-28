@@ -7,23 +7,23 @@ The GStreamer pipelines (where BDK relies on to extract the participants' camera
 In this document we will explain how we tested the synchronization between different streams, some expected results, and findings.
 
 ## Setup
-To play the streams and compare their running times, we used _gst-play_ (one instance per stream) and OBS Studio as main tools.
+**Tools**
+* _gst-play_
+* _OBS Studio_
 
-To run those tools, we used a PC with the following characteristics:
-
+**Client PC** 
 * i7 8700 non-k (6 cores - 12 threads)
 * 16 Gb of RAM
 * RTX 2080 8 GB VRAM (to take advantage of hardware decoding through GPU)
 
-To run BDK and extract 4 participants at the same time, we used an Azure virtual machine with the *Standard F16s_v2* sku (16 vCPUs, 32 Gb of RAM)
+**BDK Host**
+* Azure virtual machine with *Standard F16s_v2* sku (16 vCPUs, 32 Gb of RAM)
 
 ## Tests
 
-To perform the tests, we've invited the BDK bot into a Microsoft Teams meeting, configured the default SRT latency for all extractions, and started the extraction of:
-* Dominant Speaker
-* Participant
-* Together Mode (the user must enable it inside the meeting)
-* Screen Share (the user must share his screen)
+To test the synchronization between different streams, we started 4 SRT extractions (with same default latency) and played those streams using _gst-play_ as player and _OBS Studio_ also as player and as a composition tool. We left the streams running during a period of time and took screenshots at different times to compare the running time overlay of the streams.
+
+### Latency configuration
 
 To set default latency, we did a ping to the BDK host server, took the average RTT (216ms in our case) and followed this [guide](https://www.haivision.com/blog/all/how-to-configure-srt-settings-video-encoder-optimal-performance/) to calculate SRT latency.
 
@@ -31,9 +31,13 @@ To set default latency, we did a ping to the BDK host server, took the average R
 
 Because we don't have a tool to calculate the bandwidth overhead needed to pick the RTT multiplier, we used the highest RTT multiplier from the guide and calculated a latency of 1296ms (6 * 216ms).
 
-### Gst-play
+### Streams
+* Dominant Speaker
+* Participant
+* Together Mode (the user must enable it inside the meeting)
+* Screen Share (the user must share his screen)
 
-{{PENDING}}
+### Gst-play results
 
 To test the synchronization between the four streams, we opened four terminals and ran _gst-play_ with the SRT url of each stream provided by BDK (check participant card)
 
@@ -42,7 +46,7 @@ To test the synchronization between the four streams, we opened four terminals a
 gst-play "srt://dev.teamst.co:8888?mode=caller&latency=1296"
 ```
 
-We left the players running for 45 minutes aproximately and took screenshots at different time to compare the difference in miliseconds between the streams.
+We left the players running for 45 minutes aproximately and took screenshots at different time to compare the running time difference in miliseconds between the streams.
 
 **First Screenshot (beginning of the stream)**
 
@@ -64,7 +68,7 @@ We left the players running for 45 minutes aproximately and took screenshots at 
 | Participant (top-left) | 0:16:26.527 |
 | Dominant Speaker (bottom-left) | 0:16:26.524 |
 | Together Mode (top-right) | 0:16:26.555   |
-| Screenshare (bottom-right) | 0:16:26.427  |
+| Screenshare (bottom-right) | 0:16:26.427 |
 
 |![Second screenshot](images/gst-play-example-2.png)|
 |:--:|
@@ -83,7 +87,7 @@ We left the players running for 45 minutes aproximately and took screenshots at 
 |:--:|
 |*Third screenshot*|
 
-As we can see in the three stages of the test run, the maximum difference between all the streams was 119 ms average, and always was betweem the screenshare and one of the other streams. Excepting the screenshare stream, the difference was 23 ms average.
+As we can see in the three stages of the test run, the maximum difference between all the streams was 119 ms average, and always was between the screenshare and one of the other streams. Excepting the screenshare stream, the difference was 23 ms average.
 
 Also, if we compare in all the screenshots the difference between the stopwatch on the Microsoft Teams feed and one of the streams, the difference is constant (3.7 seconds approximately)
 
@@ -93,14 +97,132 @@ Also, if we compare in all the screenshots the difference between the stopwatch 
 | 7 minutes after | 00:05.52 | 00:01.82 | 00:03.7 | 
 | 47 minutes after | 00:8.96   | 00:05.25 | 00:03.71 | 
 
-### OBS Studio
+### OBS Studio results
 
-Media sources configuration (no-buffering, etc.)
-{{PENDING}}
+To test the synchronization between the four streams with OBS, we added a media source per stream to a scene. To know how to configure a media source please follow this [OBS guide](https://obsproject.com/wiki/Streaming-With-SRT-Protocol)
+
+**Media source settings**
+* Local File: unchecked
+* Network Buffering: 0 MB
+* Input: SRT stream url (E.g.: srt://dev.teamstx.co:8888?mode=caller&latency=2000)
+* Input Format: mpegts
+* Use hardware decoding when available: checked
+
+We left OBS running for 40 minutes approximately, but compared to _gst-play_ the results weren't consistent. While _gst-play_ relies on _GStreamer_ to process the SRT stream, OBS media sources rely on ffmpeg. We don't know how ffmpeg works under the hood, but we had to increase the latency of the streams and had to disable/enable the media sources to restart the streams to try to keep them in sync.
+
+**First Screenshot (beginning of the stream)**
+
+| Stream | Running Time|
+| ------------- | ------------- |
+| Participant (top-left) | 0:00:57.021 |
+| Dominant Speaker (top-right) | 0:00:56.237 |
+| Together Mode (bottom-left) | 0:00:56.268 |
+| Screenshare (bottom-right) | 0:00:56.298 |
+
+The highest desynchronization difference was about 784 ms, beteween the participant and dominant speaker.
+
+![First screenshot](images/obs-example-1.png)|
+|:--:|
+|*First screenshot (beginning of the stream)*|
+
+**Second Screenshot (after 30 seconds approximately.)**
+
+| Stream | Running Time|
+| ------------- | ------------- |
+| Participant (top-left) | 0:01:25.483 |
+| Dominant Speaker (top-right) | 0:01:24.866 |
+| Together Mode (bottom-left) | 0:01:24.897 |
+| Screenshare (bottom-right) | 0:01:24.927 |
+
+![Seconds screenshot](images/obs-example-2.png)|
+|:--:|
+|*Second Screenshot (after 30 seconds approximately.)*|
+
+The highest desynchronization difference was about 617 ms, beteween the participant and dominant speaker.
+
+**Third Screenshot (after restarting participant media source)**
+
+| Stream | Running Time|
+| ------------- | ------------- |
+| Participant (top-left) | 0:05:15.546 |
+| Dominant Speaker (top-right) | 0:05:15.496 |
+| Together Mode (bottom-left) | 0:05:15.460 |
+| Screenshare (bottom-right) | 0:05:15.490 |
+
+![Third screenshot](images/obs-example-reset-stream.png)|
+|:--:|
+|*Third screenshot - after restarting participant media source in OBS*|
+
+After restarting the participant media source in OBS, the highest desynchronization difference was about 86 ms, beteween the participant and together mode.
+
+**Fourth Screenshot (after 19 minutes approximately)**
+
+**OBS**
+| Stream | Running Time|
+| ------------- | ------------- |
+| Participant (top-left) | 0:19:57.494 |
+| Dominant Speaker (top-right) | 0:19:57.577 |
+| Together Mode (bottom-left) | 0:19:58.309 |
+| Screenshare (bottom-right) | 0:19:58.193 |
+
+**gst-play**
+| Stream | Running Time|
+| ------------- | ------------- |
+| Participant (top-left) | 0:19:58.328 |
+| Dominant Speaker (top-right) | 0:19:58.345 |
+| Together Mode (bottom-right) | 0:19:58.509 |
+| Screenshare (bottom-left) | 0:19:58.427 |
+
+![Fourth Screenshot](images/obs-gst-play-comparison.png)|
+|:--:|
+|*Fourth Screenshot (after 19 minutes approximately)*|
+
+After 19 minutes approximately, we can see how the streams become desynchronized again. This time, the highest unsynch difference was about 815 ms. If we compare the _OBS_ results with the _gst-play_ ones, the highest desynchronization difference was about 181 ms. For an unknown reason, the participant and dominant speaker streams had more delay in OBS.
+
+**Fifth Screenshot (after restarting the media sources)**
+
+**OBS**
+| Stream | Running Time|
+| ------------- | ------------- |
+| Participant (top-left) | 0:22:14.898 |
+| Dominant Speaker (top-right) | 0:22:14.914 |
+| Together Mode (bottom-left) | 0:22:15.112 |
+| Screenshare (bottom-right) | 0:22:14.997 |
+
+**gst-play**
+| Stream | Running Time|
+| ------------- | ------------- |
+| Participant (top-left) | 0:22:15.365 |
+| Dominant Speaker (top-right) | 0:22:15.348 |
+| Together Mode (bottom-right) | 0:22:15.346 |
+| Screenshare (bottom-left) | 0:22:15.264 |
+
+![Fifth Screenshot](images/obs-gst-play-comparison-2.png)|
+|:--:|
+|*Fifth Screenshot (after 22 minutes approximately)*|
+
+After restarting the media sources in _OBS_, the highest desynchronization difference was about 214 ms. If we compare the _OBS_ results with the _gst-play_ ones, the highest desynchronization difference was about 101 ms. For an unknown reason, the participant and dominant speaker streams have more delay in OBS.
+
+**Sixth Screenshot (after 38 minutes approximately)**
+
+| Stream | Running Time|
+| ------------- | ------------- |
+| Participant (top-left) | 0:38:14.623 |
+| Dominant Speaker (top-right) | 0:38:14.773 |
+| Together Mode (bottom-left) | 0:38:15.472 |
+| Screenshare (bottom-right) | 0:38:15.556 |
+
+![Sixth screenshot](images/obs-gst-play-comparison-3.png)|
+|:--:|
+|*Sixth screenshot - after 38 minutes approximately*|
+
+After 38 minutes, we can see how the streams become desynchronized again. This time, the highest desynchronization difference was about 933 ms. If we compare the running time of the participant stream in _OBS_ (the one with the lowest running time) with the running time of _gst-play_, the latter is ahead in time.
 
 ### Findings
+* The results we shared above may vary between different executions, depending on factors like player, network condition, BDK virtual machine CPU consumption.
+* Using SRT and _OBS Studio_, we couldn't achieve the results we achieved with _gst-play_. We don't know how ffmpeg works under the hood, but we had to increase the latency of the streams and had to disable/enable the media sources to restart the streams to try to keep the streams synchronized. According to OBS users recomendations, we should add a filter delay to the required sources to synchronize the streams.
+* From the different tests and comparisons between _OBS_ and _gst-play_, we can observe that when we restart the streams, they recover their current running time. This indicates that the pipelines are synchronized, but the players/tools have issues to play them synchronized. 
 
-Issues with the tools over time, synchornization differences in ms, screen share drop framwes
-{{PENDING}}
+
 
 
