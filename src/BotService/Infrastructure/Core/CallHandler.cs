@@ -285,6 +285,59 @@ namespace BotService.Infrastructure.Core
             }
         }
 
+        private int AssignExtractionPort(StartStreamExtractionBody streamBody)
+        {
+            int port = 0;
+
+            switch (streamBody.Protocol)
+            {
+                case Protocol.SRT:
+                    if (!_availablePorts.TryTake(out int srtPort))
+                    {
+                        _logger.LogWarning("[Call Handler] There are no ports available");
+
+                        throw new StartStreamExtractionException("There are no ports available");
+                    }
+
+                    port = srtPort;
+                    break;
+                case Protocol.RTMP:
+                    if (!_availableRtmpPorts.TryTake(out int rtmpPort))
+                    {
+                        _logger.LogWarning("[Call Handler] There are no ports available");
+
+                        throw new StartStreamExtractionException("There are no ports available");
+                    }
+
+                    port = rtmpPort;
+                    break;
+                default:
+                    throw new ArgumentException("Protocol not supported", nameof(streamBody));
+
+            }
+
+            _currentAssignedPorts.AddOrUpdate(streamBody.ParticipantGraphId, port, (k, v) => port);
+
+            return port;
+        }
+
+        private void RemoveAssignedExtractionPort(string streamId, Protocol protocol)
+        {
+            _currentAssignedPorts.TryRemove(streamId, out int port);
+
+            switch (protocol)
+            {
+                case Protocol.SRT:
+                    _availablePorts.Add(port);
+                    break;
+                case Protocol.RTMP:
+                    _availableRtmpPorts.Add(port);
+                    break;
+                default:
+                    throw new ArgumentException("Protocol not supported", protocol.ToString());
+            }
+        }
+
         private StartStreamExtractionResponse StartParticipantStreamExtraction(StartStreamExtractionBody streamBody)
         {
             var participant = Call.Participants.FirstOrDefault(x => x.Id == streamBody.ParticipantGraphId);
@@ -355,16 +408,7 @@ namespace BotService.Infrastructure.Core
                 {
                     mediaExtractor.Stop();
 
-                    _currentAssignedPorts.TryRemove(streamBody.ParticipantGraphId, out int port);
-
-                    if (mediaExtractor.Protocol == Protocol.SRT)
-                    {
-                        _availablePorts.Add(port);
-                    }
-                    else
-                    {
-                        _availableRtmpPorts.Add(port);
-                    }
+                    RemoveAssignedExtractionPort(streamBody.ParticipantGraphId, mediaExtractor.Protocol);
 
                     _mediaSocketPool.ReleaseSocket(mediaExtractor.VideoSocket);
                 }
@@ -448,16 +492,8 @@ namespace BotService.Infrastructure.Core
                 if (_currentMediaExtractors.TryRemove(_primarySpeakerId, out IMediaExtractor mediaExtractor))
                 {
                     mediaExtractor.Stop();
-                    _currentAssignedPorts.TryRemove(_primarySpeakerId, out int port); // TODO: Verify if necessary to validate this case
 
-                    if (mediaExtractor.Protocol == Protocol.SRT)
-                    {
-                        _availablePorts.Add(port);
-                    }
-                    else
-                    {
-                        _availableRtmpPorts.Add(port);
-                    }
+                    RemoveAssignedExtractionPort(_primarySpeakerId, mediaExtractor.Protocol); // TODO: Verify if necessary to validate this case
 
                     _mediaSocketPool.ReleaseSocket(mediaExtractor.VideoSocket);
                 }
@@ -501,16 +537,7 @@ namespace BotService.Infrastructure.Core
             {
                 _screenShareMediaSocket.Stop();
 
-                _currentAssignedPorts.TryRemove(streamExtraction.ParticipantGraphId, out int port);
-
-                if (_screenShareMediaSocket.Protocol == Protocol.SRT)
-                {
-                    _availablePorts.Add(port);
-                }
-                else
-                {
-                    _availableRtmpPorts.Add(port);
-                }
+                RemoveAssignedExtractionPort(streamExtraction.ParticipantGraphId, _screenShareMediaSocket.Protocol);
 
                 _mediaSocketPool.ReleaseSocket(_screenShareMediaSocket.VideoSocket);
                 _screenShareMediaSocket = null;
@@ -531,21 +558,14 @@ namespace BotService.Infrastructure.Core
             if (_currentAssignedPorts.Count == _numberOfMultiviewSockets)
             {
                 _logger.LogWarning("[Call Handler] Maximum number of extractions reached");
-                return null;
+
+                throw new StartStreamExtractionException("Maximum number of extractions reached");
             }
 
             switch (streamBody.Protocol)
             {
                 case Protocol.SRT:
-                    if (!_availablePorts.TryTake(out int port))
-                    {
-                        _logger.LogWarning("[Call Handler] There are no ports available");
-
-                        // TODO: Throw custom exception
-                        return null;
-                    }
-
-                    _currentAssignedPorts.AddOrUpdate(streamBody.ParticipantGraphId, port, (k, v) => port);
+                    var port = AssignExtractionPort(streamBody);
                     var srtStreamBody = (SrtStreamExtractionBody)streamBody;
 
                     protocolSettings = new SrtSettings
@@ -562,17 +582,9 @@ namespace BotService.Infrastructure.Core
 
                     break;
                 case Protocol.RTMP:
-                    if (!_availableRtmpPorts.TryTake(out int rtmpPort))
-                    {
-                        _logger.LogWarning("[Call Handler] There are no ports available");
-
-                        // TODO: Throw custom exception
-                        return null;
-                    }
-
-                    _currentAssignedPorts.AddOrUpdate(streamBody.ParticipantGraphId, rtmpPort, (k, v) => rtmpPort);
-
+                    var rtmpPort = AssignExtractionPort(streamBody);
                     var rtmpStreamBody = (RtmpStreamExtractionBody)streamBody;
+
                     protocolSettings = new RtmpSettings
                     {
                         Mode = rtmpStreamBody.Mode,

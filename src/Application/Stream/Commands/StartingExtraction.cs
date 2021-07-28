@@ -120,7 +120,7 @@ namespace Application.Stream.Commands
             {
                 if (!privateCallContext.TryGetValue("streamKey", out string streamKey))
                 {
-                    throw new StartStreamInjectionException("Stream key is not configured for this call, RTMP injection in push mode could not be initiated");
+                    throw new StartStreamExtractionException("Stream key is not configured for this call, RTMP Extraction in pull mode could not be initiated");
                 }
 
                 return streamKey;
