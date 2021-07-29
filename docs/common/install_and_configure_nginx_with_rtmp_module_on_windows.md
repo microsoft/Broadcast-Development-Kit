@@ -40,6 +40,54 @@ events {
 }
 
 stream {
+    upstream secure-extraction-1 {
+        server 127.0.0.1:2951;
+    }
+    server {
+        listen 2951 ssl;
+        proxy_pass secure-extraction-1;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }    
+
+    upstream secure-extraction-2 {
+        server 127.0.0.1:2952;
+    }
+    server {
+        listen 2952 ssl;
+        proxy_pass secure-extraction-2;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-3 {
+        server 127.0.0.1:2953;
+    }
+    server {
+        listen 2953 ssl;
+        proxy_pass secure-extraction-3;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-4 {
+        server 127.0.0.1:2954;
+    }
+    server {
+        listen 2954 ssl;
+        proxy_pass secure-extraction-4;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
     upstream publish {
         server 127.0.0.1:29361;
     }
@@ -48,7 +96,6 @@ stream {
         proxy_pass publish;
         ssl_certificate c:\\certs\\fullchain.pem; #root path where your certificate is located e.g.: C:\certs\fullchain.pem
         ssl_certificate_key c:\\certs\\privkey.pem; #root path where your certificate key is located e.g.: C:\certs\privkey.pem
-
         allow all;
     }
 
@@ -60,12 +107,95 @@ stream {
         proxy_pass live;
         ssl_certificate c:\\certs\\fullchain.pem; #root path where your certificate is located e.g.: C:\certs\fullchain.pem
         ssl_certificate_key c:\\certs\\privkey.pem; #root path where your certificate key is located e.g.: C:\certs\privkey.pem
-
         allow all;              # this is public (this is also the default)
     }
 }
 
 rtmp {
+    server { 
+        listen 127.0.0.1:2951;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+    server { 
+        listen 127.0.0.1:2952;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+    server { 
+        listen 127.0.0.1:2953;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+   server { 
+        listen 127.0.0.1:2954;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+   server { 
+        listen 2941;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+   }
+
+   server { 
+        listen 2942;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+   server { 
+        listen 2943;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+    server { 
+        listen 2944;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
     server {
         listen 127.0.0.1:29361;
         chunk_size 4096;
@@ -74,8 +204,7 @@ rtmp {
             live on;
             record off;
 
-	        on_publish http://localhost/api/bot/validate-stream-key;
-
+            on_publish http://localhost/api/bot/validate-stream-key;
             allow publish 127.0.0.1;  # publishing through rtmps://rtmp.example.com:1936
             allow play 127.0.0.1;     # for the pull from rtmp://localhost:19351/live
         }
@@ -90,7 +219,6 @@ rtmp {
             record off;
             deny publish all;         # no need to publish on /live -- IMPORTANT!!!
             allow play 127.0.0.1;     # playing through rtmps://rtmp.example.com:1935/live
-
             pull rtmp://127.0.0.1:29361/secure-ingest;
         }
     }
@@ -101,12 +229,8 @@ rtmp {
         application ingest {
             live on;
             record off;
-	    
-	        on_publish http://localhost/api/bot/validate-stream-key;
-        }
-        application test-endpoint {
-            live on;
-            record off;
+        
+            on_publish http://localhost/api/bot/validate-stream-key;
         }
     }
 }
@@ -114,16 +238,15 @@ rtmp {
 http {
     server {
         listen      8080;
-		
+
         location / {
             root html;
         }
-		
+        
         location /stat {
             rtmp_stat all;
             rtmp_stat_stylesheet stat.xsl;
         }
-
         location /stat.xsl {
             root html;
         }
