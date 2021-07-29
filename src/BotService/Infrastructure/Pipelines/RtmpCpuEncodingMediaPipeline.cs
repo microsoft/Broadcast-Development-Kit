@@ -217,6 +217,5 @@ namespace BotService.Infrastructure.Pipelines
                    Element.Link(videoElements.Where(e => e != null).ToArray()) &&
                    Element.Link(_muxer, _sinkQueue, _sink);
         }
-    }   
-
+    }
 }

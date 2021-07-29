@@ -30,7 +30,8 @@ namespace BotService.Infrastructure.Core
         /// </summary>
         private const uint PrimarySpeakerNone = DominantSpeakerChangedEventArgs.None;
         private const int DefaultSrtPort = 8888;
-        private const int DefaultRtmpPort = 29371;
+        private const int DefaultRtmpPort = 2941;
+        private const int DefaultRtmpsPort = 2951;
 
         private readonly ILogger _logger;
         private readonly object _subscriptionLock = new object();
@@ -42,6 +43,7 @@ namespace BotService.Infrastructure.Core
 
         private readonly ConcurrentBag<int> _availablePorts;
         private readonly ConcurrentBag<int> _availableRtmpPorts;
+        private readonly ConcurrentBag<int> _availableRtmpsPorts;
         private readonly ConcurrentDictionary<string, int> _currentAssignedPorts = new ConcurrentDictionary<string, int>();
 
         private readonly BotConfiguration _config;
@@ -76,6 +78,7 @@ namespace BotService.Infrastructure.Core
             _numberOfMultiviewSockets = config.NumberOfMultiviewSockets;
             _availablePorts = new ConcurrentBag<int>(GetPorts(_numberOfMultiviewSockets, DefaultSrtPort));
             _availableRtmpPorts = new ConcurrentBag<int>(GetPorts(_numberOfMultiviewSockets, DefaultRtmpPort));
+            _availableRtmpsPorts = new ConcurrentBag<int>(GetPorts(_numberOfMultiviewSockets, DefaultRtmpsPort));
 
             Call = statefulCall;
             Call.OnUpdated += CallOnUpdated;
@@ -302,18 +305,36 @@ namespace BotService.Infrastructure.Core
                     port = srtPort;
                     break;
                 case Protocol.RTMP:
-                    if (!_availableRtmpPorts.TryTake(out int rtmpPort))
-                    {
-                        _logger.LogWarning("[Call Handler] There are no ports available");
+                    var rtmpStreamBody = (RtmpStreamExtractionBody)streamBody;
+                    int rtmpPort = 0;
 
-                        throw new StartStreamExtractionException("There are no ports available");
+                    if (rtmpStreamBody.EnableSsl)
+                    {
+                        if (!_availableRtmpsPorts.TryTake(out int rtmps))
+                        {
+                            _logger.LogWarning("[Call Handler] There are no ports available");
+
+                            throw new StartStreamExtractionException("There are no ports available");
+                        }
+
+                        rtmpPort = rtmps;
+                    }
+                    else
+                    {
+                        if (!_availableRtmpPorts.TryTake(out int rtmp))
+                        {
+                            _logger.LogWarning("[Call Handler] There are no ports available");
+
+                            throw new StartStreamExtractionException("There are no ports available");
+                        }
+
+                        rtmpPort = rtmp;
                     }
 
                     port = rtmpPort;
                     break;
                 default:
                     throw new ArgumentException("Protocol not supported", nameof(streamBody));
-
             }
 
             _currentAssignedPorts.AddOrUpdate(streamBody.ParticipantGraphId, port, (k, v) => port);
@@ -331,7 +352,15 @@ namespace BotService.Infrastructure.Core
                     _availablePorts.Add(port);
                     break;
                 case Protocol.RTMP:
-                    _availableRtmpPorts.Add(port);
+                    if (port >= DefaultRtmpPort && port <= (DefaultRtmpPort + _numberOfMultiviewSockets))
+                    {
+                        _availableRtmpPorts.Add(port);
+                    }
+                    else
+                    {
+                        _availableRtmpsPorts.Add(port);
+                    }
+
                     break;
                 default:
                     throw new ArgumentException("Protocol not supported", protocol.ToString());
