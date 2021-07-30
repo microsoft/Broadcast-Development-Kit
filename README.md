@@ -24,7 +24,11 @@ The sources that can be used for extraction are:
 
 - **The primary speaker**: this is a media stream that automatically switches to the participant that is speaking at that time in the call. This allows to switch between participants automatically during a conversation. Only one participant is captured at a time.
 
-- **The screen share**: If a participant is sharing their screen, that feed can also be extracted as an individual stream too.
+- **The screen share**: if a participant is sharing their screen, that feed can also be extracted as an individual stream too.
+
+- **Together mode**: if together mode is enabled in the meeting, it can be extracted as a separate media stream.
+
+- **Large gallery mode**: if large gallery mode is enabled in the meeting, it can be extracted as a separate media stream too.
 
 The solution supports multiple extractions at a time, allowing to stream any combination of the sources listed above (each as a individual stream) over SRT or RTMP to a video mixing solution of your choice.
 
@@ -67,7 +71,14 @@ Then you can process those feeds in a video production solution of your choosing
 
 If you have media content that can be streamed through SRT or RTMP such as live event or a VOD, you can use the injection feature to playback the video inside the Microsoft Teams meeting to the rest of the participants and watch the stream together.
 
-## Limitations
+## Limitations and known issues
+
+There are some known issues in the current version of this solution:
+
+- There is a bug with the Teams Meeting client where sometimes, when you start injecting video, the Teams Meeting client of some participants do not show the video (but reproduce the audio). The workaround is to force the Teams Meeting client to refresh the view. There are several ways of doing this:
+    - By disabling the incoming video and enabling it again 
+    - Spotlighting a participant and then change the spotlight to the bot
+    - Leaving the meeting and entering again
 
 This solution currently has some limitations:
 
@@ -80,8 +91,6 @@ This solution currently has some limitations:
 - While this solution can extract the screen share feed, it cannot extract content that is shared in the meeting. For example, if you share a Power Point presentation directly in the meeting, this solution can not capture and extract that content. That is because while the screen share is a media feed, the content shared directly in the meeting is not.
 
 - Only one video and audio can be injected into the meeting at a time.
-
-- There is a bug with the Teams Meeting client where sometimes, when you start injecting video, the Teams Meeting client of some participants do not show the video (but reproduce the audio). The workaround is to force the Teams Meeting client to refresh the view, for example by disabling the incoming video and enabling it again or spotlighting a participant and then change the spotlight to the bot.
 
 - There are some restrictions on using this solution to record content from a Microsoft Teams meeting, which are inherited from the [Graph Communications Bot Media SDK](https://microsoftgraph.github.io/microsoft-graph-comms-samples/docs/bot_media/index.html#accompanying-documentation). Check the documentation of the SDK for more information.
 
