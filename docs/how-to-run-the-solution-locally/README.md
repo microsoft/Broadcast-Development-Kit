@@ -196,9 +196,7 @@ Go to details tab and search for Thumbprint field, select it, and copy its value
 The solution is composed by 3 main projects:
 - **BotOrchestrator:** The Azure Functions used to execute some of the features in the solution.
 - **ManagementApi:** The project containing the management API that is used to interact with the solution.
-- **BotService:** A self-hosted API/application-hosted media bot that hosts the media session. As part of its core componentes, it includes  the GStreamer pipelines that are in charge of processing the media and devliver it in SRT/RTMP.
-
-
+- **BotService:** A self-hosted API/application-hosted media bot that hosts the media session. As part of its core components, it includes  the GStreamer pipelines that are in charge of processing the media and deliver it in SRT/RTMP.
 
 Each of the three projects have configuration files that must be updated separately in order to run the solution locally. To do so, run Visual Studio 2019 as administrator, right click on the Visual Studio icon and click the `Run as administrator` option. It is very important to open it as administrator otherwise the solution will not run correctly.
 
@@ -378,7 +376,7 @@ Then, in the root of the project, create a new configuration file with the name 
       "InstanceInternalPort": 8445,
       "InstancePublicPort": "{{instancePublicPort}}",
       "ServiceFqdn": "{{serviceFqdn}}",
-      "CertificatePassword": "{{certificatePassword}}",
+      "CertificatePassword": "",
       "CertificateThumbprint": "{{certificateThumbprint}}",
       "MainApiUrl": "localhost:8442"
     }
@@ -396,7 +394,6 @@ clientIdAzureBotAppRegistration | Client Id of the [app registration](../prerequ
 clientSecretAzureBotAppRegistration | Client secret of the [app registration](../prerequisites/azure_bot.md).
 cosmosDbPrimaryKey | [Azure Cosmos DB Emulator primary key, can be found in the data explorer of the emulator](#cosmos-db-emulator).
 cosmosDbDatabaseName | Name of the database that the solution will create in Cosmos DB Emulator.  E.g.: `BroadcastDevelopmentKitDb`
-certificatePassword | Password of the  installed certificate.
 certificateThumbprint | Thumbprint of the installed certificate.
 appInsightInstrumentationKey | ***`Optional:`*** by default leave it empty or if you have an instance of Application Insights you can store the log messages by entering an instrumentation key.
 
@@ -456,7 +453,7 @@ Select the `Service` container and then click on the `New Item` button and copy 
 ```json
 {
     "CallId": null,
-    "Name": "Fake VM",
+    "Name": "Local Service",
     "State": 1,
     "CreatedAt": "2021-06-09T11:05:37.2778107-03:00",
     "Infrastructure": {
