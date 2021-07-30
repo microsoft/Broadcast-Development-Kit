@@ -19,11 +19,25 @@ While creating the virtual machine, consider the following settings:
 - ***Resource Group:*** The resource group where you want to create the VM. We recommend creating a specific resource group for the VM, so you can easily identify the VM resources in case of resource deletion.
 - ***Virtual Machine Name:*** A meaningful name for the VM.
 - ***Image:*** Windows 10 Pro, Version 20H2.
-- ***Size:***
-    - Standard_F4s_v2 - 4 vcpus, 8 GiB memory. recommended for testing purpose.
-    - Standard_F8s_v2 - 8 vcpus, 16 GiB memory. Recommended for Production environments.
+- ***Size:*** Please refer to the [Virtual Machine size](#virtual-machine-size) section below.
 - ***Username:*** A meaningful username.
 - ***Password:*** A meaningful password.
+
+### Virtual Machine size
+The computational power of the VM must be chosen based on the number of simultaneous streams required. The following table shows some of the Azure VM options where the BDK has been tested. 
+
+| Virtual Machine size                | Number of simultaneous active streams | Percentage of CPU usage | Notes                          |
+|-------------------------------------|:-------------------------------------:|:-----------------------:|--------------------------------|
+| F4s_v2 (4 vCPUs and 8 GB of RAM)    | Up to 2                               | 95%                     | Not recommended for production workloads. Only for testing purpose. |
+| F8s_v2 (8 vCPUs and 16 GB of RAM)   | Up to 4                               | 70%                     | 4 Stream extractions or 3 Stream extractions + 1 stream Injection.  | 
+| F16s_v2 (16 vCPUs and 32 GB of RAM) | Up to 7                               | 70%                     | 7 Stream extractions or 6 Stream extractions + 1 stream Injection.  | 
+| F32s_v2 (32 vCPUs and 32 GB of RAM) | Up to 10                              | 50%                     | 9 Stream extractions + 1 stream injection                           | 
+
+The results shown in the table above are for reference only. Please take into account the following considerations:
+- Stream processing (decoding, normalization, and encoding) is performed by the CPU. It is not recommended to exceed the CPU workload above 70% to guarantee the streams quality. 
+- The results may vary based on the processing required on each stream to decode, normalize, and encode them. For example, streams with fewer variations in image changes tend to require less CPU consumption in the encoding process. 
+
+>**NOTE**: The maximum number of streams that can be simultaneously extracted by the bot can be limited by setting the `NumberOfMultiviewSockets` property in the [Bot Service app settings file](storage_account.md#environment-json-file-settings-example). E.g. If you want to limit the maximum number of extractions to N, just set this property to N - 1. 
 
 ### Network Security Group inbound rules
 
