@@ -405,8 +405,8 @@ namespace BotService.Infrastructure.Core
             lock (_subscriptionLock)
             {
                 mediaStreamSettings = GetMediaStreamSettings(msi, streamBody);
-                _currentMediaExtractors.AddOrUpdate(streamBody.ParticipantGraphId, mediaExtractor, (k, v) => mediaExtractor);
                 mediaExtractor.Start(mediaStreamSettings);
+                _currentMediaExtractors.AddOrUpdate(streamBody.ParticipantGraphId, mediaExtractor, (k, v) => mediaExtractor);
             }
 
             StartStreamExtractionResponse response = GetStreamExtractionResponse(mediaStreamSettings.ProtocolSettings);

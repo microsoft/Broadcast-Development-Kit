@@ -8,7 +8,7 @@ namespace Application.Common.Models
     {
         public RtmpMode Mode { get; set; }
 
-        public bool EnableSsl {get; set; }
+        public bool EnableSsl { get; set; }
 
         public string StreamUrl { get; set; }
 

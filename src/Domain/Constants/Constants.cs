@@ -73,7 +73,6 @@ namespace Domain.Constants
                     public const string Client = "srt://{0}:{1}?mode=caller";
                 }
             }
-
         }
 
         public static class AzureEventGid

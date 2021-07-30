@@ -56,7 +56,6 @@ namespace Application.Stream.Commands
             private readonly IMapper _mapper;
             private readonly IExtractionUrlHelper _extractionUrlHelper;
 
-
             public StartExtractionCommandHandler(
                 IAppConfiguration configuration,
                 IBot bot,
