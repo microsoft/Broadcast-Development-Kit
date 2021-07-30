@@ -30,8 +30,8 @@ namespace BotService.Infrastructure.Core
         /// </summary>
         private const uint PrimarySpeakerNone = DominantSpeakerChangedEventArgs.None;
         private const int DefaultSrtPort = 8888;
-        private const int DefaultRtmpPort = 2941;
-        private const int DefaultRtmpsPort = 2951;
+        private const int DefaultRtmpPort = 1940;
+        private const int DefaultRtmpsPort = 2940;
 
         private readonly ILogger _logger;
         private readonly object _subscriptionLock = new object();
@@ -297,9 +297,9 @@ namespace BotService.Infrastructure.Core
                 case Protocol.SRT:
                     if (!_availablePorts.TryTake(out int srtPort))
                     {
-                        _logger.LogWarning("[Call Handler] There are no ports available");
+                        _logger.LogWarning("[Call Handler] There are no SRT ports available");
 
-                        throw new StartStreamExtractionException("There are no ports available");
+                        throw new StartStreamExtractionException("There are no SRT ports available");
                     }
 
                     port = srtPort;
@@ -312,9 +312,9 @@ namespace BotService.Infrastructure.Core
                     {
                         if (!_availableRtmpsPorts.TryTake(out int rtmps))
                         {
-                            _logger.LogWarning("[Call Handler] There are no ports available");
+                            _logger.LogWarning("[Call Handler] There are no RTMPS ports available");
 
-                            throw new StartStreamExtractionException("There are no ports available");
+                            throw new StartStreamExtractionException("There are no RTMPS ports available");
                         }
 
                         rtmpPort = rtmps;
@@ -323,9 +323,9 @@ namespace BotService.Infrastructure.Core
                     {
                         if (!_availableRtmpPorts.TryTake(out int rtmp))
                         {
-                            _logger.LogWarning("[Call Handler] There are no ports available");
+                            _logger.LogWarning("[Call Handler] There are no RTMP ports available");
 
-                            throw new StartStreamExtractionException("There are no ports available");
+                            throw new StartStreamExtractionException("There are no RTMP ports available");
                         }
 
                         rtmpPort = rtmp;
@@ -404,8 +404,8 @@ namespace BotService.Infrastructure.Core
             MediaExtractionSettings mediaStreamSettings;
             lock (_subscriptionLock)
             {
-                _currentMediaExtractors.AddOrUpdate(streamBody.ParticipantGraphId, mediaExtractor, (k, v) => mediaExtractor);
                 mediaStreamSettings = GetMediaStreamSettings(msi, streamBody);
+                _currentMediaExtractors.AddOrUpdate(streamBody.ParticipantGraphId, mediaExtractor, (k, v) => mediaExtractor);
                 mediaExtractor.Start(mediaStreamSettings);
             }
 
@@ -454,20 +454,6 @@ namespace BotService.Infrastructure.Core
             // OR make a method to find the primary speaker for the call
             _primarySpeakerId = streamExtraction.ParticipantGraphId;
 
-            if (!_currentMediaExtractors.TryGetValue(streamExtraction.ParticipantGraphId, out IMediaExtractor mediaExtractor))
-            {
-                IVideoSocket videoSocket = _mediaSocketPool.GetParticipantVideoSocket();
-
-                if (videoSocket == null)
-                {
-                    _logger.LogWarning("[Call Handler] There are not media streams available");
-                    throw new StartStreamExtractionException("There are not media streams available");
-                }
-
-                mediaExtractor = _mediaHandlerFactory.CreateSwitchingExtractor(videoSocket, _mediaSocketPool, _mediaSocketPool.MainAudioSocket);
-                _currentMediaExtractors.TryAdd(streamExtraction.ParticipantGraphId, mediaExtractor);
-            }
-
             IParticipant participant;
             if (_currentPrimarySpeaker == PrimarySpeakerNone)
             {
@@ -503,6 +489,21 @@ namespace BotService.Infrastructure.Core
             _currentPrimarySpeaker = msi;
 
             var mediaStreamSettings = GetMediaStreamSettings(msi, streamExtraction);
+
+            if (!_currentMediaExtractors.TryGetValue(streamExtraction.ParticipantGraphId, out IMediaExtractor mediaExtractor))
+            {
+                IVideoSocket videoSocket = _mediaSocketPool.GetParticipantVideoSocket();
+
+                if (videoSocket == null)
+                {
+                    _logger.LogWarning("[Call Handler] There are not media streams available");
+                    throw new StartStreamExtractionException("There are not media streams available");
+                }
+
+                mediaExtractor = _mediaHandlerFactory.CreateSwitchingExtractor(videoSocket, _mediaSocketPool, _mediaSocketPool.MainAudioSocket);
+                _currentMediaExtractors.TryAdd(streamExtraction.ParticipantGraphId, mediaExtractor);
+            }
+
             mediaExtractor.Start(mediaStreamSettings);
 
             _isCapturingPrimarySpeaker = true;

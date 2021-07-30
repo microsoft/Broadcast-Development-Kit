@@ -12,7 +12,6 @@ namespace Infrastructure.Core.Common
     {
         public string GetSrtStreamUrl(StartSrtStreamExtractionResponse startSrtStreamExtractionResponse, string serviceDns)
         {
-            // RtmpStreamInjectionBody
             var streamUrl = startSrtStreamExtractionResponse.Url;
 
             if (startSrtStreamExtractionResponse.Mode == SrtMode.Listener)
@@ -27,7 +26,6 @@ namespace Infrastructure.Core.Common
 
         public string GetRtmpStreamUrl(StartRtmpStreamExtractionResponse startRtmpStreamExtractionResponse, string callId,  string serviceDns)
         {
-            // RtmpStreamInjectionBody
             var streamUrl = startRtmpStreamExtractionResponse.StreamUrl;
             if (startRtmpStreamExtractionResponse.Mode == RtmpMode.Pull)
             {
