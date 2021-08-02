@@ -40,6 +40,126 @@ events {
 }
 
 stream {
+    upstream secure-extraction-1 {
+        server 127.0.0.1:2940;
+    }
+    server {
+        listen 2940 ssl;
+        proxy_pass secure-extraction-1;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }    
+
+    upstream secure-extraction-2 {
+        server 127.0.0.1:2941;
+    }
+    server {
+        listen 2941 ssl;
+        proxy_pass secure-extraction-2;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-3 {
+        server 127.0.0.1:2942;
+    }
+    server {
+        listen 2942 ssl;
+        proxy_pass secure-extraction-3;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-4 {
+        server 127.0.0.1:2943;
+    }
+    server {
+        listen 2943 ssl;
+        proxy_pass secure-extraction-4;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-5 {
+        server 127.0.0.1:2944;
+    }
+    server {
+        listen 2944 ssl;
+        proxy_pass secure-extraction-5;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-6 {
+        server 127.0.0.1:2945;
+    }
+    server {
+        listen 2945 ssl;
+        proxy_pass secure-extraction-6;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-7 {
+        server 127.0.0.1:2946;
+    }
+    server {
+        listen 2946 ssl;
+        proxy_pass secure-extraction-7;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-8 {
+        server 127.0.0.1:2947;
+    }
+    server {
+        listen 2947 ssl;
+        proxy_pass secure-extraction-8;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-9 {
+        server 127.0.0.1:2948;
+    }
+    server {
+        listen 2948 ssl;
+        proxy_pass secure-extraction-9;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
+    upstream secure-extraction-10 {
+        server 127.0.0.1:2949;
+    }
+    server {
+        listen 2949 ssl;
+        proxy_pass secure-extraction-10;
+        ssl_certificate c:\\certs\\fullchain.pem;
+        ssl_certificate_key c:\\certs\\privkey.pem;
+        
+        allow all;
+    }
+
     upstream publish {
         server 127.0.0.1:29361;
     }
@@ -48,7 +168,6 @@ stream {
         proxy_pass publish;
         ssl_certificate c:\\certs\\fullchain.pem; #root path where your certificate is located e.g.: C:\certs\fullchain.pem
         ssl_certificate_key c:\\certs\\privkey.pem; #root path where your certificate key is located e.g.: C:\certs\privkey.pem
-
         allow all;
     }
 
@@ -60,12 +179,221 @@ stream {
         proxy_pass live;
         ssl_certificate c:\\certs\\fullchain.pem; #root path where your certificate is located e.g.: C:\certs\fullchain.pem
         ssl_certificate_key c:\\certs\\privkey.pem; #root path where your certificate key is located e.g.: C:\certs\privkey.pem
-
         allow all;              # this is public (this is also the default)
     }
 }
 
 rtmp {
+    server { 
+        listen 127.0.0.1:2940;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+    server { 
+        listen 127.0.0.1:2941;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+    server { 
+        listen 127.0.0.1:2942;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+   server { 
+        listen 127.0.0.1:2943;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+    server { 
+        listen 127.0.0.1:2944;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+   server { 
+        listen 127.0.0.1:2945;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+    server { 
+        listen 127.0.0.1:2946;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+   server { 
+        listen 127.0.0.1:2947;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+    server { 
+        listen 127.0.0.1:2948;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+   server { 
+        listen 127.0.0.1:2949;
+        chunk_size 4096;
+
+        application secure-extraction {
+            live on;
+            record off;
+            allow publish 127.0.0.1;
+        }
+    }
+
+   server { 
+        listen 1940;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+   }
+
+   server { 
+        listen 1941;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+   server { 
+        listen 1942;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+    server { 
+        listen 1943;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+    server { 
+        listen 1944;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+   }
+
+   server { 
+        listen 1945;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+   server { 
+        listen 1946;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+    server { 
+        listen 1947;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+    server { 
+        listen 1948;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
+    server { 
+        listen 1949;
+        chunk_size 4096;
+
+        application extraction {
+            live on;
+            record off;
+        }
+    }
+
     server {
         listen 127.0.0.1:29361;
         chunk_size 4096;
@@ -74,8 +402,7 @@ rtmp {
             live on;
             record off;
 
-	        on_publish http://localhost/api/bot/validate-stream-key;
-
+            on_publish http://localhost/api/bot/validate-stream-key;
             allow publish 127.0.0.1;  # publishing through rtmps://rtmp.example.com:1936
             allow play 127.0.0.1;     # for the pull from rtmp://localhost:19351/live
         }
@@ -90,7 +417,6 @@ rtmp {
             record off;
             deny publish all;         # no need to publish on /live -- IMPORTANT!!!
             allow play 127.0.0.1;     # playing through rtmps://rtmp.example.com:1935/live
-
             pull rtmp://127.0.0.1:29361/secure-ingest;
         }
     }
@@ -101,12 +427,15 @@ rtmp {
         application ingest {
             live on;
             record off;
-	    
-	        on_publish http://localhost/api/bot/validate-stream-key;
+        
+            on_publish http://localhost/api/bot/validate-stream-key;
         }
+
         application test-endpoint {
             live on;
             record off;
+        
+            on_publish http://localhost/api/bot/validate-stream-key;
         }
     }
 }
@@ -114,16 +443,15 @@ rtmp {
 http {
     server {
         listen      8080;
-		
+
         location / {
             root html;
         }
-		
+        
         location /stat {
             rtmp_stat all;
             rtmp_stat_stylesheet stat.xsl;
         }
-
         location /stat.xsl {
             root html;
         }

@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Config;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
@@ -49,17 +50,23 @@ namespace Application.Stream.Commands
 
         public class StartExtractionCommandHandler : IRequestHandler<StartExtractionCommand, StartExtractionCommandResponse>
         {
+            private readonly IAppConfiguration _configuration;
             private readonly IBot _bot;
             private readonly IParticipantStreamRepository _participantStreamRepository;
             private readonly IMapper _mapper;
+            private readonly IExtractionUrlHelper _extractionUrlHelper;
 
             public StartExtractionCommandHandler(
+                IAppConfiguration configuration,
                 IBot bot,
                 IParticipantStreamRepository participantStreamRepository,
+                IExtractionUrlHelper extractionUrlHelper,
                 IMapper mapper)
             {
+                _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
                 _bot = bot ?? throw new ArgumentNullException(nameof(bot));
                 _participantStreamRepository = participantStreamRepository ?? throw new ArgumentNullException(nameof(participantStreamRepository));
+                _extractionUrlHelper = extractionUrlHelper ?? throw new ArgumentNullException(nameof(extractionUrlHelper));
                 _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             }
 
@@ -88,14 +95,14 @@ namespace Application.Stream.Commands
 
                             participant.Details.Latency = srtExtractionResponse.Latency;
                             participant.Details.StreamKey = srtExtractionResponse.Passphrase;
-                            participant.Details.StreamUrl = srtExtractionResponse.Url;
+                            participant.Details.StreamUrl = _extractionUrlHelper.GetSrtStreamUrl(srtExtractionResponse, _configuration.BotConfiguration.ServiceFqdn);
                             participant.Details.KeyLength = srtExtractionResponse.KeyLength;
 
                             break;
                         case Protocol.RTMP:
                             var rtmpExtractionResponse = (StartRtmpStreamExtractionResponse)startExtractionResponse;
 
-                            participant.Details.StreamUrl = rtmpExtractionResponse.StreamUrl;
+                            participant.Details.StreamUrl = _extractionUrlHelper.GetRtmpStreamUrl(rtmpExtractionResponse, participant.CallId, _configuration.BotConfiguration.ServiceDnsName);
                             participant.Details.StreamKey = rtmpExtractionResponse.StreamKey;
 
                             break;

@@ -8,6 +8,7 @@ using BotService.Infrastructure.Extensions;
 using Domain.Enums;
 using Gst;
 using Gst.App;
+using static Domain.Constants.Constants;
 
 namespace BotService.Infrastructure.Pipelines
 {
@@ -105,6 +106,16 @@ namespace BotService.Infrastructure.Pipelines
             gstBuffer.Dispose();
         }
 
+        private static string GetRtmpPullLocation(RtmpSettings settings)
+        {
+            return settings.EnableSsl ? string.Format(MediaExtractionUrl.Rtmps.Pull.Gstreamer, "localhost", settings.Port, settings.StreamKey) : string.Format(MediaExtractionUrl.Rtmp.Pull.Gstreamer, "localhost", settings.Port, settings.StreamKey);
+        }
+
+        private static string GetRtmpPushLocation(RtmpSettings settings)
+        {
+            return string.IsNullOrEmpty(settings.StreamKey) ? settings.StreamUrl : $"{settings.StreamUrl}/{settings.StreamKey}";
+        }
+
         private bool BuildPipeline()
         {
             CreatePipelineElements();
@@ -125,7 +136,7 @@ namespace BotService.Infrastructure.Pipelines
 
             _sinkQueue.SetProperty("leaky", new GLib.Value(QueueLeakyType));
             _sink = ElementFactory.Make("rtmpsink", "rtmp_output");
-            var uri = string.IsNullOrEmpty(_protocolSettings.StreamKey) ? _protocolSettings.StreamUrl : $"{_protocolSettings.StreamUrl}/{_protocolSettings.StreamKey}";
+            var uri = _protocolSettings.Mode == RtmpMode.Push ? GetRtmpPushLocation(_protocolSettings) : GetRtmpPullLocation(_protocolSettings);
             _sink.SetProperty("location", new GLib.Value(uri));
 
             // Video processing elements

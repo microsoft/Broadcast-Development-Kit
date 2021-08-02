@@ -14,6 +14,8 @@ namespace BotService.Infrastructure.Core
 
         public RtmpMode Mode { get; set; }
 
+        public int Port { get; set; }
+
         public string StreamUrl { get; set; }
 
         public string StreamKey { get; set; }

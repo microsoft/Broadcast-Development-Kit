@@ -50,8 +50,8 @@ Once the virtual machine is created, we must add inbound rules in the network se
 | SRT             | 8880-9000 | UDP      | Used for SRT protocol for media extraction & injection.                 |
 | HTTPS           | 443       | TCP      | Allows communication from the main API.                                 |
 | MediaPlatform   | 8445      | TCP      | Used to establish communication between the bot and the media platform. |
-| RTMP            | 1935-1936      | TCP      | Used to extract & inject RTMP content.                                          |
-| RTMPS           | 2935-2936      | TCP      | Used to extract & inject RTMPS content.                                                 |
+| RTMP            | 1935-1936, 1940-1949 | TCP      | Used to inject & extract RTMP content.                       |
+| RTMPS           | 2935-2936, 2940-2949 | TCP      | Used to inject & extract RTMPS content.                      |
 
 ### Configure the virtual machine
 Before starting using the virtual machine, we must install the applications listed below.

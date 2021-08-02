@@ -46,6 +46,35 @@ namespace Domain.Constants
             }
         }
 
+        public static class MediaExtractionUrl
+        {
+            public static class Rtmp
+            {
+                public static class Pull
+                {
+                    public const string Client = "rtmp://{0}:{1}/extraction/{2}?callId={3}";
+                    public const string Gstreamer = "rtmp://{0}:{1}/extraction/{2}";
+                }
+            }
+
+            public static class Rtmps
+            {
+                public static class Pull
+                {
+                    public const string Client = "rtmps://{0}:{1}/secure-extraction/{2}?callId={3}";
+                    public const string Gstreamer = "rtmp://{0}:{1}/secure-extraction/{2}";
+                }
+            }
+
+            public static class Srt
+            {
+                public static class Listener
+                {
+                    public const string Client = "srt://{0}:{1}?mode=caller";
+                }
+            }
+        }
+
         public static class AzureEventGid
         {
             public static class EventTypes
