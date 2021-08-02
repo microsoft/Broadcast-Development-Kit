@@ -6,6 +6,10 @@
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
     <UserSecretsId>a22b53e6-2379-4c8c-80c9-24560028fcc4</UserSecretsId>
     <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <Version>0.4.0-dev</Version>
+    <Product>Broadcast Development Kit for Teams</Product>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.3.0" />

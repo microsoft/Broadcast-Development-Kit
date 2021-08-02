@@ -5,6 +5,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
+    <Product>Broadcast Development Kit for Teams</Product>
+    <Version>0.4.0-dev</Version>
+    <Company>Microsoft</Company>
+    <Authors>Microsoft</Authors>
   </PropertyGroup>
 
   <ItemGroup>

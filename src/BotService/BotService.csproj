@@ -8,6 +8,10 @@
     <LangVersion>8.0</LangVersion>
     <UserSecretsId>019a9d6b-92c1-4624-b860-e3ef639bb6a2</UserSecretsId>
     <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
+    <Product>Broadcast Development Kit for Teams</Product>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <Version>0.4.0-dev</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
