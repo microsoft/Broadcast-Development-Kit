@@ -9,7 +9,26 @@ As endpoints in the solution are securitized in order to make requests to the AP
 
 ## Client Credential Flow
 ### Create an App Registration
+It is necessary to create a new App registration to be able to configure it and thus be able to obtain the `access token`. Review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) that will explain how to do it, and consider the following settings for each of them:
 
+- ***Name:*** Meaningful name.
+- ***Supported account types:*** Accounts in this organizational directory only (`your-organization` only - Single tenant).
+
+Once you've registered the app registration you must [add a client secret](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-a-client-secret), copy the value and save it together with the application client id in a secure place, we will need them for future steps.
+
+#### API permissions
+
+From the App registration view, go to the **API permissions** option that is in the resource blade, click the **Add a permission** button and then ensure that the **APIs my organization** uses tab is selected. Search for the **Broadcaster for Teams API** and click on the search result.
+
+![Search API permissions](./images/search_api_permissions.png)
+
+Then inside BotService select **AccessAll** and click on **Add permissions**.
+
+![Request API permissions.png](./images/request_api_permissions.png)
+
+> **NOTE**: If your user does not have the necessary permissions to enable the add-on permission. You must ask a user with the required permission to enable it.
+
+![Add permissions](./images/added_api_permission.png)
 
 ### How to generate a bearer token
 Once the App registration is created, follow the steps below to generate the `access token` from **Postman**:
@@ -27,14 +46,14 @@ Once the App registration is created, follow the steps below to generate the `ac
     | Placeholder | Description |
     |-------------|-------------|
     | Grant Type     |  Select the **Client Credentials** option.|
-    | callbackUrl     | URL set in the [SPA](https://github.com/microsoft/Broadcast-Development-Kit-Web-UI/tree/main/docs/how-to-run-the-solution-in-azure#configure-the-app-registration). |
-    | authUrl | https://login.microsoftonline.com/`{{tenantId}}`/oauth2/v2.0/token`|
+    | accessTokenURL | https://login.microsoftonline.com/`{{tenantId}}`/oauth2/v2.0/token`|
     | tenantId |  Tenant Id of the subscription. |
     | clientId    |   Client Id of the App registration created for testing |
+    | clientSecret    |   Client Secret of the App registration created for testing |
     | scope   |     api://`{{clientIdManagementAPI}}`/.default |
-    | clientIdManagementAPI |  Client Id of the [App Registration](./how-to-run-the-solution-in-azure/app_registrations.md#how-to-setup-management-api-app-registration) of the ManagementApi. |
+    | clientIdManagementAPI |  Client Id of the [App Registration](../how-to-run-the-solution-in-azure/app_registrations.md#how-to-setup-management-api-app-registration) of the ManagementApi. |
     
-1. Next, to generate the token, click on the **Get New Access Token** button. After a few seconds the pop-up window **Manage Access Tokens** will be displayed, which shows the generated `access token`. To use this token, click on the button **Use Toekn**, this will allow adding this `access token` for the calls of the APIs.
+1. Next, to generate the token, click on the **Get New Access Token** button, a new window will be displayed to log in with your Microsoft account and then it will show the generated `access token`. To use this token, click on the button **Use Token**, this will allow adding this `access token` for the calls of the APIs.
 
     |![Management Access Tokens](./images/management_access_token.png)|
     |:--:|
@@ -44,7 +63,7 @@ Once the App registration is created, follow the steps below to generate the `ac
 ## How to generate a bearer token
 > NOTE: It is necessary to use a App registration SPA to generate the access token, please review the following [documentation]().
 
-In order to call the APIs of the **Management API**, it is necessary to generate an ``access token`` that authorizes communication with the endpoints. To generate the ``access token``, it is suggested to follow the following steps:
+Another alternative to obtain the `access token` is through the authorization request. To generate the access token with this alternative, the following steps are suggested:
  
 1. Open **Postman** and create a new **GET** request.
 
@@ -64,6 +83,7 @@ In order to call the APIs of the **Management API**, it is necessary to generate
     | tenantId |  Tenant Id of the subscription. |
     | clientId    |   Client Id of the App registration created for testing |
     | scope   |     api://`{{clientIdManagementAPI}}`/access_as_producer |
+    | clientIdManagementAPI |  Client Id of the [App Registration](../how-to-run-the-solution-in-azure/app_registrations.md#how-to-setup-management-api-app-registration) of the ManagementApi. |
 
 1. Next, to generate the token, click on the **Get New Access Token** button. After a few seconds the pop-up window **Manage Access Tokens** will be displayed, which shows the generated `access token`. To use this token, click on the button **Use Toekn**, this will allow adding this `access token` for the calls of the APIs.
 
@@ -265,7 +285,7 @@ The returned status is equals 0 (Establishing) means that the bot is joining the
     "graphId": "graphId",
     "streams": [
         {
-            "id": "streamId",
+            "id": "participantId",
             "aadId": null,
             "callId": "callId",
             "participantGraphId": "participantScreenGraphId",
@@ -292,7 +312,7 @@ The returned status is equals 0 (Establishing) means that the bot is joining the
             "error": null
         },
         {
-            "id": "streamId",
+            "id": "participantId",
             "aadId": null,
             "callId": "callId",
             "participantGraphId": "participantSpeakerGraphId",
@@ -319,8 +339,8 @@ The returned status is equals 0 (Establishing) means that the bot is joining the
             "error": null
         },
         {
-            "id": "streamId",
-            "aadId": "aadId",
+            "id": "participant1Id",
+            "aadId": "aadId1",
             "callId": "callId",
             "participantGraphId": "participant1GraphId",
             "displayName": "Participant 1 Name",
@@ -346,8 +366,8 @@ The returned status is equals 0 (Establishing) means that the bot is joining the
             "error": null
         },
         {
-            "id": "streamId",
-            "aadId": "aadId",
+            "id": "participant2Id",
+            "aadId": "aadId2",
             "callId": "callId",
             "participantGraphId": "participant2GraphId",
             "displayName": "Participant 2 Name",
@@ -383,7 +403,7 @@ The returned status is equals 0 (Establishing) means that the bot is joining the
 
 The list of the participants joined to the call is listed in the streams property of the response.
 
-1. **Start Stream**: To start the extraction of a participant it is necessary to check if the isSharingVideo property of the participant is true. In previous step request response we can see that participant 2 is sharing video.
+5. **Start Stream**: To start the extraction of a participant it is necessary to check if the isSharingVideo property of the participant is true. In previous step request response we can see that participant 2 is sharing video.
 
 **Method**: `POST`  
 **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/stream/start-extraction`  
@@ -396,3 +416,193 @@ The list of the participants joined to the call is listed in the streams propert
 **Body**: `raw`
 
 Complete the body in Postman with the following: 
+```json
+{  
+  "participantId": "{{participantId}}",  
+  "participantGraphId": "{{participantGraphId}}",  
+  "resourceType": {{resourceType}}, 
+  "protocol": {{protocol}}, 
+  "mode": {{mode}},
+  "streamUrl": "{{streamUrl}}",  
+  "streamKey": "{{streamKey}}", 
+  "timeOverlay": {{timeOverlay}},
+  "enableSsl" : {{enableSSl}},
+  "keyLength": {{keyLength}},
+  "latency": {{latency}}
+} 
+```
+
+| Placeholder | Description |
+|-------------|-------------|
+| participantId | Participant Id |
+| participantGraphId | Participant Graph Id |
+| resourceType | For participant extraction use `2` |
+| protocol | Use `1` for SRT and `2` for RTMP extraction protocol|
+| mode | **SRT**: `1` is Caller, `2` is Listener. **RTMP**: `1` is Pull, `2` is Push |
+| streamUrl | streamUrl for extraction if SRT is in `Caller` mode or RTMP in `Push` mode or `null` |
+| streamKey | Stream key or passphrase or `null`|
+| timeOverlay | `True` or `False` |
+| enableSsl | Enable SSL: `True` or `False` with RTMP protocol, use `null` for SRT |
+| keyLength | key length value for SRT, allowed values: `0`, `16`, `24`, `32`, use `null` in RTMP|
+| latency | Latency for SRT (eg: `750`), use `null` in RTMP|
+
+**Response:**
+
+```json
+{
+    "id": "participant2Id",
+    "resource": {
+        "id": "participant2Id",
+        "aadId": "aadId2",
+        "callId": "callId",
+        "participantGraphId": "participant2GraphId",
+        "displayName": "Participant 2 Name",
+        "photoUrl": "photoUrl",
+        "type": 2,
+        "state": 2,
+        "isHealthy": true,
+        "healthMessage": "",
+        "audioMuted": true,
+        "isSharingAudio": true,
+        "isSharingVideo": true,
+        "isSharingScreen": false,
+        "details": {
+            "streamUrl": "rtmps://domain:2940/secure-extraction/hJw5wZxAETkyExVhqdtw?callId=callid",
+            "audioDemuxed": false,
+            "passphrase": "hJw5wZxAETkyExVhqdtw",
+            "keyLength": 0,
+            "latency": 0,
+            "previewUrl": null
+        },
+        "createdAt": "0001-01-01T00:00:00",
+        "leftAt": null,
+        "error": null
+    }
+}
+```
+
+When started the extraction in SRT Listener mode or in RTMP Pull mode, you can use the `streamUrl` in the `details` of the response to consume the extraction with a player as VLC
+
+6. **Stop Stream:**
+
+**Method**: `POST`  
+**Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/stream/stop-extraction` 
+
+**Headers**: Verify the `Content-type` key has as value `application/json`  
+**Body**: `raw`
+
+Complete the body in Postman with the following: 
+```json
+{ 
+  "participantId": "{{participantId}}", 
+  "participantGraphId": "{{participantGraphId}}",
+  "resourceType": {{resourceType}}, 
+} 
+```
+| Placeholder | Description |
+|-------------|-------------|
+| participantId | Participant Id |
+| participantGraphId | Participant Graph Id |
+| resourceType | For participant extraction use `2` |
+
+**Response:**
+```json
+{
+    "id": "participant2Id",
+    "resource": {
+        "id": "participant2Id",
+        "aadId": "aadId2",
+        "callId": "callId",
+        "participantGraphId": "participant2GraphId",
+        "displayName": "Participant 2 Name",
+        "photoUrl": "https://appServiceUrl/api/participant/photo/f2b1876a-0573-4555-ab81-42d2fcd9cfa6",
+        "type": 2,
+        "state": 0,
+        "isHealthy": true,
+        "healthMessage": "",
+        "audioMuted": false,
+        "isSharingAudio": true,
+        "isSharingVideo": true,
+        "isSharingScreen": false,
+        "details": {
+            "streamUrl": null,
+            "audioDemuxed": false,
+            "passphrase": null,
+            "keyLength": 0,
+            "latency": 0,
+            "previewUrl": null
+        },
+        "createdAt": "0001-01-01T00:00:00",
+        "leftAt": null,
+        "error": null
+    }
+}
+```
+
+7. **Disconnect Call:**
+
+**Method**: `DELETE`  
+**Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}` 
+
+**Response:**
+```json
+{
+    "id": "callid",
+    "resource": {
+        "id": "callid",
+        "meetingUrl": "teamsMeetingUrl",
+        "meetingId": "meetingId",
+        "state": 2,
+        "createdAt": "2021-08-03T16:17:57.4086259+00:00",
+        "startedAt": "2021-08-03T16:18:05.9058345Z",
+        "endedAt": "0001-01-01T00:00:00",
+        "meetingType": 0,
+        "botFqdn": "",
+        "botIp": null,
+        "defaultPassphrase": null,
+        "defaultLatency": 0,
+        "graphId": "graphId",
+        "streams": [],
+        "injectionStream": null,
+        "publicContext": {},
+        "privateContext": {
+            "streamKey": "hJw5wZxAETkyExVhqdtw"
+        }
+    }
+}
+```
+
+8. **Stop Service:**
+
+**Method**: `POST`  
+**Endpoint**: `https://{{appServiceUrl}}/api/service/{{serviceId}}/stop` 
+
+**Response:**
+```json
+{
+    "id": "serviceId",
+    "resource": {
+        "id": "serviceId",
+        "callId": null,
+        "name": "serviceName",
+        "state": 3,
+        "createdAt": "2021-06-07T15:44:16.6961976+00:00",
+        "infrastructure": {
+            "virtualMachineName": "",
+            "resourceGroup": "",
+            "subscriptionId": "",
+            "id": "",
+            "powerState": "PowerState/running",
+            "ipAddress": "",
+            "dns": "",
+            "provisioningDetails": {
+                "state": {
+                    "id": 2,
+                    "name": "Deprovisioning"
+                },
+                "message": "Deprovisioning service serviceName"
+            }
+        }
+    }
+}
+```
