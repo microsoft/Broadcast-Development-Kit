@@ -18,11 +18,11 @@ Once you've registered the app registration you must [add a client secret](https
 
 #### API permissions
 
-From the App registration view, go to the **API permissions** option that is in the resource blade, click the **Add a permission** button and then ensure that the **APIs my organization** uses tab is selected. Search for the **Broadcaster for Teams API** and click on the search result.
+From the App registration created view, go to the **API permissions** option that is in the resource blade, click the **Add a permission** button and then ensure that the **APIs my organization** uses tab is selected. Search for the **Broadcaster for Teams API** and click on the search result.
 
 ![Search API permissions](./images/search_api_permissions.png)
 
-Then inside BotService select **AccessAll** and click on **Add permissions**.
+Then inside App registration created, select **AccessAll** and click on **Add permissions**.
 
 ![Request API permissions.png](./images/request_api_permissions.png)
 
