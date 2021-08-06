@@ -99,9 +99,13 @@ This solution currently has some limitations:
 This section will guide you through the process of configuring the solution to run it locally and/or in azure.
 
 ### How to run the solution
+Please follow these documents to build and configure this solution:
 - [Prerequisites](docs/prerequisites/README.md)
 - [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
 - [How to run the solution in Azure](docs/how-to-run-the-solution-in-azure/README.md)
+
+You can find how to use the APIs in this solution in the following document:
+- [How to use the Management API](docs/how-to-use-the-solution/README.md)
 
 ### Adding an UI
 
