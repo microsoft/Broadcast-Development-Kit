@@ -443,13 +443,13 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     {  
         "participantId": "{{participantId}}",  
         "participantGraphId": "{{participantGraphId}}",  
-        "resourceType": "{{resourceType}}", 
-        "protocol": "{{protocol}}", 
-        "mode": "{{mode}}",
+        "resourceType": 2, 
+        "protocol": 1, 
+        "mode": 1,
         "streamUrl": "{{streamUrl}}",
         "streamKey": "{{streamKey}}", 
-        "timeOverlay": "{{timeOverlay}}",
-        "enableSsl": "{{enableSSl}}"
+        "timeOverlay": false,
+        "enableSsl": false
     } 
     ```
 
@@ -472,14 +472,14 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     {  
         "participantId": "{{participantId}}",  
         "participantGraphId": "{{participantGraphId}}",  
-        "resourceType": "{{resourceType}}", 
-        "protocol": "{{protocol}}", 
-        "mode": "{{mode}}",
+        "resourceType": 2, 
+        "protocol": 0, 
+        "mode": 2,
         "streamUrl": "{{streamUrl}}",
         "streamKey": "{{streamKey}}", 
-        "timeOverlay": "{{timeOverlay}}",
-        "keyLength": "{{keyLength}}",
-        "latency": "{{latency}}"
+        "timeOverlay": false,
+        "keyLength": 0,
+        "latency": 750
     } 
     ```
 
@@ -557,7 +557,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     { 
         "participantId": "{{participantId}}",
         "participantGraphId": "{{participantGraphId}}",
-        "resourceType": "{{resourceType}}",
+        "resourceType": 2,
     } 
     ```
     | Placeholder | Description |
@@ -616,10 +616,10 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     #### Body for RTMP
     ```json
     {
-        "protocol": "{{protocol}}",
-        "mode": "{{mode}}",
+        "protocol": 1,
+        "mode": 1,
         "streamUrl": "{{streamUrl}}",
-        "enableSSl": "{{enableSsl}}"
+        "enableSSl": false
     }
     ```
 
@@ -633,12 +633,12 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     #### Body for SRT
     ```json
     {
-        "protocol": "{{protocol}}",
-        "mode": "{{mode}}",
+        "protocol": 0,
+        "mode": 1,
         "streamUrl": "{{streamUrl}}",
         "streamKey": "{{streamKey}}",
-        "latency": "{{latency}}",
-        "keyLength": "{{keyLength}}",
+        "latency": 750,
+        "keyLength": 0,
     }
     ```
 
@@ -710,7 +710,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     }
     ```
 ### Generate RTMP stream key
-1. **Generate RTMP stream key:** This endpoint updates the streamKey in the privateContext of the call, used key for RTMP  injections and extractions.
+1. **Generate RTMP stream key:** This endpoint updates the streamKey in the privateContext of the call, used key for RTMP injections and extractions. Only need to use this endpoint if you want to change the RMTP key of the current meeting, each meeting has its own RTMP stream key.
 
     **Method**: `POST`  
     **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/generate-stream-key`  
