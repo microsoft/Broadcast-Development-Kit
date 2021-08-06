@@ -1,6 +1,7 @@
-# How to use the Backend solution
+# How to use the Management API
+
 ## Getting Started
-This document is intended to provide the guidance needed by the user to operate the Broadcast Development Kit (BDK) using Postman. This includes:
+This document contains the instructions to operate the Broadcast Development Kit (BDK) using Postman. This includes:
 
   - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -113,11 +114,16 @@ To generate the access token with implicit grant type, the following steps are s
     |*Management Access Tokens*|
 
 ## Call Flow
-First, we need to start the service where the bot will run (Start Virtual Machine). After requested the service provisioning, we must poll the `Get Service State` endpoint several times until the service is `Provisioned`.
+The life cycle of a call follows these steps:
 
-Once the service is provisioned, to invite the bot into a meeting we must use the `Initialize Call` endpoint. The request will return a call with state equals to `0` (Establishing). Then, we must poll the `Get Call Details` endpoint until the state of the call is `1` (Established) and the Participants are available. After that, we are able to start streams. 
-
-After the bot usage is done, it can be terminated using the `Stop Service` endpoint. As before with starting, to make sure that the VM has been stopped, we must poll the Get Virtual Machine State endpoint several times until the service is `Deprovisioned`. 
+1. First, we need to start the service (i.e. the VM) that host the bot using the `Start Service` endpoint. 
+2. After requesting the provisioning of the service, we must poll the `Get Service State` endpoint several times until the service is `Provisioned`.
+3. Once the service is provisioned, to invite the bot into a meeting we must use the `Initialize Call` endpoint. The request will return a call with state equals to `0` (Establishing). 
+4. Then, we must poll the `Get Call Details` endpoint until the state of the call is `1` (Established) and the Participants are available. 
+5. After that, we are able to start and stop the streams we want to capture.
+6. Once the service is not longer needed in the call and all streams are stopped, we can disconnect it using the `Delete Call` endpoint.
+7. After the bot usage is done, it can be terminated using the `Stop Service` endpoint. 
+8. To make sure that the VM has been stopped, we must poll the `Get Service State` endpoint several times until the service is `Deprovisioned`. 
 
 ## Operations
 The following instructions are the steps necessary to start the service, join the bot into the meeting, start an extraction or injection, disconnect the call and stop the service. 
@@ -132,8 +138,8 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
 
     | Placeholder | Description |
     |-------------|-------------|
-    | appServiceUrl | AppService Url|
-    | serviceId | Service Id|
+    | appServiceUrl | AppService Url |
+    | serviceId | Service Id (the default id is `00000000-0000-0000-0000-000000000000`)|
 
 
     **Response:** 
@@ -174,8 +180,8 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
 
     | Placeholder | Description |
     |-------------|-------------|
-    | appServiceUrl | AppService URL|
-    | serviceId | Service Id|
+    | appServiceUrl | AppService URL |
+    | serviceId | Service Id (the default id is `00000000-0000-0000-0000-000000000000`)|
 
     **Response:**
 
@@ -226,7 +232,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     Complete the body in Postman with the following: 
     ```json
     { 
-        "MeetingUrl": "{{teamsMeetingUrl}}" 
+        "MeetingUrl": "{{teamsMeetingUrl}}" 
     } 
     ```
 
@@ -269,7 +275,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     ```
     The returned status is equals `0` (Establishing) means that the bot is joining the call. To be able to start a stream, the call state has to be in `1` (Established). You can use the `Get Call Details` operation to verify the status of the call. The returned `Id` value must to be copied to be used in the following steps. 
 
-    2. **Get call details:** The call details endpoind will retrieve call and participants information. If the state of the call is `1` (Established), it means that the bot is joined in the call.
+2. **Get call details:** The call details endpoind will retrieve call and participants information. If the state of the call is `1` (Established), it means that the bot is joined in the call.
 
     **Method**: `POST`  
     **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}`  
@@ -415,7 +421,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     The list of the participants joined to the call is listed in the streams property of the response.
 
 ### Start an extraction
-1. **Start extraction stream**: To start the extraction of a participant it is necessary to check if the isSharingVideo property of the participant is true. In previous step request response we can see that participant 2 is sharing video.
+1. **Start extraction stream**: To start the extraction of a participant it is necessary to check if the `isSharingVideo` property of the participant is true. In previous step request response we can see that participant 2 is sharing video.
 
     **Method**: `POST`  
     **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/stream/start-extraction`  
@@ -742,6 +748,11 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
 
     **Method**: `POST`  
     **Endpoint**: `https://{{appServiceUrl}}/api/service/{{serviceId}}/stop` 
+
+    | Placeholder | Description |
+    |-------------|-------------|
+    | appServiceUrl | AppService URL |
+    | serviceId | Service Id (the default id is `00000000-0000-0000-0000-000000000000`)|
 
     **Response:**
     ```json
