@@ -18,7 +18,8 @@ This document contains the instructions to operate the Broadcast Development Kit
     - [Join the bot into a meeting](#join-the-bot-into-a-meeting)
     - [Start an extraction](#start-an-extraction)
     - [Start an Injection](#start-an-injection)
-    - [Disconnect Call:](#disconnect-call)
+    - [Disconnect Call](#disconnect-call)
+    - [Generate RTMP Stream Key](#generate-rtmp-stream-key)
     - [Stop service](#stop-service)
   
 ## Prerequisites
@@ -27,9 +28,10 @@ This document contains the instructions to operate the Broadcast Development Kit
 ## Authorization
 As endpoints in the solution are securitized in order to make requests to the API it is necessary to generate an access token and use it in the header of the requests, otherwise, the API will respond to requests with HTTP error code 401 (Unauthorized).
 
-In this section we describe how to generate an access token using the app registration used for the SPA or by creating a new one for the client credential flow and use it in each request.
+In this section we describe how to generate an access token with the app registration used in the SPA for the [implicit grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) or by creating a new App registration for the [client credential flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow).
 
 ### Client Credential Flow
+
 #### Create an App Registration
 Create a new App registration to be able to configure it and thus be able to obtain the `access token`. Review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) that will explain how to do it, and consider the following settings:
 
@@ -81,6 +83,7 @@ Once the App registration is created, follow the steps below to generate the `ac
     |*Management Access Tokens*|
 
 ### Implicit Flow
+
 #### How to generate an access token with implicit grant type
 > NOTE: It is necessary to use the App registration of the SPA to generate the access token, please review the following [documentation](https://github.com/microsoft/Broadcast-Development-Kit-Web-UI/tree/main/docs/how-to-run-the-solution-in-azure#create-a-new-app-registration).
 
@@ -438,15 +441,15 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     Complete the body in Postman with the following: 
     ```json
     {  
-    "participantId": "{{participantId}}",  
-    "participantGraphId": "{{participantGraphId}}",  
-    "resourceType": {{resourceType}}, 
-    "protocol": {{protocol}}, 
-    "mode": {{mode}},
-    "streamUrl": "{{streamUrl}}",  
-    "streamKey": "{{streamKey}}", 
-    "timeOverlay": {{timeOverlay}},
-    "enableSsl" : {{enableSSl}}
+        "participantId": "{{participantId}}",  
+        "participantGraphId": "{{participantGraphId}}",  
+        "resourceType": "{{resourceType}}", 
+        "protocol": "{{protocol}}", 
+        "mode": "{{mode}}",
+        "streamUrl": "{{streamUrl}}",  
+        "streamKey": "{{streamKey}}", 
+        "timeOverlay": "{{timeOverlay}}",
+        "enableSsl" : "{{enableSSl}}"
     } 
     ```
 
@@ -458,7 +461,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | protocol | Use `1` for RTMP extraction protocol|
     | mode | Use: `1` is Pull, `2` is Push |
     | streamUrl | RTMP in `Push` mode, use `null` if is `Pull` mode |
-    | streamKey | Stream key or passphrase is in `Push` mode, use `null` if is `Pull` mode|
+    | streamKey | Stream key for `Push` mode, use `null` in `Pull` mode (In `Pull` mode uses the stream key of the call's privateContext)|
     | timeOverlay | `True` or `False` |
     | enableSsl | Enable SSL: `True` or `False` is in `Pull` mode, use `false` if is `Push` mode|
 
@@ -467,16 +470,16 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     Complete the body in Postman with the following: 
     ```json
     {  
-    "participantId": "{{participantId}}",  
-    "participantGraphId": "{{participantGraphId}}",  
-    "resourceType": {{resourceType}}, 
-    "protocol": {{protocol}}, 
-    "mode": {{mode}},
-    "streamUrl": "{{streamUrl}}",  
-    "streamKey": "{{streamKey}}", 
-    "timeOverlay": {{timeOverlay}},
-    "keyLength": {{keyLength}},
-    "latency": {{latency}}
+        "participantId": "{{participantId}}",  
+        "participantGraphId": "{{participantGraphId}}",  
+        "resourceType": "{{resourceType}}", 
+        "protocol": "{{protocol}}", 
+        "mode": "{{mode}}",
+        "streamUrl": "{{streamUrl}}",  
+        "streamKey": "{{streamKey}}", 
+        "timeOverlay": "{{timeOverlay}}",
+        "keyLength": "{{keyLength}}",
+        "latency": "{{latency}}"
     } 
     ```
 
@@ -552,9 +555,9 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     Complete the body in Postman with the following: 
     ```json
     { 
-      "participantId": "{{participantId}}", 
-    "participantGraphId": "{{participantGraphId}}",
-    "resourceType": {{resourceType}}, 
+        "participantId": "{{participantId}}", 
+        "participantGraphId": "{{participantGraphId}}",
+        "resourceType": "{{resourceType}}", 
     } 
     ```
     | Placeholder | Description |
@@ -613,11 +616,10 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     #### Body for RTMP
     ```json
     {
-        "protocol": {{protocol}},
-        "mode": {{mode}},
+        "protocol": "{{protocol}}",
+        "mode": "{{mode}}",
         "streamUrl": "{{streamUrl}}",
-        "streamKey": "{{streamKey}}",
-        "enableSSl": {{enableSsl}}
+        "enableSSl": "{{enableSsl}}"
     }
     ```
 
@@ -626,16 +628,15 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | protocol | Use `1` for RTMP injection protocol|
     | mode | Use: `1` for Pull, `2` for Push |
     | streamUrl | RTMP in `Pull` mode or `null` |
-    | streamKey | Stream key or passphrase or `null`|
     | enableSsl | Enable SSL: `True` or `False` used when mode is `Push`|
 
     #### Body for SRT
     ```json
     {
-        "protocol": {{protocol}},
-        "mode": {{mode}},
+        "protocol": "{{protocol}}",
+        "mode": "{{mode}}",
         "streamUrl": "{{streamUrl}}",
-        "streamKey": "",
+        "streamKey": "{{streamKey}}",
         "latency": "{{latency}}",
         "keyLength": "0,16,24,32",
     }
@@ -643,10 +644,10 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
 
     | Placeholder | Description |
     |-------------|-------------|
-    | protocol | Use `0` for SRT extraction protocol |
+    | protocol | Use `0` for SRT injection protocol |
     | mode | Use: `1` is Caller, `2` is Listener. |
-    | streamUrl | streamUrl for extraction if SRT is in `Caller` mode, use `null` if is Listener |
-    | streamKey | use a passphrase or `null`|
+    | streamUrl | streamUrl for injection if SRT is in `Caller` mode, use `null` if is Listener |
+    | streamKey | Use a passphrase or `null`|
     | latency | Latency (eg: `750`)|
     | keyLength | Allowed values: `0`, `16`, `24`, `32`|
 
@@ -706,6 +707,23 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
             "streamMode": 2,
             "error": null
         }
+    }
+    ```
+### Generate RTMP Stream Key
+1. **Generate RTMP Stream Key:** This endpoint updates the streamKey in the privateContext of the call, used key for RTMP  injections and extractions.
+
+    **Method**: `POST`  
+    **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/generate-stream-key`        
+
+    | Placeholder | Description |
+    |-------------|-------------|
+    | callId      | Call Id     |
+
+    **Response**
+    ```json
+    {
+        "callId": "callId",
+        "streamKey": "QBfeZihvokOGiISvQ2pyTw"
     }
     ```
 
