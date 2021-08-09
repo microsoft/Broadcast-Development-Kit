@@ -32,5 +32,7 @@ namespace Application.Interfaces.Common
         Task UnmuteBotAsync();
 
         Task RegisterServiceAsync(string virtualMachineName);
+
+        Task UnregisterServiceAsync(string virtualMachineName);
     }
 }
