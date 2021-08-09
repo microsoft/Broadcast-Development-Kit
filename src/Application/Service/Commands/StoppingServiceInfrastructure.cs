@@ -62,7 +62,7 @@ namespace Application.Service.Commands
                 }
 
                 // TODO: Review
-                service.State = ServiceState.Stopping;
+                service.State = ServiceState.Off;
                 service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Deprovisioning;
                 service.Infrastructure.ProvisioningDetails.Message = $"Deprovisioning service {service.Name}";
                 await _serviceRepository.UpdateItemAsync(service.Id, service);
