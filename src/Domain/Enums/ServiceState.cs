@@ -7,6 +7,5 @@ namespace Domain.Enums
         Off = 0,
         Available = 1,
         Unavailable = 2,
-        Error = 3,
     }
 }
