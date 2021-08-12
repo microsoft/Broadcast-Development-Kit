@@ -119,7 +119,7 @@ namespace Application.Service.Commands
                     Id = request.IsDefault ? Constants.EnvironmentDefaults.ServiceId : null,
                     Name = request.FriendlyName,
                     CreatedAt = DateTime.Now,
-                    State = ServiceState.Off,
+                    State = ServiceState.Unavailable,
                     Infrastructure = new Domain.Entities.Parts.Infrastructure
                     {
                         Id = resourceId,

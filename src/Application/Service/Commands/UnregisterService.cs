@@ -63,7 +63,7 @@ namespace Application.Service.Commands
                 }
 
                 entity.CallId = null;
-                entity.State = Domain.Enums.ServiceState.Off;
+                entity.State = Domain.Enums.ServiceState.Unavailable;
 
                 await _serviceRepository.UpdateItemAsync(entity.Id, entity);
 

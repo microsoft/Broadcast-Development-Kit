@@ -61,7 +61,7 @@ namespace Application.Service.Commands
                 // TODO: Review
                 if (_environment.IsLocal())
                 {
-                    service.State = ServiceState.Off;
+                    service.State = ServiceState.Unavailable;
                     service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Deprovisioned;
                     service.Infrastructure.ProvisioningDetails.Message = $"Deprovisioned service {service.Name}.";
                     service.Infrastructure.PowerState = PowerState.Deallocated.Value;
