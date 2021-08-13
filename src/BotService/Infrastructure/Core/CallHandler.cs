@@ -695,7 +695,7 @@ namespace BotService.Infrastructure.Core
 
                 _logger.LogInformation("[CallHandler] Call Established {callId}", Call.ScenarioId.ToString());
 
-                // Start slate image injection
+                // Start injecting a slate image to prevent video rendering issues in MS Teams client related to media bots
                 StartSlateInjection();
             }
 
