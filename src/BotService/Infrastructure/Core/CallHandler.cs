@@ -53,6 +53,7 @@ namespace BotService.Infrastructure.Core
 
         private ISwitchingMediaExtractor _screenShareMediaSocket;
         private IMediaInjector _mediaInjector;
+        private IMediaInjector _mediaSlateInjector;
 
         private bool _isCapturingScreenShare;
         private bool _isCapturingPrimarySpeaker;
@@ -142,6 +143,8 @@ namespace BotService.Infrastructure.Core
 
         public void StartInjection(StartStreamInjectionBody startStreamInjectionBody)
         {
+            StopSlateInjection();
+
             var videoSocket = _mediaSocketPool.GetInjectionVideoSocket();
             if (videoSocket == null)
             {
@@ -164,6 +167,8 @@ namespace BotService.Infrastructure.Core
                 _mediaSocketPool.ReleaseSocket(_mediaInjector.VideoSocket);
                 _mediaInjector = null;
             }
+
+            StartSlateInjection();
         }
 
         /// <inheritdoc/>
@@ -178,6 +183,11 @@ namespace BotService.Infrastructure.Core
             if (_mediaInjector != null)
             {
                 _mediaInjector.Stop();
+            }
+
+            if (_mediaSlateInjector != null)
+            {
+                _mediaSlateInjector.Stop();
             }
 
             _clockProvider.ResetBaseTime();
@@ -640,6 +650,29 @@ namespace BotService.Infrastructure.Core
 
             return mediaStreamSettings;
         }
+
+        private void StartSlateInjection()
+        {
+            var injectionSettings = new MediaInjectionSettings
+            {
+                CallId = Call.Id,
+                StreamId = Call.Id,
+            };
+            var videoSocket = _mediaSocketPool.GetInjectionVideoSocket();
+
+            _mediaSlateInjector = _mediaHandlerFactory.CreateSlateInjector(videoSocket);
+            _mediaSlateInjector.Start(injectionSettings);
+        }
+
+        private void StopSlateInjection()
+        {
+            if (_mediaSlateInjector != null)
+            {
+                _mediaSlateInjector.Stop();
+                _mediaSocketPool.ReleaseSocket(_mediaSlateInjector.VideoSocket);
+                _mediaSlateInjector = null;
+            }
+        }
         #endregion
 
         #region Private Event Handlers
@@ -661,6 +694,9 @@ namespace BotService.Infrastructure.Core
                 await _mediatorService.SetCallAsEstablishedAsync(callId, Call.Id);
 
                 _logger.LogInformation("[CallHandler] Call Established {callId}", Call.ScenarioId.ToString());
+
+                // Start slate image injection
+                StartSlateInjection();
             }
 
             if (e.OldResource.State != e.NewResource.State && e.NewResource.State == Microsoft.Graph.CallState.Terminated)

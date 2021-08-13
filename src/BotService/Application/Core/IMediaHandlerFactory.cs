@@ -11,5 +11,7 @@ namespace BotService.Application.Core
         ISwitchingMediaExtractor CreateSwitchingExtractor(IVideoSocket videoSocket, IMediaSocketPool mediaSocketPool, IAudioSocket audioSocket);
 
         IMediaInjector CreateInjector(IVideoSocket videoSocket, IAudioSocket audioSocket);
+
+        IMediaInjector CreateSlateInjector(IVideoSocket videoSocket);
     }
 }

@@ -1,4 +1,6 @@
-﻿using Gst;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+using Gst;
 
 namespace BotService.Infrastructure.Pipelines
 {
