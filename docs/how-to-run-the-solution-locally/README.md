@@ -166,7 +166,7 @@ Once this command is executed a message like the following will be displayed, th
 
 ### Domain Certificate
 
-You will need to install the [pfx certificate mentioned in the prerequisites](../prerequisites/readme.md) in your local environment. You can find instructions on how to do this in document [Manual installation of your domain certificate](../common/install_domain_certificate.md).
+You will need to install the [pfx certificate mentioned in the prerequisites](../prerequisites/README.md) in your local environment. You can find instructions on how to do this in document [Manual installation of your domain certificate](../common/install_domain_certificate.md).
 
 ## Configure the Backend Solution to run locally
 

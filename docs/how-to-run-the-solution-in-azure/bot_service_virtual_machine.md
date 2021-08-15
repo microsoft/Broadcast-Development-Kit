@@ -8,7 +8,7 @@ This document explains how to create the virtual machine where the Bot Service A
 To continue with the Virtual Machine documentation, the following dependencies need to be created:
 
 - [Storage Account](storage_account.md).
-- [SSL Certificate](../prerequisites/readme.md).
+- [SSL Certificate](../prerequisites/README.md).
 
 ## Create the virtual machine in Azure
 
@@ -78,6 +78,25 @@ Download [VCRedist](https://aka.ms/vs/16/release/vc_redist.x64.exe) and install 
 ### NGINX
 Follow this guide [How to Install and configure NGINX with RTMP module on Windows](../common/install_and_configure_nginx_with_rtmp_module_on_windows.md) to install and configure NGINX with RTMP module on windows, and configure it as a Windows service.
 
+### Environment variables
+In order to run the bot, we need to configure some environment variables that the bot will read in order to get access to its configuration settings and certificate.
+
+> **IMPORTANT** Before performing these steps, the storage account with the bot configurations must be already created to set the environment's variables.
+
+![Set Environment Variables](./images/set_environment_variables.png)
+
+![Set Systema Variables](./images/set_system_variables.png)
+
+| **Placer**                | **Description**                                                      |
+|---------------------------|----------------------------------------------------------------------|
+| storage account           | Name of the [Storage account](app_registrations.md) where the files are being stored.    |
+| blob container            | Name the container of [Storage account](app_registrations.md).                           |
+| blob sas query            | SAS key to get access to the container files of [Storage account](app_registrations.md). |
+| settings json file name   | Name of the bot app settings file uploaded into the config container in the [Storage account](app_registrations.md).  |
+| certificate pfx file name | Name of `.pfx` [wilcard certificate](../prerequisites/README.md) for the domain.  |
+
+> **NOTE**: The `BLOB_SAS_QUERY` must include the '?' at the beginning. This token has an expiration date, be aware of this date to renew the access token.
+
 ## Bot Service
 At the moment, there isn't automated deployment for the Bot Service so you need to manually copy and install the compiled version of the Bot Service in your virtual machine. To do this you can use one of the released versions of the Bot Service or compile the code manually in Visual Studio.
 
@@ -102,26 +121,6 @@ Check the configuration and to finish publishing, press the **Save** button.
 ![Configuration to Publish Bot Service](./images/save_publish_from_bot_service.png)
 
 After that, we can publish the project, and copy the files from the Target Location folder into the virtual machine. Later, we will explain how to run it from the command line or as a Windows Service.
-
-### Environment variables
-In order to run the bot, we need to configure some environment variables that the bot will read in order to get access to its configuration settings and certificate.
-
-> **IMPORTANT** Before performing these steps, the storage account with the bot configurations must be already created to set the environment's variables.
-
-![Set Environment Variables](./images/set_environment_variables.png)
-
-![Set Systema Variables](./images/set_system_variables.png)
-
-| **Placer**                | **Description**                                                      |
-|---------------------------|----------------------------------------------------------------------|
-| storage account           | Name of the [Storage account](app_registrations.md) where the files are being stored.    |
-| blob container            | Name the container of [Storage account](app_registrations.md).                           |
-| blob sas query            | SAS key to get access to the container files of [Storage account](app_registrations.md). |
-| settings json file name   | Name of the bot app settings file uploaded into the config container in the [Storage account](app_registrations.md).  |
-| certificate pfx file name | Name of `.pfx` [wilcard certificate](../prerequisites/readme.md) for the domain.  |
-
-
-> **NOTE**: The `BLOB_SAS_QUERY` must include the '?' at the beginning. This token has an expiration date, be aware of this date to renew the access token.
 
 ## Running the bot
 We have two alternatives to run the bot, from the command line and as a Windows Service. The first alternative is used when we want to see the logs in the terminal. There are some GStreamer and external libraries stdout/stderr we can't capture nor log them in application insights. The second alternative is used to run the Bot Service authomatically when the VM starts.
