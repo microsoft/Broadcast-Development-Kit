@@ -14,7 +14,7 @@ The following list shows the resources required to complete the configuration of
 - [Azure Bot app registration](../prerequisites/azure_bot.md).
 - [Cosmos DB](cosmos_db.md).
 - [SSL Certificate](../prerequisites/readme.md).
-- [Azure Virtual Machine (where the bot service is hosted)](bot_service_virtual_machine.md).
+- [Azure Virtual Machine (where the bot service is hosted)](virtual_machine.md).
 - [Management API](web_app_and_app_service_plan.md).
 - [Bot Service API app registration](app_registrations.md#how-to-setup-bot-service-api-app-registration).
 - [Application Insights](application_insights.md).

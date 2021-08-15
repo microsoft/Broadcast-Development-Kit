@@ -31,8 +31,8 @@ The service is configured/registered through the Management API by making a `POS
 | serviceName                            | A meaningful name for the service to be configured/registered, e.g. `Test service`. |
 | virtualMachineResourceGroup            | The [resource group](readme.md#resource-groups) name where the virtual machine was created. |
 | subscriptionIdOfResourceGroup          | The subscription Id where the virtual machine resource group was created.           |
-| virtualMachineName                     | The name of the [virtual machine](bot_service_virtual_machine.md)                   |
-| serviceDefault                         | Indicates whether the service to be added is the default, set it to `true`.     |
+| virtualMachineName                     | The name of the [virtual machine](virtual_machine.md)                               |
+| serviceDefault                         | Indicates whether the service to be added is the default, set it to `true`.         |
 
 ### Configure/register the service example
 You can use any HTTP client to configure/register the service to be used by the solution. In this example, the client used is `Postman`.

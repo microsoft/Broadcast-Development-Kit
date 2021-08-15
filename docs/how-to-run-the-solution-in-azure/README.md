@@ -20,10 +20,10 @@ This document describes the resources that must be created and configured to run
         - [Web App](web_app_and_app_service_plan.md).
         - [Function App](function_app_and_app_service_plan.md).
     - Virtual Machine resource group:
-        - [Virtual Machine](bot_service_virtual_machine.md).
+        - [Virtual Machine](virtual_machine.md).
         - [Event Grid](configure_event_grid.md).
 - Components Deployment:
-    - [Deploy the Bot Service into the Virtual Machine](bot_service_virtual_machine.md#bot-service).
+    - [Deploy the Bot Service into the Virtual Machine](deploy_bot-service.md).
     - [Deploy the Web App into the Azure App Service](deploy_web_app.md).
     - [Deploy the Function App into the Azure Function App Service](deploy_function_app.md).
 - Testing the environment:
@@ -73,5 +73,5 @@ The following resources form the core part of the solution, which is charge of c
 All these resources should be created in the `resource-group-name`-bot-vm resource group. 
 The app registration that was created to manage the state of the VM must be given access to this resource group with the Contributor role. This can be done in the **Access control (IAM)** menu of the resource group.
 
-- [Virtual Machine](bot_service_virtual_machine.md).
+- [Virtual Machine](virtual_machine.md).
 - [Event Grid](configure_event_grid.md##how-to-configure-event-grid).
