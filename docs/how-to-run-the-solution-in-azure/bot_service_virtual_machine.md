@@ -53,32 +53,45 @@ Once the virtual machine is created, we must add inbound rules in the network se
 | RTMP            | 1935-1936, 1940-1949 | TCP      | Used to inject & extract RTMP content.                       |
 | RTMPS           | 2935-2936, 2940-2949 | TCP      | Used to inject & extract RTMPS content.                      |
 
-### Configure the virtual machine
+## Configure the virtual machine
 Before starting using the virtual machine, we must install the applications listed below.
 
 > **IMPORTANT**: The disk D:\ is a temporary disk (files are deleted after shutdown/restart of the virtual machine) so you must install all the applications in C:\.
 
-#### Gstreamer
+### SSL Certificate
+Your wildcard SSL certificate can be installed in the virtual machine using one of these approaches:
+
+1. **Install the SSL certificate manually in the VM.** The main advantage of this is that you won't need to upload your PFX and password to the storage account, but you will need to change the certificate manually once it expires. To use this approach check the instructions in [Manual installation of your domain certificate](../common/install_domain_certificate.md).
+
+2. **Automatically through the Bot Service.** The main advantage is that the Bot Service will take care of installing the latest certificate as long as it is available in the storage account. The downside is that you will need to upload the certificate and password to the storage account. To delegate the installation to the Bot Service, check the instructions in [Storage Account](storage_account.md).
+
+### Gstreamer
 Download the GStreamer installer from this [link](https://gstreamer.freedesktop.org/data/pkg/windows/1.18.4/mingw/gstreamer-1.0-mingw-x86_64-1.18.4.msi). Once you have downloaded the installer and started the installation process, choose the custom installation and make sure that all modules have been selected and the installation path is in C:\.
 
 > **IMPORTANT**: Remember to select all GStreamer modules/plugins while installing GStreamer as a custom installation.
 
 After GStreamer installation, add the GStreamer bin folder path to the path environment variable.
 
-#### VCRedist
+### VCRedist
 Download [VCRedist](https://aka.ms/vs/16/release/vc_redist.x64.exe) and install it.
 
-#### NGINX
+### NGINX
 Follow this guide [How to Install and configure NGINX with RTMP module on Windows](../common/install_and_configure_nginx_with_rtmp_module_on_windows.md) to install and configure NGINX with RTMP module on windows, and configure it as a Windows service.
 
-### Bot Service
-At the moment,  there isn't automated deployment for the Bot Service API so, you need to use Visual Studio to publish the BotService project into a local folder.
+## Bot Service
+At the moment, there isn't automated deployment for the Bot Service so you need to manually copy and install the compiled version of the Bot Service in your virtual machine. To do this you can use one of the released versions of the Bot Service or compile the code manually in Visual Studio.
 
-Go to the Solution Explorer, right-click on BotService project and click **Publish**.
+### Using a released version
+To deploy a released version of the solution go to the [Releases](https://github.com/microsoft/Broadcast-Development-Kit/releases) page and download the Zip file for the version of the Bot Service that you want to use.
+
+Then copy the Zip file to your VM and un-zip the files into the folder where you want to install you Bot Service.
+
+### Building from the source code
+Open the solution in Visual Studio. Then, go to the Solution Explorer, right-click on BotService project and click **Publish**.
 
 ![Publish Bot Service](./images/publish_bot_service.png)
 
-In the publish tab, configure the Target Location, and edit the following settings:
+In the publish tab, configure the Target Location (a folder in your local machine), and edit the following settings:
 - ***Configuration:*** Release
 - ***Target Framework:*** net472
 - ***Target Runtime:*** win7-x64
@@ -88,7 +101,7 @@ In the publish tab, configure the Target Location, and edit the following settin
 Check the configuration and to finish publishing, press the **Save** button.
 ![Configuration to Publish Bot Service](./images/save_publish_from_bot_service.png)
 
-After that, we can publish the project, and copy the files into the virtual machine. Later, we will explain how to run it from the command line or as a Windows Service.
+After that, we can publish the project, and copy the files from the Target Location folder into the virtual machine. Later, we will explain how to run it from the command line or as a Windows Service.
 
 ### Environment variables
 In order to run the bot, we need to configure some environment variables that the bot will read in order to get access to its configuration settings and certificate.
@@ -110,12 +123,12 @@ In order to run the bot, we need to configure some environment variables that th
 
 > **NOTE**: The `BLOB_SAS_QUERY` must include the '?' at the beginning. This token has an expiration date, be aware of this date to renew the access token.
 
-### Running the bot
+## Running the bot
 We have two alternatives to run the bot, from the command line and as a Windows Service. The first alternative is used when we want to see the logs in the terminal. There are some GStreamer and external libraries stdout/stderr we can't capture nor log them in application insights. The second alternative is used to run the Bot Service authomatically when the VM starts.
 
 > **NOTE**: The first time we configure the environment, we recommend running it from the command line so windows prompts the firewall rule and we can accept and enable it.
 
-#### From command line
+### From command line
 In this scenario, you can run the Bot Service by executing the command `.\BotService.exe --console` in a terminal window from the path where the Bot Service is located.
 
 If you want to override the environment settings, 
@@ -130,9 +143,9 @@ $env:CERTIFICATE_FILE_NAME = '{{certFileName}}'
 .\BotService.exe --console
 ```
 
-> **NOTE**: Enable remote signed script for Powershell `set-executionpolicy remotesigned`.
+> **NOTE**: You might need to enable remote signed scripts in Powershell using the command `set-executionpolicy remotesigned`.
 
-#### As a Windows Service
+### As a Windows Service
 To run the bot every time the virtual machine is turned on, we configure it as a Windows Service. Before configuring it, we must validate that the group **ALL APPLICATION PACKAGES** has special permissions in the bot folder (right-click in the bot folder, click on **properties**, select the **security** tab). If the group doesn't have permissions, we must add it by clicking on **Advance** → **Add** → **Select a Principal**.
 
 ![As a Windows Service](./images/configure_windows_service.png)

@@ -1,7 +1,7 @@
 # Function App
 
 ## Introduction
-A Function App for it must be created to host the Azure VM Management. This document is intend to show, how to create a Function App in the resource group created for the architecture solution.
+To host the Bot Orchestrator function a Function App must be created in Azure. This document shows how to create the Function App for the Bot Orchestrator.
 
 ## Dependencies
 To create the Function App service needed to deploy the Orchestrator function, the following resources must be already created:

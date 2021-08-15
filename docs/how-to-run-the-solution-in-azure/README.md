@@ -16,8 +16,9 @@ This document describes the resources that must be created and configured to run
         - [Application Insights](application_insights.md).
         - [Storage account](storage_account.md).
         - [Cosmos DB](cosmos_db.md).
-        - [Web App and App service plan](web_app_and_app_service_plan.md).
-        - [Function App and App service plan](function_app_and_app_service_plan.md).
+        - [App Service Plan](service_plan.md).
+        - [Web App](web_app_and_app_service_plan.md).
+        - [Function App](function_app_and_app_service_plan.md).
     - Virtual Machine resource group:
         - [Virtual Machine](bot_service_virtual_machine.md).
         - [Event Grid](configure_event_grid.md).
@@ -28,6 +29,12 @@ This document describes the resources that must be created and configured to run
     - [How to configure/register the Service](add_service.md).
     - [How to test the Management API](test_web_app.md)
     - [How to test the Orchestrator Function](test_function_app.md)
+
+## General prerequisites
+
+Before deploying the solution in Azure, please make sure you have the all the prerequisites listed in [Prerequisites](..\prerequisites\README.md).
+
+Also, if you haven't already, make sure you have setup your [Azure Bot](..\prerequisites\azure_bot.md) too.
 
 ## App Registrations for authentication in different components in Azure AD tenant
 To secure and connect several of the resources used for the solution, we need to create several app registrations, each with its own permissions and settings. Several of the following instructions include creating application credentials. We recommend creating a Key Vault resource in Azure to store these credentials securely. We also recommend keeping track of the application IDs generated for each app registration to simplify the configuration of the applications during the project.  
