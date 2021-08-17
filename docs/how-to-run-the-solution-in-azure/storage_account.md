@@ -13,7 +13,7 @@ The following list shows the resources required to complete the configuration of
 
 - [Azure Bot app registration](../prerequisites/azure_bot.md).
 - [Cosmos DB](cosmos_db.md).
-- [SSL Certificate](../prerequisites/readme.md).
+- [SSL Certificate](../prerequisites/README.md).
 - [Azure Virtual Machine (where the bot service is hosted)](virtual_machine.md).
 - [Management API](web_app_and_app_service_plan.md).
 - [Bot Service API app registration](app_registrations.md#how-to-setup-bot-service-api-app-registration).
@@ -21,7 +21,7 @@ The following list shows the resources required to complete the configuration of
 
 ### Settings
 Create this storage account with the following settings:
-- ***Resource Group:*** Select the [resource group](readme.md#architecture-resource-group) created for the solution architecture.
+- ***Resource Group:*** Select the [resource group](README.md#architecture-resource-group) created for the solution architecture.
 - ***Storage account Name***: A meaningful name.
 - ***Region***: Same region as the rest of the resources.
 - ***Performance***: Standard.

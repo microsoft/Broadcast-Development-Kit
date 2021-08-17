@@ -36,7 +36,7 @@ The service is configured/registered through the Management API by making a `POS
 | Placeholder                            | Description                                                                         |
 |----------------------------------------|-------------------------------------------------------------------------------------|
 | serviceName                            | A meaningful name for the service to be configured/registered, e.g. `Test service`. |
-| virtualMachineResourceGroup            | The [resource group](readme.md#resource-groups) name where the virtual machine was created. |
+| virtualMachineResourceGroup            | The [resource group](README.md#resource-groups) name where the virtual machine was created. |
 | subscriptionIdOfResourceGroup          | The subscription Id where the virtual machine resource group was created.           |
 | virtualMachineName                     | The name of the [virtual machine](virtual_machine.md)                               |
 | serviceDefault                         | Indicates whether the service to be added is the default, set it to `true`.         |

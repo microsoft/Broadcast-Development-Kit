@@ -11,7 +11,7 @@ To continue with the App Service Plan, the following dependencies need to be cre
 ### Settings
 Fill the fields in the creation wizard with the following information:
 
-- ***Resource Group:*** Select the [resource group](readme.md#architecture-resource-group) created for the solution architecture.
+- ***Resource Group:*** Select the [resource group](README.md#architecture-resource-group) created for the solution architecture.
 - ***Name:*** A meaningful name.
 - ***Operating System:*** Windows.
 - ***Region:*** Same region as the rest of the resources.

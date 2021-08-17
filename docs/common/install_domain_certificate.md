@@ -4,7 +4,7 @@
 This document explains how to manually install your domain certificate in your virtual machine or local environment. 
 
 ## Installing the certificate
-Copy the [pfx certificate mentioned in the prerequisites](../prerequisites/readme.md) to your virtual machine or local environment and double click on it to run the certificate import wizard.
+Copy the [pfx certificate mentioned in the prerequisites](../prerequisites/README.md) to your virtual machine or local environment and double click on it to run the certificate import wizard.
 
 On the first screen, select `Local machine` as the Store Location and click `Next` (Windows may ask for administrator rights).
 

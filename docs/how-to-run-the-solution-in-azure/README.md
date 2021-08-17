@@ -23,7 +23,7 @@ This document describes the resources that must be created and configured to run
         - [Virtual Machine](virtual_machine.md).
         - [Event Grid](configure_event_grid.md).
 - Components Deployment:
-    - [Deploy the Bot Service into the Virtual Machine](deploy_bot-service.md).
+    - [Deploy the Bot Service into the Virtual Machine](deploy_bot_service.md).
     - [Deploy the Web App into the Azure App Service](deploy_web_app.md).
     - [Deploy the Function App into the Azure Function App Service](deploy_function_app.md).
 - Testing the environment:

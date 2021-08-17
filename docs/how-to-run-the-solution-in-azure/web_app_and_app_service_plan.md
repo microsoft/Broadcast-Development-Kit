@@ -13,7 +13,7 @@ To create the Web App needed to deploy the Management API, the following resourc
 Fill the fields in the creation wizard with the following information: 
 
 - ***Basic:***
-    - ***Resource Group:*** Select the [resource group](./readme.md#architecture-resource-group) created for the solution architecture.
+    - ***Resource Group:*** Select the [resource group](./README.md#architecture-resource-group) created for the solution architecture.
     - ***Name:*** A meaningful name.
     - ***Publish:*** Code.
     - ***Runtime stack:*** .NET Core 3.1 (LTS).
