@@ -11,9 +11,9 @@ By default, the `Slate` image rendered on the Microsoft client is an image provi
 
 ## Customizing the Slate image
 
-The `Slate` image rendered by the bot on the Microsoft Teams client can be customized. You only need to change the default image provided in the solution by one of your choices.
+The `Slate` image rendered by the bot on the Microsoft Teams client can be customized. You only need to change the default image provided in the solution with one of your choosing.
 
-To do so, please go to the `BotService` solution folder, find the `PNG` file called `slate.png` and replace it with one of your preferences. 
+To do so, please go to the `BotService` solution folder, find the `PNG` file called `slate.png` and replace it with an image of your choosing. 
 
 |![BDK default slate image route](images/default-slate-image-solution-route.png)|
 |:--:|
@@ -25,7 +25,5 @@ The `Slate` image you need to provide must have the following characteristics:
 - ***Name***: The image name must be named `slate`. 
 - ***Width***: The image width must be 1920px.
 - ***Height***: The image height must be 1080px.  
-
-> **NOTE**: Currently, the only image format supported is `PNG`. Also, the image resolution must be 1920x1080. If an image with different characteristics is provided it may cause video rendering issues on the Microsoft Teams client. 
 
 > **NOTE**: The image provided in the solution is copied to the folder where the `BotService` is published. You can also change the image directly from the folder where the bot was published, you do not need to build and publish again the solution, every time you want to change the `Slate` image. 
