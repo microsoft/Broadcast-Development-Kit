@@ -22,6 +22,7 @@ namespace BotService
 
         protected override void OnStarting(string[] args)
         {
+            _logger.LogInformation("OnStarting method called.");
             _webHost.SetupAndRegisterBotService();
 
             base.OnStarting(args);
@@ -29,8 +30,8 @@ namespace BotService
 
         protected override void OnStopping()
         {
-            // TODO: Unregister service
             _logger.LogInformation("OnStopping method called.");
+            _webHost.UnregisterBotService();
             base.OnStopping();
         }
     }

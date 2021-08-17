@@ -13,6 +13,7 @@ using static Application.Participant.Commands.HandleParticipantLeave;
 using static Application.Participant.Commands.UpdateParticipantMeetingStatus;
 using static Application.Service.Commands.RegisterService;
 using static Application.Service.Commands.SetBotServiceAsAvailable;
+using static Application.Service.Commands.UnregisterService;
 
 namespace BotService.Infrastructure.Services
 {
@@ -114,6 +115,19 @@ namespace BotService.Infrastructure.Services
         {
             using var scope = _serviceScopeFactory.CreateScope();
             var command = new RegisterServiceCommand
+            {
+                VirtualMachineName = virtualMachineName,
+            };
+
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+            return await mediator.Send(command);
+        }
+
+        public async Task<UnregisterServiceCommandResponse> UnregisterServiceAsync(string virtualMachineName)
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var command = new UnregisterServiceCommand
             {
                 VirtualMachineName = virtualMachineName,
             };

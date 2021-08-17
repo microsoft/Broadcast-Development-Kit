@@ -109,9 +109,10 @@ namespace BotService.Infrastructure.Core
             Id = response.Id;
         }
 
-        public void RegisterBotInstance()
+        public async Task UnregisterServiceAsync(string virtualMachineName)
         {
-            throw new NotImplementedException();
+            var response = await _mediatorService.UnregisterServiceAsync(virtualMachineName);
+            Id = response.Id;
         }
 
         public async Task MuteBotAsync()
