@@ -3,9 +3,12 @@
 ## About
 This document details the required software to be installed and the necessary steps you must follow to configure and run the solution locally.
 
+> **IMPORTANT**: These instructions will configure the solution to run in **Local mode**. This mode is designed to **disable most authentication checks** to make it easier for a developer to run the solution in their local environment. However, these settings should never be used when deploying this solution to Azure. For instructions on how to properly configure this solution in Azure, go to [How to Run the Solution in Azure](../how-to-run-the-solution-in-azure/README.md).
+
 ## Getting Started
 
 - [Requirements](#requirements)
+  - [General prerequisites](#general-prerequisites)
   - [Microsoft Azure Storage Emulator](#microsoft-azure-storage-emulator)
   - [Visual Studio 2019](#visual-studio-2019)
   - [Cosmos DB Emulator](#cosmos-db-emulator)
@@ -21,6 +24,13 @@ This document details the required software to be installed and the necessary st
 - [Testing the application](#testing-the-application)
 
 ## Requirements
+
+### General prerequisites
+
+Before running the solution locally, please make sure you have the all the prerequisites listed in [Prerequisites](..\prerequisites\README.md).
+
+Also, if you haven't already, make sure you have setup your [Azure Bot](..\prerequisites\azure_bot.md) too, as this still needed if you plan to run the solution locally.
+
 ### Microsoft Azure Storage Emulator
 Download and Install [Azure Storage Emulator](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator#get-the-storage-emulator)
 
@@ -155,41 +165,8 @@ Once this command is executed a message like the following will be displayed, th
 > ***OPTIONAL:*** Add `C:\ngrok` path where the .exe file is located to the Path environment variable. If you add it, you will not have to change the directory in the terminal every time you want to run ngrok.
 
 ### Domain Certificate
-Having the [pfx certificate mentioned in the prerequisites](../prerequisites/readme.md) double click on it to run the certificate import wizard.
 
-On the first screen, select `Local machine` as the Store Location and click `Next` (Windows may ask for administrator rights).
-
-|![Import Certificate](images/import_certificate.png)|
-|:--:|
-|*Certificate Import Wizard*|
-
-Click `Next` on the File to import step.
-
-In the Privacy Key Protection step, the wizard will ask for the password to read the certificate's private key, complete it and leave the rest of the settings as-is and click next.
-
-|![Import Certificate](images/certificate_password.png)|
-|:--:|
-|*Complete the password to read the certificate*|
-
-Finally, in the Certificate Store selection, click on `Browse` and select `Personal`. Then continue with the rest of the wizard.
-
-Later it will be necessary to obtain the certificate thumbprint to complete the botservice configuration. To obtain it press Win+R keys, complete the input with `certlm.msc` and press `Ok`.
-
-|![Run Certificate](images/run_certificate.png)|
-|:--:|
-|*Complete the input and press Ok*|
-
-Navigate to `Certificates - Local Computer\Personal\Certificates`, search for the name of the certificate and open it (Either by double clicking or left click and open).
-
-|![Run Certificate](images/certificate_personal.png)|
-|:--:|
-|*Search the certificate and open it*|
-
-Go to details tab and search for Thumbprint field, select it, and copy its value, you will use it later.
-
-|![Run Certificate](images/certificate_thumbprint.png)|
-|:--:|
-|*Copy the thumbprint of the certificate*|
+You will need to install the [pfx certificate mentioned in the prerequisites](../prerequisites/README.md) in your local environment. You can find instructions on how to do this in document [Manual installation of your domain certificate](../common/install_domain_certificate.md).
 
 ## Configure the Backend Solution to run locally
 
@@ -301,8 +278,6 @@ clientSecretAzureBotAppRegistration | Client secret of Azure bot [app registrati
 cosmosDbPrimaryKey | [Azure Cosmos DB Emulator primary key, can be found in the data explorer of the emulator](#cosmos-db-emulator).
 cosmosDbDatabaseName | Name of the database that the solution will create in Cosmos DB Emulator.  E.g.: `BroadcastDevelopmentKitDb`
 
-
-
 ### Configure BotService
 
 In the solution explorer, go to the `BotService` project (under `src/applications`), open the `Properties` folder and replace the `launchSettings.json` with the following configuration.
@@ -394,7 +369,7 @@ clientIdAzureBotAppRegistration | Client Id of the [app registration](../prerequ
 clientSecretAzureBotAppRegistration | Client secret of the [app registration](../prerequisites/azure_bot.md).
 cosmosDbPrimaryKey | [Azure Cosmos DB Emulator primary key, can be found in the data explorer of the emulator](#cosmos-db-emulator).
 cosmosDbDatabaseName | Name of the database that the solution will create in Cosmos DB Emulator.  E.g.: `BroadcastDevelopmentKitDb`
-certificateThumbprint | Thumbprint of the installed certificate.
+certificateThumbprint | Thumbprint of the installed certificate. If you don't know your certificate thumbprint, follow the instructions [here](../common/install_domain_certificate.md#obtaining-the-certificate-thumbprint) to obtain it.
 appInsightInstrumentationKey | ***`Optional:`*** by default leave it empty or if you have an instance of Application Insights you can store the log messages by entering an instrumentation key.
 
  To finish Configure the configuration file you have to use ngrok. The following image serves as a guide to know in a simple way where to take the values.

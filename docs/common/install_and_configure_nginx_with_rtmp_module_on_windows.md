@@ -16,7 +16,7 @@ Download as a zip NGINX with RTMP module from the following [GitHub repository](
 |*NGINX with RTMP module repository*|
 
 
-Before editing the `nginx.config` file, to support RTMPS we must copy the SSL certificate (we've mentioned as prerequisite [here](../prerequisites/readme.md)) and its key into the host machine. (e.g.: C:\certs)
+Before editing the `nginx.config` file, to support RTMPS we must copy the SSL certificate (we've mentioned as prerequisite [here](../prerequisites/README.md)) and its key into the host machine. (e.g.: C:\certs)
 
 | ![Certs](images/cert-files.png)|
 |:--:|

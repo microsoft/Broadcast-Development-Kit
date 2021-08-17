@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-This document shows how to create and configure the Storage account for the solution core components. This Storage account will be used to store the environment settings in `json` format, the wildcard SSL certificate in `pfx` format, and the queues that are consumed by the Azure Functions. 
+This document shows how to create and configure the Storage account for the solution core components. This Storage account will be used to store the environment settings in `json` format and the queues that are consumed by the Azure Functions. If you want to delegate the installation of the wildcard SSL certificate to the Bot Service, you will also store the certificate in `pfx` format in this storage account.
 
 To create a Storage account in Azure, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal).
 
@@ -13,15 +13,15 @@ The following list shows the resources required to complete the configuration of
 
 - [Azure Bot app registration](../prerequisites/azure_bot.md).
 - [Cosmos DB](cosmos_db.md).
-- [SSL Certificate](../prerequisites/readme.md).
-- [Azure Virtual Machine (where the bot service is hosted)](bot_service_virtual_machine.md).
+- [SSL Certificate](../prerequisites/README.md).
+- [Azure Virtual Machine (where the bot service is hosted)](virtual_machine.md).
 - [Management API](web_app_and_app_service_plan.md).
 - [Bot Service API app registration](app_registrations.md#how-to-setup-bot-service-api-app-registration).
 - [Application Insights](application_insights.md).
 
-### Settings.
+### Settings
 Create this storage account with the following settings:
-- ***Resource Group:*** Select the [resource group](readme.md#architecture-resource-group) created for the solution architecture.
+- ***Resource Group:*** Select the [resource group](README.md#architecture-resource-group) created for the solution architecture.
 - ***Storage account Name***: A meaningful name.
 - ***Region***: Same region as the rest of the resources.
 - ***Performance***: Standard.
@@ -38,7 +38,7 @@ Once this Storage account is created, create a new container with the following 
 
 To create a new Container, please review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal#create-a-container)
 
-Once the config container is created, upload the Bot Service settings and the wildcard SSL certificate files to it.
+Once the config container is created, upload the Bot Service settings in it. If you plan to delegate the installation of the certificate to the Bot Service, will need to upload the wildcard SSL certificate files to it too.
 
 ### Environment ***.json*** file settings example:
 Below there is a json file template with placeholders values you need to complete and upload to storage account before using the bot for the first time.
@@ -117,12 +117,12 @@ Below there is a json file template with placeholders values you need to complet
 | cosmosDbEndpointUrl                    | Endpoint URL of the [Cosmos DB](cosmos_db.md) created.                              |
 | cosmosDbPrimareyKey                    | Primary key of the [Cosmos DB](cosmos_db.md) created.                               |
 | cosmosDbDatabaseName                   | Database name of the [Cosmos DB](cosmos_db.md) created.                             |
-| pfxCertificatePassword                 | Password of the wildcard certificate uploaded to the Storage account.               |
+| pfxCertificatePassword                 | **Only needed if you want to delegate the installation of your certificate to the Bot Service**. Password of the wildcard certificate uploaded to the Storage account.               |
 | pfxCertificateThumbprint               | Thumbprint of the wildcard certificate uploaded to the Storage account.             |
 | managementApiURl                       | URL of the [Management API](web_app_and_app_function.md) (without https:// prefix). |
 | tenantIdAzureBotServiceApiClientId     | Tenant Id of the app registration for the [Bot Service API](app_registrations.md#how-to-setup-bot-service-api-app-registration).          |
-| botServiceApiClientId                     | Client Id of the app registration for the [Bot Service API](app_registrations.md#how-to-setup-bot-service-api-app-registration). |
-| appInsigtsKey                          | Application Insights key of the [Application Insights](application_insights.md) resource. |
+| botServiceApiClientId                  | Client Id of the app registration for the [Bot Service API](app_registrations.md#how-to-setup-bot-service-api-app-registration). |
+| appInsightsKey                         | Application Insights key of the [Application Insights](application_insights.md) resource. |
 
 ## Upload file to container
 Here's explains how to upload the `json file` into the container that was created.

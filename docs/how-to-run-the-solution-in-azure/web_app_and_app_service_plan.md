@@ -1,7 +1,7 @@
 # Web App
 
 ## Introduction
-In order to host the Management API, a Web App service must be created. This document is intend to show, how to create a Web App in the resource group created for the architecture solution.
+To host the Management API a Web App service must be created in Azure. This documents shows how to create the Web App for this API.
 
 ## Dependencies
 To create the Web App needed to deploy the Management API, the following resources must be already created:
@@ -13,7 +13,7 @@ To create the Web App needed to deploy the Management API, the following resourc
 Fill the fields in the creation wizard with the following information: 
 
 - ***Basic:***
-    - ***Resource Group:*** Select the [resource group](./readme.md#architecture-resource-group) created for the solution architecture.
+    - ***Resource Group:*** Select the [resource group](./README.md#architecture-resource-group) created for the solution architecture.
     - ***Name:*** A meaningful name.
     - ***Publish:*** Code.
     - ***Runtime stack:*** .NET Core 3.1 (LTS).

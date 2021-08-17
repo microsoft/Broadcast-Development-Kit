@@ -7,6 +7,16 @@ To continue with the Deploy the Function App into the Azure Function App Service
 
 - [Function App](function_app_and_app_service_plan.md).
 
+## Deploying a released version
+To deploy a released version of the solution go to the [Releases](https://github.com/microsoft/Broadcast-Development-Kit/releases) page and download the Zip file for the version of the Bot Orchestrator you want to deploy.
+
+Then, using **Azure CLI** (either locally or in the Azure Portal), run the following command to deploy the Zip file:
+
+```
+az functionapp deployment source config-zip -g <resource_group> -n <app_name> --src <zip_file_path>
+```
+
+## Building and deploying from the source code
 To deploy the Function App into the Azure Function App Service created we can follow this steps:
 1. Open the solution in **Visual Studio**.
 1. In Solution Explorer, right-click in the project `BotOrchestrator` node and choose **Publish**.

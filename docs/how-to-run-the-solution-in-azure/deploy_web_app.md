@@ -7,6 +7,16 @@ To continue with the Deploy the Web App into the Azure App Service documentation
 
 - [Web App](web_app_and_app_service_plan.md).
 
+## Deploying a released version
+To deploy a released version of the solution go to the [Releases](https://github.com/microsoft/Broadcast-Development-Kit/releases) page and download the Zip file for the version of the Management API you want to deploy.
+
+Then, using **Azure CLI** (either locally or in the Azure Portal), run the following command to deploy the Zip file:
+
+```
+az webapp deployment source config-zip --resource-group <resource_group> --name <app-name> --src <zip_file_path>
+```
+
+## Building and deploying from the source code
 To deploy the Web App into the Web Azure App Service created we can follow this steps:
 1. Open the solution in **Visual Studio**.
 1. In Solution Explorer, right-click in the project `ManagementApi` node and choose **Publish**.
