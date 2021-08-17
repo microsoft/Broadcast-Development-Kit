@@ -31,6 +31,11 @@ namespace BotService.Infrastructure.Core
             return new MediaInjector(videoSocket, audioSocket, _loggerFactory, _pipelineBusObserver);
         }
 
+        public IMediaInjector CreateSlateInjector(IVideoSocket videoSocket)
+        {
+            return new SlateMediaInjector(videoSocket, _loggerFactory, _pipelineBusObserver);
+        }
+
         public ISwitchingMediaExtractor CreateSwitchingExtractor(IVideoSocket videoSocket, IMediaSocketPool mediaSocketPool, IAudioSocket audioSocket)
         {
             return new SwitchingMediaExtractor(videoSocket, mediaSocketPool, audioSocket, _processorFactory, _loggerFactory);

@@ -47,9 +47,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Graph.Communications.Calls.Media" Version="1.2.0.850" />
-    <PackageReference Include="Microsoft.Graph.Communications.Client" Version="1.2.0.850" />
-    <PackageReference Include="Microsoft.Graph.Communications.Common" Version="1.2.0.850" />
+    <PackageReference Include="Microsoft.Graph.Communications.Calls.Media" Version="1.2.0.3144" />
+    <PackageReference Include="Microsoft.Graph.Communications.Client" Version="1.2.0.3144" />
+    <PackageReference Include="Microsoft.Graph.Communications.Common" Version="1.2.0.3144" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.8.0" />
     <PackageReference Include="Microsoft.Skype.Bots.Media" Version="1.20.0.348-alpha" />
     <PackageReference Include="Serilog" Version="2.10.0" />
@@ -72,6 +72,12 @@
 
   <ItemGroup>
     <Reference Include="System.Data.Entity" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="slate.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
