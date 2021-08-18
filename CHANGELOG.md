@@ -15,7 +15,7 @@ The code in this repository is provided "AS IS", without any warranty of any kin
     - You can personalize this slate following the instructions in the [Customize the Broadcast Development Kit Slate image](docs/common/customize_bdk_slate_image.md) document.
 - Added support for extracting video from the call using the RTMP/RTMPS protocols in pull mode. Previously, only push mode was supported for extractions with RTMP/RTMPS.
 - Updated to the latest version of the **Microsoft Graph Communications** SDKs (v1.2.0.3144).
-- Change how the status of the service is managed to separate the state of the **BotService** from the state of the underlying virtual machine.
+- Changed how the status of the service is managed to separate the state of the **BotService** from the state of the underlying virtual machine.
 - Updated the initialization logic of the **BotService** when running as a Windows service, to reduce the chance of Windows killing the service if the start-up process takes too long.
 
 ## 0.4.0-dev
