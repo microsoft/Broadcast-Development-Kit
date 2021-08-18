@@ -14,7 +14,6 @@ using Infrastructure.Core.Common.Extensions;
 using Infrastructure.Core.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -64,7 +63,8 @@ namespace BotService
             else
             {
                 // When running as a console app we have time to run this part of the setup before starting the web host.
-                host.SetupAndRegisterBotService();
+                host.SetupDatabase();
+                host.RegisterBotService();
                 host.Run();
             }
         }
