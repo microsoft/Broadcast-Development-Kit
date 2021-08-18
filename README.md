@@ -37,7 +37,8 @@ To provide the best possible experience during a meeting, Microsoft Teams automa
 Extraction of any of those streams can be done with the following configurations:
 - SRT in "caller" mode (you have a SRT listener waiting to receive a connection from this solution).
 - SRT in "listener" mode (the solution will wait for a SRT caller to connect and get the content).
-- RTMP / RTMPS in "push" mode (you have a RTMP URL you want to push the stream to.)
+- RTMP / RTMPS in "push" mode (you have a RTMP URL you want to push the stream to).
+- RTMP / RTMPS in "pull" mode (the solution will wait for an RTMP client to connect and retrieve the content).
 
 ### Injection
 
@@ -71,14 +72,7 @@ Then you can process those feeds in a video production solution of your choosing
 
 If you have media content that can be streamed through SRT or RTMP such as live event or a VOD, you can use the injection feature to playback the video inside the Microsoft Teams meeting to the rest of the participants and watch the stream together.
 
-## Limitations and known issues
-
-There are some known issues in the current version of this solution:
-
-- There is a bug with the Teams Meeting client where sometimes, when you start injecting video, the Teams Meeting client of some participants do not show the video (but reproduce the audio). The workaround is to force the Teams Meeting client to refresh the view. There are several ways of doing this:
-    - By disabling the incoming video and enabling it again 
-    - Spotlighting a participant and then change the spotlight to the bot
-    - Leaving the meeting and entering again
+## Limitations
 
 This solution currently has some limitations:
 
