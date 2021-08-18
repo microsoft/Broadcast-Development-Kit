@@ -1,4 +1,6 @@
-﻿namespace BotService.Infrastructure.Pipelines
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+namespace BotService.Infrastructure.Pipelines
 {
     public class GstreamerClockProvider
     {

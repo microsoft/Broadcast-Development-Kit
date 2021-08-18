@@ -109,9 +109,10 @@ namespace BotService.Infrastructure.Core
             Id = response.Id;
         }
 
-        public void RegisterBotInstance()
+        public async Task UnregisterServiceAsync(string virtualMachineName)
         {
-            throw new NotImplementedException();
+            var response = await _mediatorService.UnregisterServiceAsync(virtualMachineName);
+            Id = response.Id;
         }
 
         public async Task MuteBotAsync()
@@ -187,6 +188,7 @@ namespace BotService.Infrastructure.Core
                     {
                         VideoFormat.NV12_1280x720_30Fps,
                         VideoFormat.NV12_1920x1080_30Fps,
+                        VideoFormat.NV12_1920x1080_1_875Fps,
                     },
                     MaxConcurrentSendStreams = 1,
                 },

@@ -16,6 +16,8 @@ namespace BotService.Infrastructure.Services
 
         Task<RegisterService.RegisterServiceCommandResponse> RegisterServiceAsync(string virtualMachineName);
 
+        Task<UnregisterService.UnregisterServiceCommandResponse> UnregisterServiceAsync(string virtualMachineName);
+
         Task<SetBotServiceAsAvailable.SetBotServiceAsAvailableCommandResponse> SetBotServiceAsAvailableAsync(string callId);
 
         Task<SetCallAsEstablished.SetCallAsEstablishedCommandResponse> SetCallAsEstablishedAsync(string callId, string graphCallId);

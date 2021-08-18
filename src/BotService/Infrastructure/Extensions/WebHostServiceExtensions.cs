@@ -38,5 +38,17 @@ namespace BotService.Infrastructure.Extensions
 
             bot.RegisterServiceAsync(appConfiguration.BotConfiguration.VirtualMachineName).Wait();
         }
+
+        public static void UnregisterBotService(this IWebHost host)
+        {
+            var logger = host.Services.GetService<ILogger<IWebHost>>();
+
+            logger.LogInformation("Unregistering bot service");
+
+            var appConfiguration = host.Services.GetService<IAppConfiguration>();
+            var bot = host.Services.GetService<IBot>();
+
+            bot.UnregisterServiceAsync(appConfiguration.BotConfiguration.VirtualMachineName).Wait();
+        }
     }
 }

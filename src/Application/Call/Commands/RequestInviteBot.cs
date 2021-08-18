@@ -129,7 +129,7 @@ namespace Application.Call.Commands
                 await _callRepository.AddItemAsync(call);
 
                 service.CallId = call.Id;
-                service.State = ServiceState.Unavailable;
+                service.State = ServiceState.Busy;
 
                 await _serviceRepository.UpdateItemAsync(service.Id, service);
 
