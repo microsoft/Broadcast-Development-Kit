@@ -23,6 +23,8 @@ namespace BotService.Infrastructure.WindowsService
 
         protected override void OnStarting(string[] args)
         {
+            _logger.LogInformation("Starting the bot service");
+
             // At this point, all dependencies have been registered and the configuration was retrieved
             SetServiceAsStartPending(2);
 
@@ -34,20 +36,30 @@ namespace BotService.Infrastructure.WindowsService
 
         protected override void OnStarted()
         {
-            // At this point, the ASP.NET host is now running and receiving requests
+            // At this point, the ASP.NET host should be running and receiving requests
             SetServiceAsStartPending(4);
 
             _webHost.RegisterBotService();
             SetServiceAsRunning();
+
+            _logger.LogInformation("The bot service completed the start up process.");
 
             base.OnStarted();
         }
 
         protected override void OnStopping()
         {
-            // TODO: Unregister service
-            _logger.LogInformation("OnStopping method called.");
+            _logger.LogInformation("Stopping the bot service.");
+            _webHost.UnregisterBotService();
+
             base.OnStopping();
+        }
+
+        protected override void OnStopped()
+        {
+            _logger.LogInformation("The bot service was stopped.");
+
+            base.OnStopped();
         }
 
         [DllImport("advapi32.dll", SetLastError = true)]
@@ -61,6 +73,8 @@ namespace BotService.Infrastructure.WindowsService
 
             if (progress.HasValue)
             {
+                // The number itself doesn't have any meaning, but it needs to be increased in each call to this method
+                // to inform Windows that the service is making progress and didn't hang-up.
                 serviceStatus.dwCheckPoint = progress.Value;
             }
 

@@ -44,7 +44,6 @@ namespace BotService.Infrastructure.Extensions
             var logger = host.Services.GetService<ILogger<IWebHost>>();
 
             logger.LogInformation("Unregistering bot service");
-
             var appConfiguration = host.Services.GetService<IAppConfiguration>();
             var bot = host.Services.GetService<IBot>();
 
