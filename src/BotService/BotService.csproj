@@ -11,7 +11,7 @@
     <Product>Broadcast Development Kit for Teams</Product>
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
-    <Version>0.4.0-dev</Version>
+    <Version>0.5.0-dev</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

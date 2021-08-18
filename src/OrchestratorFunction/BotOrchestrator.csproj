@@ -8,7 +8,7 @@
     <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
-    <Version>0.4.0-dev</Version>
+    <Version>0.5.0-dev</Version>
     <Product>Broadcast Development Kit for Teams</Product>
   </PropertyGroup>
   <ItemGroup>
