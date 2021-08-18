@@ -280,7 +280,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
 
 2. **Get call details:** The call details endpoind will retrieve call and participants information. If the state of the call is `1` (Established), it means that the bot is joined in the call.
 
-    **Method**: `POST`  
+    **Method**: `GET`  
     **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}`  
 
     | Placeholder | Description |
