@@ -159,6 +159,34 @@ namespace BotService.Infrastructure.Core
             _mediaInjector.Start(injectionSettings);
         }
 
+        public void StopAllExtractions()
+        {
+            if (_currentMediaExtractors.Count > 0)
+            {
+                foreach (var item in _currentMediaExtractors)
+                {
+                    var participantGraphId = item.Key;
+                    var mediaExtractor = item.Value;
+
+                    mediaExtractor.Stop();
+                    RemoveAssignedExtractionPort(participantGraphId, mediaExtractor.Protocol);
+                    _mediaSocketPool.ReleaseSocket(mediaExtractor.VideoSocket);
+                }
+            }
+
+            if (_screenShareMediaSocket != null)
+            {
+                _screenShareMediaSocket.Stop();
+                _mediaSocketPool.ReleaseSocket(_screenShareMediaSocket.VideoSocket);
+                _screenShareMediaSocket = null;
+
+                if (_currentAssignedPorts.TryRemove(_currentAssignedPorts.First().Key, out int assignedPort))
+                {
+                    _availablePorts.Add(assignedPort);
+                }
+            }
+        }
+
         public void StopInjection()
         {
             if (_mediaInjector != null)

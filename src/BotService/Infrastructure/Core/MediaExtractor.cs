@@ -105,7 +105,9 @@ namespace BotService.Infrastructure.Core
 
             if (disposing)
             {
+                _requestKeyFrameTimer.Elapsed -= OnRequestKeyFrameTimer;
                 _requestKeyFrameTimer.Stop();
+                _requestKeyFrameTimer.Dispose();
 
                 _audioSocket.AudioMediaReceived -= OnAudioMediaReceived;
 
