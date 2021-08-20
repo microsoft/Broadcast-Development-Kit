@@ -159,6 +159,48 @@ namespace BotService.Infrastructure.Core
             _mediaInjector.Start(injectionSettings);
         }
 
+        public void StopActiveStreams()
+        {
+            if (_mediaInjector != null)
+            {
+                _mediaInjector.Stop();
+                _mediaSocketPool.ReleaseSocket(_mediaInjector.VideoSocket);
+                _mediaInjector = null;
+            }
+
+            if (_mediaSlateInjector != null)
+            {
+                _mediaSlateInjector.Stop();
+                _mediaSocketPool.ReleaseSocket(_mediaSlateInjector.VideoSocket);
+                _mediaSlateInjector = null;
+            }
+
+            if (_currentMediaExtractors.Count > 0)
+            {
+                foreach (var item in _currentMediaExtractors)
+                {
+                    var participantGraphId = item.Key;
+                    var mediaExtractor = item.Value;
+
+                    mediaExtractor.Stop();
+                    RemoveAssignedExtractionPort(participantGraphId, mediaExtractor.Protocol);
+                    _mediaSocketPool.ReleaseSocket(mediaExtractor.VideoSocket);
+                }
+            }
+
+            if (_screenShareMediaSocket != null)
+            {
+                _screenShareMediaSocket.Stop();
+                _mediaSocketPool.ReleaseSocket(_screenShareMediaSocket.VideoSocket);
+                _screenShareMediaSocket = null;
+
+                if (_currentAssignedPorts.TryRemove(_currentAssignedPorts.First().Key, out int assignedPort))
+                {
+                    _availablePorts.Add(assignedPort);
+                }
+            }
+        }
+
         public void StopInjection()
         {
             if (_mediaInjector != null)
@@ -178,17 +220,6 @@ namespace BotService.Infrastructure.Core
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-
-            // Stop previous injection if it was not stoped
-            if (_mediaInjector != null)
-            {
-                _mediaInjector.Stop();
-            }
-
-            if (_mediaSlateInjector != null)
-            {
-                _mediaSlateInjector.Stop();
-            }
 
             _clockProvider.ResetBaseTime();
             _mediaSocketPool.MainAudioSocket.DominantSpeakerChanged -= OnDominantSpeakerChanged;
