@@ -159,8 +159,22 @@ namespace BotService.Infrastructure.Core
             _mediaInjector.Start(injectionSettings);
         }
 
-        public void StopAllExtractions()
+        public void StopActiveStreams()
         {
+            if (_mediaInjector != null)
+            {
+                _mediaInjector.Stop();
+                _mediaSocketPool.ReleaseSocket(_mediaInjector.VideoSocket);
+                _mediaInjector = null;
+            }
+
+            if (_mediaSlateInjector != null)
+            {
+                _mediaSlateInjector.Stop();
+                _mediaSocketPool.ReleaseSocket(_mediaSlateInjector.VideoSocket);
+                _mediaSlateInjector = null;
+            }
+
             if (_currentMediaExtractors.Count > 0)
             {
                 foreach (var item in _currentMediaExtractors)
@@ -206,17 +220,6 @@ namespace BotService.Infrastructure.Core
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-
-            // Stop previous injection if it was not stoped
-            if (_mediaInjector != null)
-            {
-                _mediaInjector.Stop();
-            }
-
-            if (_mediaSlateInjector != null)
-            {
-                _mediaSlateInjector.Stop();
-            }
 
             _clockProvider.ResetBaseTime();
             _mediaSocketPool.MainAudioSocket.DominantSpeakerChanged -= OnDominantSpeakerChanged;

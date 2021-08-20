@@ -132,7 +132,7 @@ namespace BotService.Infrastructure.Core
             try
             {
                 var callHandler = GetHandlerOrThrow(callGraphId);
-                callHandler.StopAllExtractions();
+                callHandler.StopActiveStreams();
                 await callHandler.Call.DeleteAsync().ConfigureAwait(false);
             }
             catch (Exception)
