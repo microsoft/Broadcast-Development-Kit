@@ -15,11 +15,7 @@ namespace BotService.Infrastructure.Extensions
     {
         public static void RunAsCustomService(this IWebHost host)
         {
-            var webHostService = new HostService(host)
-            {
-                // Set the service name to identify logs in the Windows Event Viewer
-                ServiceName = "bot-bervice",
-            };
+            var webHostService = new HostService(host);
             ServiceBase.Run(webHostService);
         }
 

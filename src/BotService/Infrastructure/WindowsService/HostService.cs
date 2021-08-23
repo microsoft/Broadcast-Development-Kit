@@ -19,6 +19,9 @@ namespace BotService.Infrastructure.WindowsService
         {
             _webHost = host;
             _logger = host.Services.GetRequiredService<ILogger<HostService>>();
+
+            // Set the service name to identify logs in the Windows Event Viewer
+            ServiceName = "bot-bervice";
         }
 
         protected override void OnStarting(string[] args)
