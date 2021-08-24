@@ -28,7 +28,7 @@ using Microsoft.Skype.Bots.Media;
 
 namespace BotService.Infrastructure.Core
 {
-    public class Bot : IBot
+    public class Bot : IBot, IDisposable
     {
         private readonly ICommunicationsClient _client;
         private readonly IMediatorService _mediatorService;
@@ -166,6 +166,21 @@ namespace BotService.Infrastructure.Core
         {
             var callHandler = CallHandlers.First().Value;
             callHandler.StopExtraction(streamBody);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Release the resources used by the Media Platform
+                MediaPlatform.Shutdown();
+            }
         }
 
         #region Private
