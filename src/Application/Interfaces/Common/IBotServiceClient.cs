@@ -19,7 +19,7 @@ namespace Application.Interfaces.Common
 
         Task<DoStartExtraction.DoStartExtractionCommandResponse> StartExtractionAsync(DoStartExtraction.DoStartExtractionCommand command);
 
-        Task<StopExtraction.StopExtractionCommandResponse> StopExtractionAsync(StopExtraction.StopExtractionCommand command);
+        Task<DoStopExtraction.DoStopExtractionCommandResponse> StopExtractionAsync(DoStopExtraction.DoStopExtractionCommand command);
 
         Task<HttpResponseMessage> MuteBotAsync();
 

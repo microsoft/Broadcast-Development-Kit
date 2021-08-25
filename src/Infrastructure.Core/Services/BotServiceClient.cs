@@ -115,13 +115,13 @@ namespace Infrastructure.Core.Services
             return response;
         }
 
-        public async Task<StopExtraction.StopExtractionCommandResponse> StopExtractionAsync(StopExtraction.StopExtractionCommand command)
+        public async Task<DoStopExtraction.DoStopExtractionCommandResponse> StopExtractionAsync(DoStopExtraction.DoStopExtractionCommand command)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.Body.CallId}/stream/stop-extraction");
-            var response = await client.PostAsync<StopExtraction.StopExtractionCommandResponse>(url, null, command);
+            var response = await client.PostAsync<DoStopExtraction.DoStopExtractionCommandResponse>(url, null, command);
 
             return response;
         }

@@ -16,23 +16,23 @@ using static Domain.Constants.Constants;
 
 namespace Application.Stream.Commands
 {
-    public class StoppingExtraction
+    public class RequestStopExtraction
     {
-        public class StoppingExtractionCommand : IRequest<StoppingExtractionCommandResponse>
+        public class RequestStopExtractionCommand : IRequest<RequestStopExtractionCommandResponse>
         {
             public StopStreamExtractionBody Body { get; set; }
         }
 
-        public class StoppingExtractionCommandResponse
+        public class RequestStopExtractionCommandResponse
         {
             public string Id { get; set; }
 
             public ParticipantStreamModel Resource { get; set; }
         }
 
-        public class StoppingExtractionCommandValidator : AbstractValidator<StoppingExtractionCommand>
+        public class RequestStopExtractionCommandValidator : AbstractValidator<RequestStopExtractionCommand>
         {
-            public StoppingExtractionCommandValidator()
+            public RequestStopExtractionCommandValidator()
             {
                 RuleFor(x => x.Body.CallId)
                     .NotEmpty();
@@ -45,14 +45,14 @@ namespace Application.Stream.Commands
             }
         }
 
-        public class StoppingExtractionCommandHandler : IRequestHandler<StoppingExtractionCommand, StoppingExtractionCommandResponse>
+        public class RequestStopExtractionCommandHandler : IRequestHandler<RequestStopExtractionCommand, RequestStopExtractionCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
             private readonly ICallRepository _callRepository;
             private readonly IServiceRepository _serviceRepository;
             private readonly IParticipantStreamRepository _participantStreamRepository;
 
-            public StoppingExtractionCommandHandler(
+            public RequestStopExtractionCommandHandler(
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository,
@@ -64,11 +64,11 @@ namespace Application.Stream.Commands
                 _participantStreamRepository = participantStreamRepository ?? throw new ArgumentNullException(nameof(participantStreamRepository));
             }
 
-            public async Task<StoppingExtractionCommandResponse> Handle(StoppingExtractionCommand request, CancellationToken cancellationToken)
+            public async Task<RequestStopExtractionCommandResponse> Handle(RequestStopExtractionCommand request, CancellationToken cancellationToken)
             {
-                StoppingExtractionCommandResponse response = new StoppingExtractionCommandResponse();
+                RequestStopExtractionCommandResponse response = new RequestStopExtractionCommandResponse();
 
-                var command = new StopExtraction.StopExtractionCommand
+                var command = new DoStopExtraction.DoStopExtractionCommand
                 {
                     Body = request.Body,
                 };

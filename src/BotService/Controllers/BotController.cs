@@ -108,7 +108,7 @@ namespace BotService.Controllers
 
         [HttpPost]
         [Route("call/{callId}/stream/stop-extraction")]
-        public async Task<ActionResult> StopExtractionAsync([FromRoute] string callId, [FromBody] StopExtraction.StopExtractionCommand command)
+        public async Task<ActionResult> StopExtractionAsync([FromRoute] string callId, [FromBody] DoStopExtraction.DoStopExtractionCommand command)
         {
             var response = await _mediator.Send(command);
 

@@ -121,7 +121,7 @@ namespace ManagementApi.Controllers
         public async Task<ActionResult> StopExtractionAsync([FromRoute] string callId, [FromBody] StopStreamExtractionBody streamExtraction)
         {
             streamExtraction.CallId = callId;
-            var command = new StoppingExtraction.StoppingExtractionCommand
+            var command = new RequestStopExtraction.RequestStopExtractionCommand
             {
                 Body = streamExtraction,
             };
