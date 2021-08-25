@@ -104,13 +104,13 @@ namespace Infrastructure.Core.Services
             return response;
         }
 
-        public async Task<StartExtraction.StartExtractionCommandResponse> StartExtractionAsync(StartExtraction.StartExtractionCommand command)
+        public async Task<DoStartExtraction.DoStartExtractionCommandResponse> StartExtractionAsync(DoStartExtraction.DoStartExtractionCommand command)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.Body.CallId}/stream/start-extraction");
-            var response = await client.PostAsync<StartExtraction.StartExtractionCommandResponse>(url, null, command);
+            var response = await client.PostAsync<DoStartExtraction.DoStartExtractionCommandResponse>(url, null, command);
 
             return response;
         }

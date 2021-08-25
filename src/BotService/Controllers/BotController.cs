@@ -99,7 +99,7 @@ namespace BotService.Controllers
 
         [HttpPost]
         [Route("call/{callId}/stream/start-extraction")]
-        public async Task<ActionResult> StartExtractionAsync([FromRoute] string callId, [FromBody] StartExtraction.StartExtractionCommand command)
+        public async Task<ActionResult> StartExtractionAsync([FromRoute] string callId, [FromBody] DoStartExtraction.DoStartExtractionCommand command)
         {
             var response = await _mediator.Send(command);
 

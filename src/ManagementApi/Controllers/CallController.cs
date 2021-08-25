@@ -107,7 +107,7 @@ namespace ManagementApi.Controllers
         public async Task<ActionResult> StartExtractionAsync([FromRoute] string callId, [FromBody] StartStreamExtractionBody streamExtraction)
         {
             streamExtraction.CallId = callId;
-            var command = new StartingExtraction.StartingExtractionCommand
+            var command = new RequestStartExtraction.RequestStartExtractionCommand
             {
                 Body = streamExtraction,
             };
