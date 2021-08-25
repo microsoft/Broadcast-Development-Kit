@@ -8,6 +8,10 @@ This is a **PRE-RELEASE** project and is still in development. This project uses
 
 The code in this repository is provided "AS IS", without any warranty of any kind. Check the [LICENSE](LICENSE) for more information.
 
+## Upgrade path
+
+To upgrade from one version to the next one you simply need to deploy the new version to the resources you already have in Azure. However, some configuration settings might change between one version and the next one. You can find a quick summary of what settings have changed between each version in the [upgrade path documentation](docs/upgrade_path.md).
+
 ## 0.5.0-dev
 
 - Fixed an issue where some participants in the call were not able to see the video injected by the bot.
