@@ -165,7 +165,7 @@ namespace ManagementApi.Controllers
         [Route("{callId}/mute")]
         public async Task<ActionResult> MuteAsync([FromRoute] string callId)
         {
-            var command = new MuteBotFromCall.MuteBotFromCallCommand
+            var command = new RequestMuteBotFromCall.RequestMuteBotFromCallCommand
             {
                 CallId = callId,
             };
@@ -177,7 +177,7 @@ namespace ManagementApi.Controllers
         [Route("{callId}/unmute")]
         public async Task<ActionResult> UnmuteAsync([FromRoute] string callId)
         {
-            var command = new UnmuteBotFromCall.UnmuteBotFromCallCommand
+            var command = new RequestUnmuteBotFromCall.RequestUnmuteBotFromCallCommand
             {
                 CallId = callId,
             };
