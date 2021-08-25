@@ -93,13 +93,13 @@ namespace Infrastructure.Core.Services
             return response;
         }
 
-        public async Task<StopInjection.StopInjectionCommandResponse> StoptInjectionAsync(StopInjection.StopInjectionCommand command)
+        public async Task<DoStopInjection.DoStopInjectionCommandResponse> StoptInjectionAsync(DoStopInjection.DoStopInjectionCommand command)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.CallId}/stream/{command.StreamId}/stop-injection");
-            var response = await client.PostAsync<StopInjection.StopInjectionCommandResponse>(url, null, command);
+            var response = await client.PostAsync<DoStopInjection.DoStopInjectionCommandResponse>(url, null, command);
 
             return response;
         }

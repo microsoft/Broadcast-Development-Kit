@@ -86,7 +86,7 @@ namespace BotService.Controllers
         [Route("call/{callId}/stream/{streamId}/stop-injection")]
         public async Task<ActionResult> StopInjectionAsync([FromRoute] string callId, [FromRoute] string streamId)
         {
-            var command = new StopInjection.StopInjectionCommand
+            var command = new DoStopInjection.DoStopInjectionCommand
             {
                 CallId = callId,
                 StreamId = streamId,

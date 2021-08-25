@@ -150,7 +150,7 @@ namespace ManagementApi.Controllers
         [Route("{callId}/stream/{streamId}/stop-injection")]
         public async Task<ActionResult> StopInjectionAsync([FromRoute] string callId, [FromRoute] string streamId)
         {
-            var command = new StoppingInjection.StoppingInjectionCommand
+            var command = new RequestStopInjection.RequestStopInjectionCommand
             {
                 CallId = callId,
                 StreamId = streamId,

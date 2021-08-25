@@ -15,25 +15,25 @@ using MediatR;
 
 namespace Application.Stream.Commands
 {
-    public class StopInjection
+    public class DoStopInjection
     {
-        public class StopInjectionCommand : IRequest<StopInjectionCommandResponse>
+        public class DoStopInjectionCommand : IRequest<DoStopInjectionCommandResponse>
         {
             public string CallId { get; set; }
 
             public string StreamId { get; set; }
         }
 
-        public class StopInjectionCommandResponse
+        public class DoStopInjectionCommandResponse
         {
             public string Id { get; set; }
 
             public StreamModel Resource { get; set; }
         }
 
-        public class StopInjectionCommandValidator : AbstractValidator<StopInjectionCommand>
+        public class DoStopInjectionCommandValidator : AbstractValidator<DoStopInjectionCommand>
         {
-            public StopInjectionCommandValidator()
+            public DoStopInjectionCommandValidator()
             {
                 RuleFor(x => x.CallId)
                     .NotEmpty();
@@ -42,13 +42,13 @@ namespace Application.Stream.Commands
             }
         }
 
-        public class StopInjectionCommandHandler : IRequestHandler<StopInjectionCommand, StopInjectionCommandResponse>
+        public class DoStopInjectionCommandHandler : IRequestHandler<DoStopInjectionCommand, DoStopInjectionCommandResponse>
         {
             private readonly IBot _bot;
             private readonly IStreamRepository _streamRepository;
             private readonly IMapper _mapper;
 
-            public StopInjectionCommandHandler(
+            public DoStopInjectionCommandHandler(
                 IBot bot,
                 IStreamRepository streamRepository,
                 IMapper mapper)
@@ -58,7 +58,7 @@ namespace Application.Stream.Commands
                 _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             }
 
-            public async Task<StopInjectionCommandResponse> Handle(StopInjectionCommand request, CancellationToken cancellationToken)
+            public async Task<DoStopInjectionCommandResponse> Handle(DoStopInjectionCommand request, CancellationToken cancellationToken)
             {
                 var entity = await _streamRepository.GetItemAsync(request.StreamId);
 
@@ -82,7 +82,7 @@ namespace Application.Stream.Commands
                     throw;
                 }
 
-                StopInjectionCommandResponse response = new StopInjectionCommandResponse
+                DoStopInjectionCommandResponse response = new DoStopInjectionCommandResponse
                 {
                     Id = entity.Id,
                     Resource = _mapper.Map<StreamModel>(entity),

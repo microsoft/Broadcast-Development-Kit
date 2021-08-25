@@ -15,7 +15,7 @@ namespace Application.Interfaces.Common
 
         Task<DoStartInjection.DoStartInjectionCommandResponse> StartInjectionAsync(DoStartInjection.DoStartInjectionCommand command);
 
-        Task<StopInjection.StopInjectionCommandResponse> StoptInjectionAsync(StopInjection.StopInjectionCommand command);
+        Task<DoStopInjection.DoStopInjectionCommandResponse> StoptInjectionAsync(DoStopInjection.DoStopInjectionCommand command);
 
         Task<DoStartExtraction.DoStartExtractionCommandResponse> StartExtractionAsync(DoStartExtraction.DoStartExtractionCommand command);
 
