@@ -72,7 +72,11 @@ Then you can process those feeds in a video production solution of your choosing
 
 If you have media content that can be streamed through SRT or RTMP such as live event or a VOD, you can use the injection feature to playback the video inside the Microsoft Teams meeting to the rest of the participants and watch the stream together.
 
-## Limitations
+## Limitations and known issues
+
+There are some known issues in the current version of this solution:
+
+- When injecting content into a meeting using an RTMPS source in pull mode (i.e. you give BDK an RTMPS URL to pull the content from it), if the source stops transmitting content while the injection is still active, then an exception is thrown in the Gstreamer pipeline once the injection is stopped in the BDK. This exception causes the Bot Service running in the VM to crash, and you will need to restart the service manually or restart the VM. This issue only occurs when using RTMPS in pull mode. Other combinations (e.g. SRT, RTMP, push mode, etc.) do not present this issue.
 
 This solution currently has some limitations:
 
