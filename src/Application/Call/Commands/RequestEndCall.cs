@@ -12,40 +12,39 @@ using MediatR;
 
 namespace Application.Call.Commands
 {
-    public class EndCall
+    public class RequestEndCall
     {
-        public class EndCallCommand : IRequest<EndCallCommandResponse>
+        public class RequestEndCallCommand : IRequest<RequestEndCallCommandResponse>
         {
             public string CallId { get; set; }
 
             public bool ShouldShutDownService { get; set; }
         }
 
-        public class EndCallCommandResponse
+        public class RequestEndCallCommandResponse
         {
             public string Id { get; set; }
 
             public CallModel Resource { get; set; }
         }
 
-        public class EndCallCommandValidator : AbstractValidator<EndCallCommand>
+        public class RequestEndCallCommandValidator : AbstractValidator<RequestEndCallCommand>
         {
-            public EndCallCommandValidator()
+            public RequestEndCallCommandValidator()
             {
-                // TODO: Check how to do a custom validation for Meeting URL
                 RuleFor(x => x.CallId)
                     .NotEmpty();
             }
         }
 
-        public class EndCallCommandHandler : IRequestHandler<EndCallCommand, EndCallCommandResponse>
+        public class RequestEndCallCommandHandler : IRequestHandler<RequestEndCallCommand, RequestEndCallCommandResponse>
         {
             private readonly ICallRepository _callRepository;
             private readonly IServiceRepository _serviceRepository;
             private readonly IBotServiceClient _botServiceClient;
             private readonly IMapper _mapper;
 
-            public EndCallCommandHandler(
+            public RequestEndCallCommandHandler(
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository,
                 IBotServiceClient botServiceClient,
@@ -57,9 +56,9 @@ namespace Application.Call.Commands
                 _mapper = mapper ?? throw new System.ArgumentNullException(nameof(mapper));
             }
 
-            public async Task<EndCallCommandResponse> Handle(EndCallCommand request, CancellationToken cancellationToken)
+            public async Task<RequestEndCallCommandResponse> Handle(RequestEndCallCommand request, CancellationToken cancellationToken)
             {
-                EndCallCommandResponse response = new EndCallCommandResponse();
+                RequestEndCallCommandResponse response = new RequestEndCallCommandResponse();
 
                 Domain.Entities.Call entity = await _callRepository.GetItemAsync(request.CallId);
                 entity.State = CallState.Terminating;

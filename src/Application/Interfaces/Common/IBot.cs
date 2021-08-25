@@ -17,7 +17,7 @@ namespace Application.Interfaces.Common
 
         Task ProcessNotificationAsync(HttpRequestMessage request);
 
-        Task RemoveBotAsync(string callGraphId);
+        Task EndCallAsync(string callGraphId);
 
         void StartInjection(StartStreamInjectionBody startStreamInjectionBody);
 

@@ -67,7 +67,7 @@ namespace ManagementApi.Controllers
         [Route("{callId}")]
         public async Task<ActionResult> EndCallAsync([FromRoute] string callId)
         {
-            var command = new EndCall.EndCallCommand
+            var command = new RequestEndCall.RequestEndCallCommand
             {
                 CallId = callId,
                 ShouldShutDownService = false,

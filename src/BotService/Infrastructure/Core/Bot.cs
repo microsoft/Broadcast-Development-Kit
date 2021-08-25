@@ -127,7 +127,7 @@ namespace BotService.Infrastructure.Core
             await callHandler.Call.UnmuteAsync();
         }
 
-        public async Task RemoveBotAsync(string callGraphId)
+        public async Task EndCallAsync(string callGraphId)
         {
             try
             {

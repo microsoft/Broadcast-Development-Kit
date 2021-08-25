@@ -43,9 +43,9 @@ namespace BotService.Controllers
 
         [HttpDelete]
         [Route("call/{graphCallId}")]
-        public async Task<ActionResult> RemoveBotAsync([FromRoute] string graphCallId)
+        public async Task<ActionResult> EndCallAsync([FromRoute] string graphCallId)
         {
-            var command = new RemoveBot.RemoveBotCommand
+            var command = new DoEndCall.DoEndCallCommand
             {
                 GraphCallId = graphCallId,
             };
