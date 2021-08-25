@@ -72,7 +72,11 @@ Then you can process those feeds in a video production solution of your choosing
 
 If you have media content that can be streamed through SRT or RTMP such as live event or a VOD, you can use the injection feature to playback the video inside the Microsoft Teams meeting to the rest of the participants and watch the stream together.
 
-## Limitations
+## Limitations and known issues
+
+There are some known issues in the current version of this solution:
+
+- There is a bug in the botservice when injecting video into a meeting from an RTMPS source and stopping it before the injection, which causes the botService to close unexpectedly when trying to stop the injection and has to be reopened.
 
 This solution currently has some limitations:
 
