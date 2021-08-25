@@ -16,23 +16,23 @@ using MediatR;
 
 namespace Application.Stream.Commands
 {
-    public class StartInjection
+    public class DoStartInjection
     {
-        public class StartInjectionCommand : IRequest<StartInjectionCommandResponse>
+        public class DoStartInjectionCommand : IRequest<DoStartInjectionCommandResponse>
         {
             public StartStreamInjectionBody Body { get; set; }
         }
 
-        public class StartInjectionCommandResponse
+        public class DoStartInjectionCommandResponse
         {
             public string Id { get; set; }
 
             public StreamModel Resource { get; set; }
         }
 
-        public class StartInjectionCommandValidator : AbstractValidator<StartInjectionCommand>
+        public class DoStartInjectionCommandValidator : AbstractValidator<DoStartInjectionCommand>
         {
-            public StartInjectionCommandValidator()
+            public DoStartInjectionCommandValidator()
             {
                 RuleFor(x => x.Body.CallId)
                     .NotEmpty();
@@ -69,7 +69,7 @@ namespace Application.Stream.Commands
             }
         }
 
-        public class StartInjectionCommandHandler : IRequestHandler<StartInjectionCommand, StartInjectionCommandResponse>
+        public class DoStartInjectionCommandHandler : IRequestHandler<DoStartInjectionCommand, DoStartInjectionCommandResponse>
         {
             private readonly IAppConfiguration _configuration;
             private readonly IBot _bot;
@@ -77,7 +77,7 @@ namespace Application.Stream.Commands
             private readonly IInjectionUrlHelper _injectionUrlHelper;
             private readonly IMapper _mapper;
 
-            public StartInjectionCommandHandler(
+            public DoStartInjectionCommandHandler(
                 IAppConfiguration configuration,
                 IBot bot,
                 IStreamRepository streamRepository,
@@ -91,7 +91,7 @@ namespace Application.Stream.Commands
                 _mapper = mapper;
             }
 
-            public async Task<StartInjectionCommandResponse> Handle(StartInjectionCommand request, CancellationToken cancellationToken)
+            public async Task<DoStartInjectionCommandResponse> Handle(DoStartInjectionCommand request, CancellationToken cancellationToken)
             {
                 var entity = await _streamRepository.GetItemAsync(request.Body.StreamId);
 
@@ -116,7 +116,7 @@ namespace Application.Stream.Commands
                     throw;
                 }
 
-                StartInjectionCommandResponse response = new StartInjectionCommandResponse
+                DoStartInjectionCommandResponse response = new DoStartInjectionCommandResponse
                 {
                     Id = entity.Id,
                     Resource = _mapper.Map<StreamModel>(entity),

@@ -60,13 +60,13 @@ namespace Infrastructure.Core.Services
             return response;
         }
 
-        public async Task<StartInjection.StartInjectionCommandResponse> StartInjectionAsync(StartInjection.StartInjectionCommand command)
+        public async Task<DoStartInjection.DoStartInjectionCommandResponse> StartInjectionAsync(DoStartInjection.DoStartInjectionCommand command)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.Body.CallId}/stream/start-injection");
-            var response = await client.PostAsync<StartInjection.StartInjectionCommandResponse>(url, null, command);
+            var response = await client.PostAsync<DoStartInjection.DoStartInjectionCommandResponse>(url, null, command);
 
             return response;
         }

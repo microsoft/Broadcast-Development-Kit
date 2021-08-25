@@ -13,7 +13,7 @@ namespace Application.Interfaces.Common
 
         Task<HttpResponseMessage> RemoveBotAsync(string callGraphId);
 
-        Task<StartInjection.StartInjectionCommandResponse> StartInjectionAsync(StartInjection.StartInjectionCommand command);
+        Task<DoStartInjection.DoStartInjectionCommandResponse> StartInjectionAsync(DoStartInjection.DoStartInjectionCommand command);
 
         Task<StopInjection.StopInjectionCommandResponse> StoptInjectionAsync(StopInjection.StopInjectionCommand command);
 

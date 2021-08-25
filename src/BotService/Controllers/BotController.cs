@@ -75,7 +75,7 @@ namespace BotService.Controllers
 
         [HttpPost]
         [Route("call/{callId}/stream/start-injection")]
-        public async Task<ActionResult> StartInjectionAsync([FromRoute] string callId, [FromBody] StartInjection.StartInjectionCommand command)
+        public async Task<ActionResult> StartInjectionAsync([FromRoute] string callId, [FromBody] DoStartInjection.DoStartInjectionCommand command)
         {
             var response = await _mediator.Send(command);
 

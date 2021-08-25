@@ -136,7 +136,7 @@ namespace ManagementApi.Controllers
         {
             streamInjection.CallId = callId;
 
-            var command = new StartingInjection.StartingInjectionCommand
+            var command = new RequestStartInjection.RequestStartInjectionCommand
             {
                 Body = streamInjection,
             };
