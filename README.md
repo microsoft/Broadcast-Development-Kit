@@ -76,7 +76,7 @@ If you have media content that can be streamed through SRT or RTMP such as live 
 
 There are some known issues in the current version of this solution:
 
-- There is a bug in the botservice when injecting video into a meeting from an RTMPS source and stopping it before the injection, which causes the botService to close unexpectedly when trying to stop the injection and has to be reopened.
+- When injecting content into a meeting using an RTMPS source in pull mode (i.e. you give BDK an RTMPS URL to pull the content from it), if the source stops transmitting content while the injection is still active, then an exception is thrown in the Gstreamer pipeline once the injection is stopped in the BDK. This exception causes the Bot Service running in the VM to crash, and you will need to restart the service manually or restart the VM. This issue only occurs when using RTMPS in pull mode. Other combinations (e.g. SRT, RTMP, push mode, etc.) do not present this issue.
 
 This solution currently has some limitations:
 
