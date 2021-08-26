@@ -18,7 +18,7 @@ using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
 using Microsoft.Azure.Management.Compute.Fluent;
-using static Application.Service.Commands.InviteBot;
+using static Application.Service.Commands.DoInviteBot;
 
 namespace Application.Call.Commands
 {
@@ -133,7 +133,7 @@ namespace Application.Call.Commands
 
                 await _serviceRepository.UpdateItemAsync(service.Id, service);
 
-                var inviteBotCommand = new InviteBotCommand
+                var inviteBotCommand = new DoInviteBotCommand
                 {
                     CallId = call.Id,
                     MeetingId = request.MeetingId,

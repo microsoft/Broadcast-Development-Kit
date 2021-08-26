@@ -9,24 +9,24 @@ using MediatR;
 
 namespace Application.Stream.Commands
 {
-    public class RequestMuteBotFromCall
+    public class RequestMuteBot
     {
-        public class RequestMuteBotFromCallCommand : IRequest<RequestMuteBotFromCallCommandResponse>
+        public class RequestMuteBotCommand : IRequest<RequestMuteBotCommandResponse>
         {
             public string CallId { get; set; }
         }
 
-        public class RequestMuteBotFromCallCommandResponse
+        public class RequestMuteBotCommandResponse
         {
         }
 
-        public class RequestMuteBotFromCallCommandHandler : IRequestHandler<RequestMuteBotFromCallCommand, RequestMuteBotFromCallCommandResponse>
+        public class RequestMuteBotCommandHandler : IRequestHandler<RequestMuteBotCommand, RequestMuteBotCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
             private readonly ICallRepository _callRepository;
             private readonly IServiceRepository _serviceRepository;
 
-            public RequestMuteBotFromCallCommandHandler(
+            public RequestMuteBotCommandHandler(
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository)
@@ -36,7 +36,7 @@ namespace Application.Stream.Commands
                 _serviceRepository = serviceRepository ?? throw new ArgumentNullException(nameof(serviceRepository));
             }
 
-            public async Task<RequestMuteBotFromCallCommandResponse> Handle(RequestMuteBotFromCallCommand request, CancellationToken cancellationToken)
+            public async Task<RequestMuteBotCommandResponse> Handle(RequestMuteBotCommand request, CancellationToken cancellationToken)
             {
                 var call = await _callRepository.GetItemAsync(request.CallId);
                 var service = await _serviceRepository.GetItemAsync(call.ServiceId);

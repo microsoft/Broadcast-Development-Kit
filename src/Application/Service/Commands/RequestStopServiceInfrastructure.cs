@@ -10,31 +10,31 @@ using Domain.Constants;
 using Domain.Enums;
 using Domain.Exceptions;
 using MediatR;
-using static Application.Service.Commands.StopServiceInfrastructure;
+using static Application.Service.Commands.DoStopServiceInfrastructure;
 
 namespace Application.Service.Commands
 {
-    public class StoppingServiceInfrastructure
+    public class RequestStopServiceInfrastructure
     {
-        public class StoppingServiceInfrastructureCommand : IRequest<StoppingServiceInfrastructureCommandResponse>
+        public class RequestStopServiceInfrastructureCommand : IRequest<RequestStopServiceInfrastructureCommandResponse>
         {
             public string ServiceId { get; set; }
         }
 
-        public class StoppingServiceInfrastructureCommandResponse
+        public class RequestStopServiceInfrastructureCommandResponse
         {
             public string Id { get; set; }
 
             public ServiceModel Resource { get; set; }
         }
 
-        public class StoppingServiceInfrastructureCommandHandler : IRequestHandler<StoppingServiceInfrastructureCommand, StoppingServiceInfrastructureCommandResponse>
+        public class RequestStopServiceInfrastructureCommandHandler : IRequestHandler<RequestStopServiceInfrastructureCommand, RequestStopServiceInfrastructureCommandResponse>
         {
             private readonly IServiceRepository _serviceRepository;
             private readonly IAzStorageHandler _storageHandler;
             private readonly IMapper _mapper;
 
-            public StoppingServiceInfrastructureCommandHandler(
+            public RequestStopServiceInfrastructureCommandHandler(
                 IServiceRepository serviceRepository,
                 IAzStorageHandler storageHandler,
                 IMapper mapper)
@@ -44,9 +44,9 @@ namespace Application.Service.Commands
                 _mapper = mapper ?? throw new System.ArgumentNullException(nameof(mapper));
             }
 
-            public async Task<StoppingServiceInfrastructureCommandResponse> Handle(StoppingServiceInfrastructureCommand request, CancellationToken cancellationToken)
+            public async Task<RequestStopServiceInfrastructureCommandResponse> Handle(RequestStopServiceInfrastructureCommand request, CancellationToken cancellationToken)
             {
-                var response = new StoppingServiceInfrastructureCommandResponse();
+                var response = new RequestStopServiceInfrastructureCommandResponse();
 
                 /* TODO: Change this.
                    NOTE: The Management Portal does not have the feature to select the service before initializing the call.
@@ -67,7 +67,7 @@ namespace Application.Service.Commands
                 service.Infrastructure.ProvisioningDetails.Message = $"Deprovisioning service {service.Name}";
                 await _serviceRepository.UpdateItemAsync(service.Id, service);
 
-                var stopServiceInfrastructureCommand = new StopServiceInfrastructureCommand
+                var stopServiceInfrastructureCommand = new DoStopServiceInfrastructureCommand
                 {
                     Id = service.Id,
                 };

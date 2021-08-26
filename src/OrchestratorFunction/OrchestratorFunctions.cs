@@ -9,8 +9,8 @@ using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using static Application.Service.Commands.HandleEventGridServiceInfrastructureEvent;
-using static Application.Service.Commands.StartServiceInfrastructure;
-using static Application.Service.Commands.StopServiceInfrastructure;
+using static Application.Service.Commands.DoStartServiceInfrastructure;
+using static Application.Service.Commands.DoStopServiceInfrastructure;
 
 namespace BotOrchestrator
 {
@@ -28,7 +28,7 @@ namespace BotOrchestrator
         }
 
         [FunctionName("start-virtual-machine")]
-        public async Task StartVirtualMachineAsync([QueueTrigger(Constants.AzureQueueNames.StartVirtualMachineQueue, Connection = Constants.StorageAccountSettingName)] StartServiceInfrastructureCommand command)
+        public async Task StartVirtualMachineAsync([QueueTrigger(Constants.AzureQueueNames.StartVirtualMachineQueue, Connection = Constants.StorageAccountSettingName)] DoStartServiceInfrastructureCommand command)
         {
             _logger.LogInformation("C# Queue trigger function processed: {command}", JsonConvert.SerializeObject(command));
 
@@ -38,7 +38,7 @@ namespace BotOrchestrator
         }
 
         [FunctionName("stop-virtual-machine")]
-        public async Task StopVirtualMachineAsync([QueueTrigger(Constants.AzureQueueNames.StopVirtualMachineQueue, Connection = Constants.StorageAccountSettingName)] StopServiceInfrastructureCommand command)
+        public async Task StopVirtualMachineAsync([QueueTrigger(Constants.AzureQueueNames.StopVirtualMachineQueue, Connection = Constants.StorageAccountSettingName)] DoStopServiceInfrastructureCommand command)
         {
             _logger.LogInformation("C# Queue trigger function processed: {command}", JsonConvert.SerializeObject(command));
 

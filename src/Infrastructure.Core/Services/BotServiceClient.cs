@@ -38,7 +38,7 @@ namespace Infrastructure.Core.Services
             _baseUrl = baseUrl;
         }
 
-        public async Task<HttpResponseMessage> InviteBotAsync(InviteBot.InviteBotCommand command)
+        public async Task<HttpResponseMessage> InviteBotAsync(DoInviteBot.DoInviteBotCommand command)
         {
             ValidateBaseUrl();
 

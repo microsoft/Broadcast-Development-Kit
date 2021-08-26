@@ -7,26 +7,26 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public class MuteBot
+    public class DoMuteBot
     {
-        public class MuteBotCommand : IRequest<MuteBotCommandResponse>
+        public class DoMuteBotCommand : IRequest<DoMuteBotCommandResponse>
         {
         }
 
-        public class MuteBotCommandResponse
+        public class DoMuteBotCommandResponse
         {
         }
 
-        public class MuteBotCommandHandler : IRequestHandler<MuteBotCommand, MuteBotCommandResponse>
+        public class DoMuteBotCommandHandler : IRequestHandler<DoMuteBotCommand, DoMuteBotCommandResponse>
         {
             private readonly IBot _bot;
 
-            public MuteBotCommandHandler(IBot bot)
+            public DoMuteBotCommandHandler(IBot bot)
             {
                 _bot = bot;
             }
 
-            public async Task<MuteBotCommandResponse> Handle(MuteBotCommand request, CancellationToken cancellationToken)
+            public async Task<DoMuteBotCommandResponse> Handle(DoMuteBotCommand request, CancellationToken cancellationToken)
             {
                 await _bot.MuteBotAsync();
                 return null;

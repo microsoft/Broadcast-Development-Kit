@@ -9,7 +9,7 @@ namespace Application.Interfaces.Common
 {
     public interface IBotServiceClient
     {
-        Task<HttpResponseMessage> InviteBotAsync(InviteBot.InviteBotCommand command);
+        Task<HttpResponseMessage> InviteBotAsync(DoInviteBot.DoInviteBotCommand command);
 
         Task<HttpResponseMessage> RemoveBotAsync(string callGraphId);
 

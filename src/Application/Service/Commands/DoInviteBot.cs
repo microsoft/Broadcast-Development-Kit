@@ -8,9 +8,9 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public class InviteBot
+    public class DoInviteBot
     {
-        public class InviteBotCommand : IRequest<InviteBotCommandResponse>
+        public class DoInviteBotCommand : IRequest<DoInviteBotCommandResponse>
         {
             public string MeetingUrl { get; set; }
 
@@ -19,14 +19,14 @@ namespace Application.Service.Commands
             public string CallId { get; set; }
         }
 
-        public class InviteBotCommandResponse
+        public class DoInviteBotCommandResponse
         {
             public string Id { get; set; }
         }
 
-        public class InviteBotCommandValidator : AbstractValidator<InviteBotCommand>
+        public class DoInviteBotCommandValidator : AbstractValidator<DoInviteBotCommand>
         {
-            public InviteBotCommandValidator()
+            public DoInviteBotCommandValidator()
             {
                 RuleFor(x => x.MeetingUrl)
                     .NotEmpty();
@@ -35,18 +35,18 @@ namespace Application.Service.Commands
             }
         }
 
-        public class InviteBotCommandHandler : IRequestHandler<InviteBotCommand, InviteBotCommandResponse>
+        public class DoInviteBotCommandHandler : IRequestHandler<DoInviteBotCommand, DoInviteBotCommandResponse>
         {
             private readonly IBot _bot;
 
-            public InviteBotCommandHandler(IBot bot)
+            public DoInviteBotCommandHandler(IBot bot)
             {
                 _bot = bot;
             }
 
-            public async Task<InviteBotCommandResponse> Handle(InviteBotCommand request, CancellationToken cancellationToken)
+            public async Task<DoInviteBotCommandResponse> Handle(DoInviteBotCommand request, CancellationToken cancellationToken)
             {
-                InviteBotCommandResponse response = new InviteBotCommandResponse();
+                DoInviteBotCommandResponse response = new DoInviteBotCommandResponse();
 
                 await _bot.InviteBotAsync(request);
 

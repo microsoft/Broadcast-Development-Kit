@@ -15,28 +15,28 @@ using Microsoft.Azure.Management.Compute.Fluent;
 
 namespace Application.Service.Commands
 {
-    public class StopServiceInfrastructure
+    public class DoStartServiceInfrastructure
     {
-        public class StopServiceInfrastructureCommand : IRequest<StopServiceInfrastructureCommandResponse>
+        public class DoStartServiceInfrastructureCommand : IRequest<DoStartServiceInfrastructureCommandResponse>
         {
             public string Id { get; set; }
         }
 
-        public class StopServiceInfrastructureCommandResponse
+        public class DoStartServiceInfrastructureCommandResponse
         {
             public string Id { get; set; }
 
             public ServiceModel Resource { get; set; }
         }
 
-        public class StopServiceInfrastructureCommandHandler : IRequestHandler<StopServiceInfrastructureCommand, StopServiceInfrastructureCommandResponse>
+        public class DoStartServiceInfrastructureCommandHandler : IRequestHandler<DoStartServiceInfrastructureCommand, DoStartServiceInfrastructureCommandResponse>
         {
             private readonly IAzVirtualMachineService _azureVirtualMachineService;
             private readonly IServiceRepository _serviceRepository;
             private readonly IHostEnvironment _environment;
             private readonly IMapper _mapper;
 
-            public StopServiceInfrastructureCommandHandler(
+            public DoStartServiceInfrastructureCommandHandler(
                 IAzVirtualMachineService azureVirtualMachineService,
                 IServiceRepository serviceRepository,
                 IHostEnvironment environment,
@@ -48,9 +48,9 @@ namespace Application.Service.Commands
                 _mapper = mapper ?? throw new System.ArgumentNullException(nameof(mapper));
             }
 
-            public async Task<StopServiceInfrastructureCommandResponse> Handle(StopServiceInfrastructureCommand request, CancellationToken cancellationToken)
+            public async Task<DoStartServiceInfrastructureCommandResponse> Handle(DoStartServiceInfrastructureCommand request, CancellationToken cancellationToken)
             {
-                var response = new StopServiceInfrastructureCommandResponse();
+                var response = new DoStartServiceInfrastructureCommandResponse();
 
                 var service = await _serviceRepository.GetItemAsync(request.Id);
                 if (service == null)
@@ -61,14 +61,14 @@ namespace Application.Service.Commands
                 // TODO: Review
                 if (_environment.IsLocal())
                 {
-                    service.State = ServiceState.Unavailable;
-                    service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Deprovisioned;
-                    service.Infrastructure.ProvisioningDetails.Message = $"Deprovisioned service {service.Name}.";
-                    service.Infrastructure.PowerState = PowerState.Deallocated.Value;
+                    service.State = ServiceState.Available;
+                    service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Provisioned;
+                    service.Infrastructure.ProvisioningDetails.Message = $"Provisioned service {service.Name}.";
+                    service.Infrastructure.PowerState = PowerState.Running.Value;
                 }
                 else
                 {
-                    var result = await _azureVirtualMachineService.StopAsync(service.Infrastructure.Id);
+                    var result = await _azureVirtualMachineService.StartAsync(service.Infrastructure.Id);
 
                     // At this point, the VM might be up and running and the bot service might have already register itself as available in the database.
                     // Therefore, we need to retrieve the latest entity of the VM again.
@@ -81,7 +81,6 @@ namespace Application.Service.Commands
 
                 response.Id = service.Id;
                 response.Resource = _mapper.Map<ServiceModel>(service);
-
                 return response;
             }
 
@@ -91,8 +90,8 @@ namespace Application.Service.Commands
                 {
                     case ResultStatus.Ok:
                         service.Infrastructure.PowerState = result.Value.PowerState.Value;
-                        service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Deprovisioned;
-                        service.Infrastructure.ProvisioningDetails.Message = $"Service {service.Name} deprovisioned.";
+                        service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Provisioned;
+                        service.Infrastructure.ProvisioningDetails.Message = $"Service {service.Name} provisioned.";
                         break;
                     case ResultStatus.Error:
                         StringBuilder sb = new StringBuilder();

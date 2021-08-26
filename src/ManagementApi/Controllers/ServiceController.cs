@@ -23,7 +23,7 @@ namespace ManagementApi.Controllers
         [Route("{serviceId}/start")]
         public async Task<IActionResult> Start([FromRoute] string serviceId)
         {
-            var command = new StartingServiceInfrastructure.StartingServiceInfrastructureCommand
+            var command = new RequestStartServiceInfrastructure.RequestStartServiceInfrastructureCommand
             {
                 ServiceId = serviceId,
             };
@@ -45,7 +45,7 @@ namespace ManagementApi.Controllers
         [Route("{serviceId}/stop")]
         public async Task<IActionResult> Stop([FromRoute] string serviceId)
         {
-            var command = new StoppingServiceInfrastructure.StoppingServiceInfrastructureCommand
+            var command = new RequestStopServiceInfrastructure.RequestStopServiceInfrastructureCommand
             {
                 ServiceId = serviceId,
             };

@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 using Application.Common.Models;
 using AutoMapper;
-using static Application.Service.Commands.StartingServiceInfrastructure;
-using static Application.Service.Commands.StartServiceInfrastructure;
-using static Application.Service.Commands.StoppingServiceInfrastructure;
-using static Application.Service.Commands.StopServiceInfrastructure;
+using static Application.Service.Commands.RequestStartServiceInfrastructure;
+using static Application.Service.Commands.DoStartServiceInfrastructure;
+using static Application.Service.Commands.RequestStopServiceInfrastructure;
+using static Application.Service.Commands.DoStopServiceInfrastructure;
 
 namespace Application.Service
 {
@@ -19,10 +19,10 @@ namespace Application.Service
             CreateMap<Domain.Entities.Service, ServiceModel>();
             CreateMap<Domain.Entities.Parts.Infrastructure, InfrastructureModel>();
             CreateMap<Domain.Entities.Parts.ProvisioningDetails, ProvisioningDetailsModel>();
-            CreateMap<Domain.Entities.Service, StartServiceInfrastructureCommand>();
-            CreateMap<Domain.Entities.Service, StopServiceInfrastructureCommand>();
-            CreateMap<Domain.Entities.Service, StartingServiceInfrastructureCommandResponse>();
-            CreateMap<Domain.Entities.Service, StoppingServiceInfrastructureCommandResponse>();
+            CreateMap<Domain.Entities.Service, DoStartServiceInfrastructureCommand>();
+            CreateMap<Domain.Entities.Service, DoStopServiceInfrastructureCommand>();
+            CreateMap<Domain.Entities.Service, RequestStartServiceInfrastructureCommandResponse>();
+            CreateMap<Domain.Entities.Service, RequestStopServiceInfrastructureCommandResponse>();
         }
     }
 }

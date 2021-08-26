@@ -10,31 +10,31 @@ using Domain.Constants;
 using Domain.Enums;
 using Domain.Exceptions;
 using MediatR;
-using static Application.Service.Commands.StartServiceInfrastructure;
+using static Application.Service.Commands.DoStartServiceInfrastructure;
 
 namespace Application.Service.Commands
 {
-    public class StartingServiceInfrastructure
+    public class RequestStartServiceInfrastructure
     {
-        public class StartingServiceInfrastructureCommand : IRequest<StartingServiceInfrastructureCommandResponse>
+        public class RequestStartServiceInfrastructureCommand : IRequest<RequestStartServiceInfrastructureCommandResponse>
         {
             public string ServiceId { get; set; }
         }
 
-        public class StartingServiceInfrastructureCommandResponse
+        public class RequestStartServiceInfrastructureCommandResponse
         {
             public string Id { get; set; }
 
             public ServiceModel Resource { get; set; }
         }
 
-        public class StartingServiceInfrastructureCommandHandler : IRequestHandler<StartingServiceInfrastructureCommand, StartingServiceInfrastructureCommandResponse>
+        public class RequestStartServiceInfrastructureCommandHandler : IRequestHandler<RequestStartServiceInfrastructureCommand, RequestStartServiceInfrastructureCommandResponse>
         {
             private readonly IServiceRepository _serviceRepository;
             private readonly IAzStorageHandler _storageHandler;
             private readonly IMapper _mapper;
 
-            public StartingServiceInfrastructureCommandHandler(
+            public RequestStartServiceInfrastructureCommandHandler(
                 IServiceRepository serviceRepository,
                 IAzStorageHandler storageHandler,
                 IMapper mapper)
@@ -44,9 +44,9 @@ namespace Application.Service.Commands
                 _mapper = mapper;
             }
 
-            public async Task<StartingServiceInfrastructureCommandResponse> Handle(StartingServiceInfrastructureCommand request, CancellationToken cancellationToken)
+            public async Task<RequestStartServiceInfrastructureCommandResponse> Handle(RequestStartServiceInfrastructureCommand request, CancellationToken cancellationToken)
             {
-                var response = new StartingServiceInfrastructureCommandResponse();
+                var response = new RequestStartServiceInfrastructureCommandResponse();
                 /* TODO: Change this.
                   NOTE: The Management Portal does not have the feature to select the service before initializing the call.
                   The following code is temporary, if the service Id is not specified, we use a harcoded ID to retrieve the service.
@@ -66,7 +66,7 @@ namespace Application.Service.Commands
                 service.Infrastructure.ProvisioningDetails.Message = $"Provisioning service {service.Name}.";
                 await _serviceRepository.UpdateItemAsync(service.Id, service);
 
-                var startVirtualMachineCommand = new StartServiceInfrastructureCommand
+                var startVirtualMachineCommand = new DoStartServiceInfrastructureCommand
                 {
                     Id = service.Id,
                 };

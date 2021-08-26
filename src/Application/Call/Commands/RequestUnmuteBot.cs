@@ -9,24 +9,24 @@ using MediatR;
 
 namespace Application.Call.Commands
 {
-    public class RequestUnmuteBotFromCall
+    public class RequestUnmuteBot
     {
-        public class RequestUnmuteBotFromCallCommand : IRequest<RequestUnmuteBotFromCallCommandResponse>
+        public class RequestUnmuteBotCommand : IRequest<RequestUnmuteBotCommandResponse>
         {
             public string CallId { get; set; }
         }
 
-        public class RequestUnmuteBotFromCallCommandResponse
+        public class RequestUnmuteBotCommandResponse
         {
         }
 
-        public class RequestUnmuteBotFromCallCommandHandler : IRequestHandler<RequestUnmuteBotFromCallCommand, RequestUnmuteBotFromCallCommandResponse>
+        public class RequestUnmuteBotCommandHandler : IRequestHandler<RequestUnmuteBotCommand, RequestUnmuteBotCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
             private readonly ICallRepository _callRepository;
             private readonly IServiceRepository _serviceRepository;
 
-            public RequestUnmuteBotFromCallCommandHandler(
+            public RequestUnmuteBotCommandHandler(
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository)
@@ -36,7 +36,7 @@ namespace Application.Call.Commands
                 _serviceRepository = serviceRepository ?? throw new ArgumentNullException(nameof(serviceRepository));
             }
 
-            public async Task<RequestUnmuteBotFromCallCommandResponse> Handle(RequestUnmuteBotFromCallCommand request, CancellationToken cancellationToken)
+            public async Task<RequestUnmuteBotCommandResponse> Handle(RequestUnmuteBotCommand request, CancellationToken cancellationToken)
             {
                 var call = await _callRepository.GetItemAsync(request.CallId);
                 var service = await _serviceRepository.GetItemAsync(call.ServiceId);

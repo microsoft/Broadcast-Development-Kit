@@ -68,7 +68,7 @@ namespace BotService.Infrastructure.Core
 
         public string VirtualMachineName { get; set; }
 
-        public async Task InviteBotAsync(InviteBot.InviteBotCommand command)
+        public async Task InviteBotAsync(DoInviteBot.DoInviteBotCommand command)
         {
             _logger.LogInformation("[Bot] Getting meeting info for call {callId}", command.CallId);
 
