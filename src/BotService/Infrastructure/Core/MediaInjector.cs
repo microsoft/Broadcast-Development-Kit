@@ -22,6 +22,10 @@ namespace BotService.Infrastructure.Core
         private const ulong VideoSampleLength = 1000000000 / VideoSamplesPerSecond; // 33.33...ms, in nano-seconds
         private const ulong AudioSampleLength = 1000000000 / AudioSamplesPerSecond; // 20ms, in nano-seconds
 
+        // Test to increase the samples threshold
+        private const ulong VideoSamplesThreshold = 3 * VideoSampleLength; // ~100 ms
+        private const ulong AudioSamplesThreshold = 5 * AudioSampleLength; // 100 ms
+
         private readonly IAudioSocket _audioSocket;
         private readonly PipelineBusObserver _pipelineBusObserver;
         private readonly ILoggerFactory _loggerFactory;
@@ -177,7 +181,7 @@ namespace BotService.Infrastructure.Core
                     }
 
                     // If the frame is too late we will simply discard it
-                    if (adjustedBufferPts + VideoSampleLength >= pipelineTime)
+                    if (adjustedBufferPts + VideoSamplesThreshold >= pipelineTime)
                     {
                         // The Media Platform uses timestamps in units of 100-ns, while GStreamer uses timestamps in units of 1-ns.
                         long timestamp = _referenceVideoTimestamp + ((long)(adjustedBufferPts - _referenceVideoPts) / 100);
@@ -267,7 +271,7 @@ namespace BotService.Infrastructure.Core
                     }
 
                     // If the audio sample is too late we will simply discard it
-                    if (adjustedBufferPts + AudioSampleLength >= pipelineTime)
+                    if (adjustedBufferPts + AudioSamplesThreshold >= pipelineTime)
                     {
                         // The Media Platform uses timestamps in units of 100-ns, while GStreamer uses timestamps in units of 1-ns.
                         long timestamp = _referenceAudioTimestamp + ((long)(adjustedBufferPts - _referenceAudioPts) / 100);
