@@ -8,9 +8,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using static Application.Service.Commands.HandleEventGridServiceInfrastructureEvent;
 using static Application.Service.Commands.DoStartServiceInfrastructure;
 using static Application.Service.Commands.DoStopServiceInfrastructure;
+using static Application.Service.Commands.HandleEventGridServiceInfrastructureEvent;
 
 namespace BotOrchestrator
 {
