@@ -3,7 +3,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Application.Common.Models;
-using static Application.Service.Commands.InviteBot;
+using static Application.Service.Commands.DoInviteBot;
 
 namespace Application.Interfaces.Common
 {
@@ -13,7 +13,7 @@ namespace Application.Interfaces.Common
 
         string VirtualMachineName { get; set; }
 
-        Task InviteBotAsync(InviteBotCommand command);
+        Task InviteBotAsync(DoInviteBotCommand command);
 
         Task ProcessNotificationAsync(HttpRequestMessage request);
 

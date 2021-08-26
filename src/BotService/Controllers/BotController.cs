@@ -34,7 +34,7 @@ namespace BotService.Controllers
         // POST api/<BotController>
         [HttpPost]
         [Route("invite")]
-        public async Task<IActionResult> InviteBotAsync([FromBody] InviteBot.InviteBotCommand command)
+        public async Task<IActionResult> InviteBotAsync([FromBody] DoInviteBot.DoInviteBotCommand command)
         {
             var response = await _mediator.Send(command);
 
@@ -59,7 +59,7 @@ namespace BotService.Controllers
         [Route("mute")]
         public async Task<ActionResult> MuteAsync()
         {
-            var command = new MuteBot.MuteBotCommand();
+            var command = new DoMuteBot.DoMuteBotCommand();
             var response = await _mediator.Send(command);
             return Ok(response);
         }
@@ -68,7 +68,7 @@ namespace BotService.Controllers
         [Route("unmute")]
         public async Task<ActionResult> UnmuteAsync()
         {
-            var command = new UnmuteBot.UnmuteBotCommand();
+            var command = new DoUnmuteBot.DoUnmuteBotCommand();
             var response = await _mediator.Send(command);
             return Ok(response);
         }
