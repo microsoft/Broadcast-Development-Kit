@@ -16,6 +16,8 @@ namespace BotService.Infrastructure.Pipelines
 {
     public class MediaInjectionPipeline : IObservable<BusEventPayload>, IMediaInjectionPipeline
     {
+        private const int MpegTsDemuxerDefaultLatency = 350;
+
         private readonly ILogger _logger;
         private readonly Pipeline _pipeline;
         private readonly Bin _audioProcessingBin, _videoProcessingBin;
@@ -36,14 +38,16 @@ namespace BotService.Infrastructure.Pipelines
             _pipeline = new Pipeline(name);
             _bus = _pipeline.Bus;
             Element source = GetSource();
-            Element decodebin = ElementFactory.Make("decodebin");
+            Bin decodebin = (Bin)ElementFactory.Make("decodebin");
 
             if (source == null || decodebin == null)
             {
                 throw new StartStreamInjectionException("Could not create all the pipeline elements");
             }
 
+            decodebin.ElementAdded += HandleElementAdded;
             decodebin.PadAdded += HandlePadAdded;
+
             _videoProcessingBin = CreateVideoProcessingBin();
             _audioProcessingBin = CreateAudioProcessingBin();
 
@@ -204,6 +208,14 @@ namespace BotService.Infrastructure.Pipelines
             }
 
             return (messageType, formatedMessage);
+        }
+
+        private void HandleElementAdded(object o, ElementAddedArgs args)
+        {
+            if (args.Element.Name.Contains("tsdemux"))
+            {
+                args.Element.SetProperty("latency", new GLib.Value(MpegTsDemuxerDefaultLatency));
+            }
         }
 
         private Element GetSource()
