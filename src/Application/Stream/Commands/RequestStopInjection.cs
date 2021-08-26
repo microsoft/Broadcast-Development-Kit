@@ -16,25 +16,25 @@ using static Domain.Constants.Constants;
 
 namespace Application.Stream.Commands
 {
-    public class StoppingInjection
+    public class RequestStopInjection
     {
-        public class StoppingInjectionCommand : IRequest<StoppingInjectionCommandResponse>
+        public class RequestStopInjectionCommand : IRequest<RequestStopInjectionCommandResponse>
         {
             public string CallId { get; set; }
 
             public string StreamId { get; set; }
         }
 
-        public class StoppingInjectionCommandResponse
+        public class RequestStopInjectionCommandResponse
         {
             public string Id { get; set; }
 
             public StreamModel Resource { get; set; }
         }
 
-        public class StoppingInjectionCommandValidator : AbstractValidator<StoppingInjectionCommand>
+        public class RequestStopCommandValidator : AbstractValidator<RequestStopInjectionCommand>
         {
-            public StoppingInjectionCommandValidator()
+            public RequestStopCommandValidator()
             {
                 RuleFor(x => x.CallId)
                     .NotEmpty();
@@ -43,14 +43,14 @@ namespace Application.Stream.Commands
             }
         }
 
-        public class StoppingInjectionCommandHandler : IRequestHandler<StoppingInjectionCommand, StoppingInjectionCommandResponse>
+        public class RequestStopInjectionCommandHandler : IRequestHandler<RequestStopInjectionCommand, RequestStopInjectionCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
             private readonly ICallRepository _callRepository;
             private readonly IServiceRepository _serviceRepository;
             private readonly IStreamRepository _streamRepository;
 
-            public StoppingInjectionCommandHandler(
+            public RequestStopInjectionCommandHandler(
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository,
@@ -62,9 +62,9 @@ namespace Application.Stream.Commands
                 _streamRepository = streamRepository ?? throw new ArgumentNullException(nameof(streamRepository));
             }
 
-            public async Task<StoppingInjectionCommandResponse> Handle(StoppingInjectionCommand request, CancellationToken cancellationToken)
+            public async Task<RequestStopInjectionCommandResponse> Handle(RequestStopInjectionCommand request, CancellationToken cancellationToken)
             {
-                StoppingInjectionCommandResponse response = new StoppingInjectionCommandResponse();
+                RequestStopInjectionCommandResponse response = new RequestStopInjectionCommandResponse();
 
                 var call = await _callRepository.GetItemAsync(request.CallId);
                 var service = await _serviceRepository.GetItemAsync(call.ServiceId);
@@ -82,7 +82,7 @@ namespace Application.Stream.Commands
 
                 await _streamRepository.UpdateItemAsync(entity.Id, entity);
 
-                var command = new StopInjection.StopInjectionCommand
+                var command = new DoStopInjection.DoStopInjectionCommand
                 {
                     CallId = request.CallId,
                     StreamId = entity.Id,

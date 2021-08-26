@@ -17,23 +17,23 @@ using MediatR;
 
 namespace Application.Stream.Commands
 {
-    public class StartExtraction
+    public class DoStartExtraction
     {
-        public class StartExtractionCommand : IRequest<StartExtractionCommandResponse>
+        public class DoStartExtractionCommand : IRequest<DoStartExtractionCommandResponse>
         {
             public StartStreamExtractionBody Body { get; set; }
         }
 
-        public class StartExtractionCommandResponse
+        public class DoStartExtractionCommandResponse
         {
             public string Id { get; set; }
 
             public ParticipantStreamModel Resource { get; set; }
         }
 
-        public class StartExtractionCommandValidator : AbstractValidator<StartExtractionCommand>
+        public class DoStartExtractionCommandValidator : AbstractValidator<DoStartExtractionCommand>
         {
-            public StartExtractionCommandValidator()
+            public DoStartExtractionCommandValidator()
             {
                 RuleFor(x => x.Body.CallId)
                    .NotEmpty();
@@ -48,7 +48,7 @@ namespace Application.Stream.Commands
             }
         }
 
-        public class StartExtractionCommandHandler : IRequestHandler<StartExtractionCommand, StartExtractionCommandResponse>
+        public class DoStartExtractionCommandHandler : IRequestHandler<DoStartExtractionCommand, DoStartExtractionCommandResponse>
         {
             private readonly IAppConfiguration _configuration;
             private readonly IBot _bot;
@@ -56,7 +56,7 @@ namespace Application.Stream.Commands
             private readonly IMapper _mapper;
             private readonly IExtractionUrlHelper _extractionUrlHelper;
 
-            public StartExtractionCommandHandler(
+            public DoStartExtractionCommandHandler(
                 IAppConfiguration configuration,
                 IBot bot,
                 IParticipantStreamRepository participantStreamRepository,
@@ -70,7 +70,7 @@ namespace Application.Stream.Commands
                 _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             }
 
-            public async Task<StartExtractionCommandResponse> Handle(StartExtractionCommand request, CancellationToken cancellationToken)
+            public async Task<DoStartExtractionCommandResponse> Handle(DoStartExtractionCommand request, CancellationToken cancellationToken)
             {
                 // TODO: Change parameter, participant Id is not the key. It is the Id assigned by the teams call
                 var participant = await _participantStreamRepository.GetItemAsync(request.Body.ParticipantId);
@@ -122,7 +122,7 @@ namespace Application.Stream.Commands
                     throw;
                 }
 
-                StartExtractionCommandResponse response = new StartExtractionCommandResponse
+                DoStartExtractionCommandResponse response = new DoStartExtractionCommandResponse
                 {
                     Id = participant.Id,
                     Resource = _mapper.Map<ParticipantStreamModel>(participant),

@@ -60,13 +60,13 @@ namespace Infrastructure.Core.Services
             return response;
         }
 
-        public async Task<StartInjection.StartInjectionCommandResponse> StartInjectionAsync(StartInjection.StartInjectionCommand command)
+        public async Task<DoStartInjection.DoStartInjectionCommandResponse> StartInjectionAsync(DoStartInjection.DoStartInjectionCommand command)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.Body.CallId}/stream/start-injection");
-            var response = await client.PostAsync<StartInjection.StartInjectionCommandResponse>(url, null, command);
+            var response = await client.PostAsync<DoStartInjection.DoStartInjectionCommandResponse>(url, null, command);
 
             return response;
         }
@@ -93,35 +93,35 @@ namespace Infrastructure.Core.Services
             return response;
         }
 
-        public async Task<StopInjection.StopInjectionCommandResponse> StoptInjectionAsync(StopInjection.StopInjectionCommand command)
+        public async Task<DoStopInjection.DoStopInjectionCommandResponse> StoptInjectionAsync(DoStopInjection.DoStopInjectionCommand command)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.CallId}/stream/{command.StreamId}/stop-injection");
-            var response = await client.PostAsync<StopInjection.StopInjectionCommandResponse>(url, null, command);
+            var response = await client.PostAsync<DoStopInjection.DoStopInjectionCommandResponse>(url, null, command);
 
             return response;
         }
 
-        public async Task<StartExtraction.StartExtractionCommandResponse> StartExtractionAsync(StartExtraction.StartExtractionCommand command)
+        public async Task<DoStartExtraction.DoStartExtractionCommandResponse> StartExtractionAsync(DoStartExtraction.DoStartExtractionCommand command)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.Body.CallId}/stream/start-extraction");
-            var response = await client.PostAsync<StartExtraction.StartExtractionCommandResponse>(url, null, command);
+            var response = await client.PostAsync<DoStartExtraction.DoStartExtractionCommandResponse>(url, null, command);
 
             return response;
         }
 
-        public async Task<StopExtraction.StopExtractionCommandResponse> StopExtractionAsync(StopExtraction.StopExtractionCommand command)
+        public async Task<DoStopExtraction.DoStopExtractionCommandResponse> StopExtractionAsync(DoStopExtraction.DoStopExtractionCommand command)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.Body.CallId}/stream/stop-extraction");
-            var response = await client.PostAsync<StopExtraction.StopExtractionCommandResponse>(url, null, command);
+            var response = await client.PostAsync<DoStopExtraction.DoStopExtractionCommandResponse>(url, null, command);
 
             return response;
         }

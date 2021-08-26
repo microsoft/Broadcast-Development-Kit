@@ -13,13 +13,13 @@ namespace Application.Interfaces.Common
 
         Task<HttpResponseMessage> RemoveBotAsync(string callGraphId);
 
-        Task<StartInjection.StartInjectionCommandResponse> StartInjectionAsync(StartInjection.StartInjectionCommand command);
+        Task<DoStartInjection.DoStartInjectionCommandResponse> StartInjectionAsync(DoStartInjection.DoStartInjectionCommand command);
 
-        Task<StopInjection.StopInjectionCommandResponse> StoptInjectionAsync(StopInjection.StopInjectionCommand command);
+        Task<DoStopInjection.DoStopInjectionCommandResponse> StoptInjectionAsync(DoStopInjection.DoStopInjectionCommand command);
 
-        Task<StartExtraction.StartExtractionCommandResponse> StartExtractionAsync(StartExtraction.StartExtractionCommand command);
+        Task<DoStartExtraction.DoStartExtractionCommandResponse> StartExtractionAsync(DoStartExtraction.DoStartExtractionCommand command);
 
-        Task<StopExtraction.StopExtractionCommandResponse> StopExtractionAsync(StopExtraction.StopExtractionCommand command);
+        Task<DoStopExtraction.DoStopExtractionCommandResponse> StopExtractionAsync(DoStopExtraction.DoStopExtractionCommand command);
 
         Task<HttpResponseMessage> MuteBotAsync();
 

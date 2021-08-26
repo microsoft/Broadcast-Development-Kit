@@ -18,23 +18,23 @@ using static Domain.Constants.Constants;
 
 namespace Application.Stream.Commands
 {
-    public class StartingInjection
+    public class RequestStartInjection
     {
-        public class StartingInjectionCommand : IRequest<StartingInjectionCommandResponse>
+        public class RequestStartInjectionCommand : IRequest<RequestStartInjectionCommandResponse>
         {
             public StartStreamInjectionBody Body { get; set; }
         }
 
-        public class StartingInjectionCommandResponse
+        public class RequestStartInjectionCommandResponse
         {
             public string Id { get; set; }
 
             public StreamModel Resource { get; set; }
         }
 
-        public class StartingInjectionCommandValidator : AbstractValidator<StartingInjectionCommand>
+        public class RequestStartInjectionCommandValidator : AbstractValidator<RequestStartInjectionCommand>
         {
-            public StartingInjectionCommandValidator()
+            public RequestStartInjectionCommandValidator()
             {
                 RuleFor(x => x.Body.CallId)
                     .NotEmpty();
@@ -69,7 +69,7 @@ namespace Application.Stream.Commands
             }
         }
 
-        public class StartingInjectionCommandHandler : IRequestHandler<StartingInjectionCommand, StartingInjectionCommandResponse>
+        public class RequestStartInjectionCommandHandler : IRequestHandler<RequestStartInjectionCommand, RequestStartInjectionCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
             private readonly ICallRepository _callRepository;
@@ -77,7 +77,7 @@ namespace Application.Stream.Commands
             private readonly IStreamRepository _streamRepository;
             private readonly IMapper _mapper;
 
-            public StartingInjectionCommandHandler(
+            public RequestStartInjectionCommandHandler(
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository,
@@ -91,12 +91,12 @@ namespace Application.Stream.Commands
                 _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             }
 
-            public async Task<StartingInjectionCommandResponse> Handle(StartingInjectionCommand request, CancellationToken cancellationToken)
+            public async Task<RequestStartInjectionCommandResponse> Handle(RequestStartInjectionCommand request, CancellationToken cancellationToken)
             {
                 var call = await _callRepository.GetItemAsync(request.Body.CallId);
                 request.Body.StreamKey = GetStreamKeyByProtocol(request.Body, call.PrivateContext);
 
-                StartingInjectionCommandResponse response = new StartingInjectionCommandResponse();
+                RequestStartInjectionCommandResponse response = new RequestStartInjectionCommandResponse();
 
                 var entity = _mapper.Map<Domain.Entities.Stream>(request.Body);
                 entity.StartingAt = DateTime.UtcNow;
@@ -106,7 +106,7 @@ namespace Application.Stream.Commands
 
                 request.Body.StreamId = entity.Id;
 
-                var command = new StartInjection.StartInjectionCommand
+                var command = new DoStartInjection.DoStartInjectionCommand
                 {
                     Body = request.Body,
                 };

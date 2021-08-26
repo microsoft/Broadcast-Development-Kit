@@ -8,41 +8,41 @@ using MediatR;
 
 namespace Application.Service.Commands
 {
-    public class RemoveBot
+    public class DoEndCall
     {
-        public class RemoveBotCommand : IRequest<RemoveBotCommandResponse>
+        public class DoEndCallCommand : IRequest<DoEndCallCommandResponse>
         {
             public string GraphCallId { get; set; }
         }
 
-        public class RemoveBotCommandResponse
+        public class DoEndCallCommandResponse
         {
             public string Id { get; set; }
         }
 
-        public class RemoveBotCommandValidator : AbstractValidator<RemoveBotCommand>
+        public class DoEndCallCommandValidator : AbstractValidator<DoEndCallCommand>
         {
-            public RemoveBotCommandValidator()
+            public DoEndCallCommandValidator()
             {
                 RuleFor(x => x.GraphCallId)
                     .NotEmpty();
             }
         }
 
-        public class RemoveBotCommandHandler : IRequestHandler<RemoveBotCommand, RemoveBotCommandResponse>
+        public class DoEndCallCommandHandler : IRequestHandler<DoEndCallCommand, DoEndCallCommandResponse>
         {
             private readonly IBot _bot;
 
-            public RemoveBotCommandHandler(IBot bot)
+            public DoEndCallCommandHandler(IBot bot)
             {
                 _bot = bot;
             }
 
-            public async Task<RemoveBotCommandResponse> Handle(RemoveBotCommand request, CancellationToken cancellationToken)
+            public async Task<DoEndCallCommandResponse> Handle(DoEndCallCommand request, CancellationToken cancellationToken)
             {
-                RemoveBotCommandResponse response = new RemoveBotCommandResponse();
+                DoEndCallCommandResponse response = new DoEndCallCommandResponse();
 
-                await _bot.RemoveBotAsync(request.GraphCallId);
+                await _bot.EndCallAsync(request.GraphCallId);
 
                 response.Id = request.GraphCallId;
 

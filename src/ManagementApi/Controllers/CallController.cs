@@ -67,7 +67,7 @@ namespace ManagementApi.Controllers
         [Route("{callId}")]
         public async Task<ActionResult> EndCallAsync([FromRoute] string callId)
         {
-            var command = new EndCall.EndCallCommand
+            var command = new RequestEndCall.RequestEndCallCommand
             {
                 CallId = callId,
                 ShouldShutDownService = false,
@@ -107,7 +107,7 @@ namespace ManagementApi.Controllers
         public async Task<ActionResult> StartExtractionAsync([FromRoute] string callId, [FromBody] StartStreamExtractionBody streamExtraction)
         {
             streamExtraction.CallId = callId;
-            var command = new StartingExtraction.StartingExtractionCommand
+            var command = new RequestStartExtraction.RequestStartExtractionCommand
             {
                 Body = streamExtraction,
             };
@@ -121,7 +121,7 @@ namespace ManagementApi.Controllers
         public async Task<ActionResult> StopExtractionAsync([FromRoute] string callId, [FromBody] StopStreamExtractionBody streamExtraction)
         {
             streamExtraction.CallId = callId;
-            var command = new StoppingExtraction.StoppingExtractionCommand
+            var command = new RequestStopExtraction.RequestStopExtractionCommand
             {
                 Body = streamExtraction,
             };
@@ -136,7 +136,7 @@ namespace ManagementApi.Controllers
         {
             streamInjection.CallId = callId;
 
-            var command = new StartingInjection.StartingInjectionCommand
+            var command = new RequestStartInjection.RequestStartInjectionCommand
             {
                 Body = streamInjection,
             };
@@ -150,7 +150,7 @@ namespace ManagementApi.Controllers
         [Route("{callId}/stream/{streamId}/stop-injection")]
         public async Task<ActionResult> StopInjectionAsync([FromRoute] string callId, [FromRoute] string streamId)
         {
-            var command = new StoppingInjection.StoppingInjectionCommand
+            var command = new RequestStopInjection.RequestStopInjectionCommand
             {
                 CallId = callId,
                 StreamId = streamId,
@@ -165,7 +165,7 @@ namespace ManagementApi.Controllers
         [Route("{callId}/mute")]
         public async Task<ActionResult> MuteAsync([FromRoute] string callId)
         {
-            var command = new MuteBotFromCall.MuteBotFromCallCommand
+            var command = new RequestMuteBotFromCall.RequestMuteBotFromCallCommand
             {
                 CallId = callId,
             };
@@ -177,7 +177,7 @@ namespace ManagementApi.Controllers
         [Route("{callId}/unmute")]
         public async Task<ActionResult> UnmuteAsync([FromRoute] string callId)
         {
-            var command = new UnmuteBotFromCall.UnmuteBotFromCallCommand
+            var command = new RequestUnmuteBotFromCall.RequestUnmuteBotFromCallCommand
             {
                 CallId = callId,
             };

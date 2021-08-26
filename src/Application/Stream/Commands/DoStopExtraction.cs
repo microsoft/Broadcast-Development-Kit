@@ -16,23 +16,23 @@ using MediatR;
 
 namespace Application.Stream.Commands
 {
-    public class StopExtraction
+    public class DoStopExtraction
     {
-        public class StopExtractionCommand : IRequest<StopExtractionCommandResponse>
+        public class DoStopExtractionCommand : IRequest<DoStopExtractionCommandResponse>
         {
             public StopStreamExtractionBody Body { get; set; }
         }
 
-        public class StopExtractionCommandResponse
+        public class DoStopExtractionCommandResponse
         {
             public string Id { get; set; }
 
             public ParticipantStreamModel Resource { get; set; }
         }
 
-        public class StopExtractionCommandValidator : AbstractValidator<StopExtractionCommand>
+        public class DoStopExtractionCommandValidator : AbstractValidator<DoStopExtractionCommand>
         {
-            public StopExtractionCommandValidator()
+            public DoStopExtractionCommandValidator()
             {
                 RuleFor(x => x.Body.CallId)
                    .NotEmpty();
@@ -45,13 +45,13 @@ namespace Application.Stream.Commands
             }
         }
 
-        public class StopExtractionCommandHandler : IRequestHandler<StopExtractionCommand, StopExtractionCommandResponse>
+        public class DoStopExtractionCommandHandler : IRequestHandler<DoStopExtractionCommand, DoStopExtractionCommandResponse>
         {
             private readonly IBot _bot;
             private readonly IParticipantStreamRepository _participantStreamRepository;
             private readonly IMapper _mapper;
 
-            public StopExtractionCommandHandler(
+            public DoStopExtractionCommandHandler(
                 IBot bot,
                 IParticipantStreamRepository participantStreamRepository,
                 IMapper mapper)
@@ -61,7 +61,7 @@ namespace Application.Stream.Commands
                 _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             }
 
-            public async Task<StopExtractionCommandResponse> Handle(StopExtractionCommand request, CancellationToken cancellationToken)
+            public async Task<DoStopExtractionCommandResponse> Handle(DoStopExtractionCommand request, CancellationToken cancellationToken)
             {
                 // TODO: Change parameter, participant Id is not the key. It is the Id assigned by the teams call
                 var participant = await _participantStreamRepository.GetItemAsync(request.Body.ParticipantId);
@@ -91,7 +91,7 @@ namespace Application.Stream.Commands
                     throw;
                 }
 
-                StopExtractionCommandResponse response = new StopExtractionCommandResponse
+                DoStopExtractionCommandResponse response = new DoStopExtractionCommandResponse
                 {
                     Id = participant.Id,
                     Resource = _mapper.Map<ParticipantStreamModel>(participant),

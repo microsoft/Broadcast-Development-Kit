@@ -7,26 +7,26 @@ using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
 using MediatR;
 
-namespace Application.Stream.Commands
+namespace Application.Call.Commands
 {
-    public class MuteBotFromCall
+    public class RequestUnmuteBotFromCall
     {
-        public class MuteBotFromCallCommand : IRequest<MuteBotFromCallCommandResponse>
+        public class RequestUnmuteBotFromCallCommand : IRequest<RequestUnmuteBotFromCallCommandResponse>
         {
             public string CallId { get; set; }
         }
 
-        public class MuteBotFromCallCommandResponse
+        public class RequestUnmuteBotFromCallCommandResponse
         {
         }
 
-        public class MuteBotFromCallCommandHandler : IRequestHandler<MuteBotFromCallCommand, MuteBotFromCallCommandResponse>
+        public class RequestUnmuteBotFromCallCommandHandler : IRequestHandler<RequestUnmuteBotFromCallCommand, RequestUnmuteBotFromCallCommandResponse>
         {
             private readonly IBotServiceClient _botServiceClient;
             private readonly ICallRepository _callRepository;
             private readonly IServiceRepository _serviceRepository;
 
-            public MuteBotFromCallCommandHandler(
+            public RequestUnmuteBotFromCallCommandHandler(
                 IBotServiceClient botServiceClient,
                 ICallRepository callRepository,
                 IServiceRepository serviceRepository)
@@ -36,12 +36,12 @@ namespace Application.Stream.Commands
                 _serviceRepository = serviceRepository ?? throw new ArgumentNullException(nameof(serviceRepository));
             }
 
-            public async Task<MuteBotFromCallCommandResponse> Handle(MuteBotFromCallCommand request, CancellationToken cancellationToken)
+            public async Task<RequestUnmuteBotFromCallCommandResponse> Handle(RequestUnmuteBotFromCallCommand request, CancellationToken cancellationToken)
             {
                 var call = await _callRepository.GetItemAsync(request.CallId);
                 var service = await _serviceRepository.GetItemAsync(call.ServiceId);
                 _botServiceClient.SetBaseUrl(service.Infrastructure.Dns);
-                await _botServiceClient.MuteBotAsync();
+                await _botServiceClient.UnmuteBotAsync();
                 return null;
             }
         }

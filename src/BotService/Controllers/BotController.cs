@@ -43,9 +43,9 @@ namespace BotService.Controllers
 
         [HttpDelete]
         [Route("call/{graphCallId}")]
-        public async Task<ActionResult> RemoveBotAsync([FromRoute] string graphCallId)
+        public async Task<ActionResult> EndCallAsync([FromRoute] string graphCallId)
         {
-            var command = new RemoveBot.RemoveBotCommand
+            var command = new DoEndCall.DoEndCallCommand
             {
                 GraphCallId = graphCallId,
             };
@@ -75,7 +75,7 @@ namespace BotService.Controllers
 
         [HttpPost]
         [Route("call/{callId}/stream/start-injection")]
-        public async Task<ActionResult> StartInjectionAsync([FromRoute] string callId, [FromBody] StartInjection.StartInjectionCommand command)
+        public async Task<ActionResult> StartInjectionAsync([FromRoute] string callId, [FromBody] DoStartInjection.DoStartInjectionCommand command)
         {
             var response = await _mediator.Send(command);
 
@@ -86,7 +86,7 @@ namespace BotService.Controllers
         [Route("call/{callId}/stream/{streamId}/stop-injection")]
         public async Task<ActionResult> StopInjectionAsync([FromRoute] string callId, [FromRoute] string streamId)
         {
-            var command = new StopInjection.StopInjectionCommand
+            var command = new DoStopInjection.DoStopInjectionCommand
             {
                 CallId = callId,
                 StreamId = streamId,
@@ -99,7 +99,7 @@ namespace BotService.Controllers
 
         [HttpPost]
         [Route("call/{callId}/stream/start-extraction")]
-        public async Task<ActionResult> StartExtractionAsync([FromRoute] string callId, [FromBody] StartExtraction.StartExtractionCommand command)
+        public async Task<ActionResult> StartExtractionAsync([FromRoute] string callId, [FromBody] DoStartExtraction.DoStartExtractionCommand command)
         {
             var response = await _mediator.Send(command);
 
@@ -108,7 +108,7 @@ namespace BotService.Controllers
 
         [HttpPost]
         [Route("call/{callId}/stream/stop-extraction")]
-        public async Task<ActionResult> StopExtractionAsync([FromRoute] string callId, [FromBody] StopExtraction.StopExtractionCommand command)
+        public async Task<ActionResult> StopExtractionAsync([FromRoute] string callId, [FromBody] DoStopExtraction.DoStopExtractionCommand command)
         {
             var response = await _mediator.Send(command);
 
