@@ -85,9 +85,9 @@ Once the window to edit the environment variable is open, click on the `new` but
 
 > It is not necessary to repeat this procedure every time you are going to run the solution locally, it should only be done before run it for the first time.
 
-### NGINX - Optional
+### NGINX
 
-To support RTMP pull mode extractions and RTMP injection features, it is necessary to install and configure [NGINX](../common/install_and_configure_nginx_with_rtmp_module_on_windows.md)
+To support RTMP pull mode extractions and RTMP injection features, it is necessary to install and configure [NGINX](../common/install_and_configure_nginx_with_rtmp_module_on_windows.md).
 
 
 ### Ngrok
