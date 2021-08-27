@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
+using Application.Service.Events;
 using AutoMapper;
 using Domain.Constants;
 using Domain.Enums;
@@ -31,16 +32,16 @@ namespace Application.Service.Commands
         public class RequestStopServiceInfrastructureCommandHandler : IRequestHandler<RequestStopServiceInfrastructureCommand, RequestStopServiceInfrastructureCommandResponse>
         {
             private readonly IServiceRepository _serviceRepository;
-            private readonly IAzStorageHandler _storageHandler;
+            private readonly IMediator _mediator;
             private readonly IMapper _mapper;
 
             public RequestStopServiceInfrastructureCommandHandler(
                 IServiceRepository serviceRepository,
-                IAzStorageHandler storageHandler,
+                IMediator mediator,
                 IMapper mapper)
             {
                 _serviceRepository = serviceRepository ?? throw new System.ArgumentNullException(nameof(serviceRepository));
-                _storageHandler = storageHandler ?? throw new System.ArgumentNullException(nameof(storageHandler));
+                _mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
                 _mapper = mapper ?? throw new System.ArgumentNullException(nameof(mapper));
             }
 
@@ -65,14 +66,16 @@ namespace Application.Service.Commands
                 service.State = ServiceState.Unavailable;
                 service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Deprovisioning;
                 service.Infrastructure.ProvisioningDetails.Message = $"Deprovisioning service {service.Name}";
+
                 await _serviceRepository.UpdateItemAsync(service.Id, service);
 
-                var stopServiceInfrastructureCommand = new DoStopServiceInfrastructureCommand
+                var stopServiceInfrastructureRequestedEvent = new StopServiceInfrastructureRequested.StopServiceInfrastructureRequestedEvent
                 {
-                    Id = service.Id,
+                    CallId = service.CallId,
+                    ServiceId = service.Id,
                 };
 
-                await _storageHandler.AddQueueMessageAsync(Constants.AzureQueueNames.StopVirtualMachineQueue, stopServiceInfrastructureCommand);
+                await _mediator.Publish(stopServiceInfrastructureRequestedEvent);
 
                 response.Id = service.Id;
                 response.Resource = _mapper.Map<ServiceModel>(service);
