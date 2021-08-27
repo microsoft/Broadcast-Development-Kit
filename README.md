@@ -92,6 +92,8 @@ This solution currently has some limitations:
 
 - There are some restrictions on using this solution to record content from a Microsoft Teams meeting, which are inherited from the [Graph Communications Bot Media SDK](https://microsoftgraph.github.io/microsoft-graph-comms-samples/docs/bot_media/index.html#accompanying-documentation). Check the documentation of the SDK for more information.
 
+- The current implementation doesn't catch the errors/warnings messages that third party libraries (like GStreamer or libraries that GStreamer uses) throw to stdout/stderr. While using _Start/Stop extraction/injection_ endpoints, the API will return OK status code even if the GStreamer pipelines throw errors/warnings. E.g.: If NGINX is not properly configured and the user tries to initialize an RTMP extraction in pull mode, the API will return an OK status code but the GStreamer pipeline won't be able to establish an RTMP connection.
+
 ## Getting Started
 
 This section will guide you through the process of configuring the solution to run it locally and/or in azure.
