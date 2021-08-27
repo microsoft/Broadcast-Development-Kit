@@ -13,6 +13,7 @@ This document details the required software to be installed and the necessary st
   - [Visual Studio 2019](#visual-studio-2019)
   - [Cosmos DB Emulator](#cosmos-db-emulator)
   - [GStreamer](#gstreamer)
+  - [NGINX - Optional](#nginx)
   - [Ngrok](#ngrok)
   - [Domain Certificate](#domain-certificate)
 - [Configure the Backend Solution to run locally](#configure-the-backend-solution-to-run-locally)
@@ -83,6 +84,11 @@ Once the window to edit the environment variable is open, click on the `new` but
 |*Add the GStreamer bin path value to the Path Environment Variable*|
 
 > It is not necessary to repeat this procedure every time you are going to run the solution locally, it should only be done before run it for the first time.
+
+### NGINX - Optional
+
+To support RTMP pull mode extractions and RTMP injection features, it is necessary to install and configure [NGINX](../common/install_and_configure_nginx_with_rtmp_module_on_windows.md)
+
 
 ### Ngrok
 
@@ -458,7 +464,7 @@ Press the `Start` button again and wait until all projects start. If the Solutio
 Each time you are going to run the solution you need to perform the following steps:
 - ***Run Azure cosmos DB emulator***: you can check that cosmos DB is run by verifying that the crosmos db logo is in the windows taskbar.
 - ***Run Ngrok:*** It is necessary to have an instance of ngrok run in order to execute the solution. Once initialized, it is necessary to update the `appsettings.local.json` file of the `BotService` with the new values of the ngrok instance.
-- ***NGINX*** *`Optional`*: If you want to perform locally RTMP injection into Microsoft Teams Meeting, you need to install and configure [NGINX](../common/install_and_configure_nginx_with_rtmp_module_on_windows.md)
+- ***Run NGINX*** *`Optional`*: If you want to perform locally RTMP extractions in pull mode or RTMP injection into Microsoft Teams Meeting, you need to run NGINX before runing the solution.
 
 Finally, run Visual Studio as administrator, open the solution and click the `Start` button on the standard Visual Studio toolbar and wait for all projects to start.
 
