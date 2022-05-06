@@ -23,7 +23,7 @@ namespace Domain.Exceptions
         }
 
         public EntityNotFoundException(string name, string id)
-            : base($"An {name} entity with key \"{id}\" was not found.")
+            : base($"The entity {name} with key \"{id}\" was not found.")
         {
         }
 

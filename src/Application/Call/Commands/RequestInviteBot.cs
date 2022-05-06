@@ -5,7 +5,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Common.Config;
 using Application.Common.Models;
 using Application.Exceptions;
 using Application.Interfaces.Common;
@@ -109,6 +108,17 @@ namespace Application.Call.Commands
                     throw new EntityNotFoundException(nameof(Domain.Entities.Service), serviceId);
                 }
 
+                if (service.State == ServiceState.Busy)
+                {
+                    var serviceCall = await _callRepository.GetItemAsync(service.CallId);
+                    if (serviceCall?.State == CallState.Established || serviceCall?.State == CallState.Establishing)
+                    {
+                        response.Id = serviceCall.Id;
+                        response.Resource = _mapper.Map<CallModel>(serviceCall);
+                        return response;
+                    }
+                }
+
                 if (service.State != ServiceState.Available)
                 {
                     throw new ServiceUnavailableException($"The service {service.Name} is not available");
@@ -119,7 +129,7 @@ namespace Application.Call.Commands
                     throw new ServiceUnavailableException($"The service {service.Name} is not running");
                 }
 
-                Domain.Entities.Call call = _mapper.Map<Domain.Entities.Call>(request);
+                var call = _mapper.Map<Domain.Entities.Call>(request);
                 call.State = CallState.Establishing;
                 call.ServiceId = service.Id;
                 call.BotFqdn = service.Infrastructure.Dns;

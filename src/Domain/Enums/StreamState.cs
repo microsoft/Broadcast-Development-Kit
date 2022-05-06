@@ -6,7 +6,9 @@ namespace Domain.Enums
     {
         Disconnected,
         Starting,
-        Started,
+        Ready,
+        Receiving,
+        NotReceiving,
         Stopping,
         StartingError,
         StoppingError,

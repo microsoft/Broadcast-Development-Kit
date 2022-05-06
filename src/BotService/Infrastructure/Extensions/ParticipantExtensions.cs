@@ -60,7 +60,8 @@ namespace BotService.Infrastructure.Extensions
 
         public static bool IsGuestUser(this IParticipant participant)
         {
-            bool isGuestUser = participant.Resource.Info.Identity.AdditionalData.ContainsKey(GuestKey);
+            var additionalData = participant.Resource.Info.Identity.AdditionalData;
+            bool isGuestUser = additionalData != null && additionalData.ContainsKey(GuestKey);
 
             return isGuestUser;
         }

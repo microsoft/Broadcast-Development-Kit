@@ -3,6 +3,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Application.Common.Models;
+using Application.Common.Models.Api;
 using static Application.Service.Commands.DoInviteBot;
 
 namespace Application.Interfaces.Common
@@ -22,6 +23,12 @@ namespace Application.Interfaces.Common
         void StartInjection(StartStreamInjectionBody startStreamInjectionBody);
 
         void StopInjection();
+
+        void SetInjectionVolume(SetInjectionVolumeRequest injectionVolumeRequest);
+
+        void DisplayInjection();
+
+        void HideInjection();
 
         StartStreamExtractionResponse StartExtraction(StartStreamExtractionBody streamBody);
 

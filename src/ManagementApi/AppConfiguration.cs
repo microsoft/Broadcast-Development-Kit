@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 using Application.Common.Config;
-using Domain.Enums;
 
 namespace ManagementApi
 {
     public class AppConfiguration : IAppConfiguration
     {
         public string BuildVersion { get; set; }
+
+        public string KeyVaultName { get; set; }
+
+        public string KeyVaultEnv { get; set; }
 
         public GraphClientConfiguration GraphClientConfiguration { get; set; } = new GraphClientConfiguration();
 

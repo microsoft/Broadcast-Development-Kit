@@ -8,11 +8,11 @@ namespace BotService.Application.Core
     {
         IAudioSocket MainAudioSocket { get; }
 
+        IVideoSocket InjectionSocket { get; }
+
         IVideoSocket GetScreenShareSocket();
 
         IVideoSocket GetParticipantVideoSocket();
-
-        IVideoSocket GetInjectionVideoSocket();
 
         void ReleaseSocket(IVideoSocket socket);
     }

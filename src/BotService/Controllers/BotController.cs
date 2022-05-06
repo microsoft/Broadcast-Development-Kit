@@ -2,7 +2,9 @@
 // Licensed under the MIT license.
 using System.Threading.Tasks;
 using Application.Common.Config;
+using Application.Common.Models.Api;
 using Application.Service.Commands;
+using Application.Stream;
 using Application.Stream.Commands;
 using BotService.Infrastructure.Common.Logging;
 using Infrastructure.Core.Common.Extensions;
@@ -56,21 +58,27 @@ namespace BotService.Controllers
         }
 
         [HttpPost]
-        [Route("mute")]
-        public async Task<ActionResult> MuteAsync()
+        [Route("call/{callId}/mute")]
+        public async Task<ActionResult> MuteAsync([FromRoute] string callId)
         {
-            var command = new DoMuteBot.DoMuteBotCommand();
-            var response = await _mediator.Send(command);
-            return Ok(response);
+            var command = new DoMuteBot.DoMuteBotCommand
+            {
+                CallId = callId,
+            };
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         [HttpPost]
-        [Route("unmute")]
-        public async Task<ActionResult> UnmuteAsync()
+        [Route("call/{callId}/unmute")]
+        public async Task<ActionResult> UnmuteAsync([FromRoute] string callId)
         {
-            var command = new DoUnmuteBot.DoUnmuteBotCommand();
-            var response = await _mediator.Send(command);
-            return Ok(response);
+            var command = new DoUnmuteBot.DoUnmuteBotCommand
+            {
+                CallId = callId,
+            };
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         [HttpPost]
@@ -90,6 +98,34 @@ namespace BotService.Controllers
             {
                 CallId = callId,
                 StreamId = streamId,
+            };
+
+            var response = await _mediator.Send(command);
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("call/{callId}/injection/display")]
+        public async Task<ActionResult> DisplayInjectionAsync([FromRoute] string callId)
+        {
+            var command = new DoDisplayInjection.DoDisplayInjectionCommand
+            {
+                CallId = callId,
+            };
+
+            var response = await _mediator.Send(command);
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("call/{callId}/injection/hide")]
+        public async Task<ActionResult> HideInjectionAsync([FromRoute] string callId)
+        {
+            var command = new DoHideInjection.DoHideInjectionCommand
+            {
+                CallId = callId,
             };
 
             var response = await _mediator.Send(command);
@@ -125,6 +161,22 @@ namespace BotService.Controllers
             {
                 CallId = callId,
                 StreamKey = name,
+            };
+
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        [Route("call/{callId}/injection/set-volume")]
+        public async Task<IActionResult> SetInjectionVolumeAsync([FromRoute] string callId, SetInjectionVolumeRequest streamVolume)
+        {
+            var command = new DoSetInjectionVolume.DoSetInjectionVolumeCommand
+            {
+                Format = streamVolume.Format,
+                Value = streamVolume.Value,
+                CallId = callId,
             };
 
             await _mediator.Send(command);

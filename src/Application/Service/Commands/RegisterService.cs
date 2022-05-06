@@ -5,9 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Interfaces.Persistance;
 using Application.Service.Specifications;
+using Domain.Enums;
 using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
+using Microsoft.Azure.Management.Compute.Fluent;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Service.Commands
@@ -54,20 +56,31 @@ namespace Application.Service.Commands
 
                 var services = await _serviceRepository.GetItemsAsync(specification);
 
-                var entity = services.FirstOrDefault();
+                var service = services.FirstOrDefault();
 
-                if (entity == null)
+                if (service == null)
                 {
                     _logger.LogError("[Bot Service API] There is no service configured with virtual machine {virtualMachineName} registered", request.VirtualMachineName);
                     throw new EntityNotFoundException($"[Bot Service API]There is no service configured with virtual machine {request.VirtualMachineName} registered");
                 }
 
-                entity.CallId = null;
-                entity.State = Domain.Enums.ServiceState.Available;
+                service.CallId = null;
+                service.State = ServiceState.Available;
 
-                await _serviceRepository.UpdateItemAsync(entity.Id, entity);
+                /*
+                 * NOTE:
+                 * This command is executed when the bot service starts running.
+                 * Because sometimes the bot's virtual machine is turned on from Azure Portal,
+                 * and the Azure function that updates the state of the infrastructure (VM) is
+                 * not executed, we force the state update from this command.
+                 */
+                service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Provisioned;
+                service.Infrastructure.ProvisioningDetails.Message = $"Provisioned service {service.Name}.";
+                service.Infrastructure.PowerState = PowerState.Running.Value;
 
-                response.Id = entity.Id;
+                await _serviceRepository.UpdateItemAsync(service.Id, service);
+
+                response.Id = service.Id;
 
                 return response;
             }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace ManagementApi
 {
@@ -25,6 +26,7 @@ namespace ManagementApi
              {
                  loggerConfiguration
                 .Enrich.FromLogContext()
+                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
                 .WriteTo.ApplicationInsights(hostingContext.Configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY"), TelemetryConverter.Traces);
              })
             .ConfigureLogging(logging =>

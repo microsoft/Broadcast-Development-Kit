@@ -7,16 +7,20 @@ The GStreamer pipelines (where BDK relies on to extract the participants' camera
 In this document we will explain how we tested the synchronization between different streams, some expected results, and findings.
 
 ## Setup
+
 **Tools**
+
 * _gst-play_
 * _OBS Studio_
 
-**Client PC** 
+**Client PC**
+
 * i7 8700 non-k (6 cores - 12 threads)
 * 16 Gb of RAM
 * RTX 2080 8 GB VRAM (to take advantage of hardware decoding through GPU for reproducing the streams)
 
 **BDK Host**
+
 * Azure virtual machine with *Standard F16s_v2* sku (16 vCPUs, 32 Gb of RAM)
 
 ## Tests
@@ -32,6 +36,7 @@ To set default latency, we did a ping to the BDK host server and took the averag
 Because we don't have a tool to calculate the bandwidth overhead needed to pick the RTT multiplier, we used the highest RTT multiplier from the guide and calculated a latency of 1296ms (6 * 216ms).
 
 ### Streams
+
 * Primary Speaker
 * Participant
 * Together Mode (the user must enable it inside the meeting)
@@ -42,11 +47,12 @@ Because we don't have a tool to calculate the bandwidth overhead needed to pick 
 To test the synchronization between the four streams, we opened four terminals and ran _gst-play_ with the SRT url of each stream provided by the Broadcast Development Kit.
 
 **Example of command**
-```
+
+```sh
 gst-play "srt://your-bdk-vm-url:8888?mode=caller&latency=1296"
 ```
 
-We left the players running for 45 minutes aproximately and took screenshots at different times to compare the running time difference in miliseconds between the streams.
+We left the players running for 45 minutes approximately and took screenshots at different times to compare the running time difference in milliseconds between the streams.
 
 **First Screenshot (beginning of the stream)**
 
@@ -74,7 +80,7 @@ We left the players running for 45 minutes aproximately and took screenshots at 
 |:--:|
 |*Second screenshot*|
 
-**Third Screenshot (47 minutes after the beggining of the stream)**
+**Third Screenshot (47 minutes after the beginning of the stream)**
 
 | Stream | Running Time|
 | ------------- | ------------- |
@@ -102,6 +108,7 @@ Also, if we compare in all the screenshots the difference between the stopwatch 
 To test the synchronization between the four streams with OBS, we added a media source per stream to a scene. To know how to configure a media source please follow this [OBS guide](https://obsproject.com/wiki/Streaming-With-SRT-Protocol).
 
 **Media source settings**
+
 * Local File: unchecked
 * Network Buffering: 0 MB
 * Input: SRT stream url (E.g.: srt://your-bdk-vm-url:8888?mode=caller&latency=2000)
@@ -119,7 +126,7 @@ We left OBS running for 40 minutes approximately, but compared to _gst-play_ the
 | Together Mode (bottom-left) | 0:00:56.268 |
 | Screenshare (bottom-right) | 0:00:56.298 |
 
-The highest desynchronization difference was about 784 ms, beteween the participant and primary speaker.
+The highest desynchronization difference was about 784 ms, between the participant and primary speaker.
 
 ![First screenshot](images/obs-example-1.png)|
 |:--:|
@@ -138,7 +145,7 @@ The highest desynchronization difference was about 784 ms, beteween the particip
 |:--:|
 |*Second Screenshot (after 30 seconds approximately.)*|
 
-The highest desynchronization difference was about 617 ms, beteween the participant and primary speaker.
+The highest desynchronization difference was about 617 ms, between the participant and primary speaker.
 
 **Third Screenshot (after restarting participant media source)**
 
@@ -153,11 +160,12 @@ The highest desynchronization difference was about 617 ms, beteween the particip
 |:--:|
 |*Third screenshot - after restarting participant media source in OBS*|
 
-After restarting the participant media source in OBS, the highest desynchronization difference was about 86 ms, beteween the participant and together mode.
+After restarting the participant media source in OBS, the highest desynchronization difference was about 86 ms, between the participant and together mode.
 
 **Fourth Screenshot (after 19 minutes approximately)**
 
 **OBS**
+
 | Stream | Running Time|
 | ------------- | ------------- |
 | Participant (top-left) | 0:19:57.494 |
@@ -166,6 +174,7 @@ After restarting the participant media source in OBS, the highest desynchronizat
 | Screenshare (bottom-right) | 0:19:58.193 |
 
 **gst-play**
+
 | Stream | Running Time|
 | ------------- | ------------- |
 | Participant (top-left) | 0:19:58.328 |
@@ -182,6 +191,7 @@ After 19 minutes approximately, we can see how the streams become desynchronized
 **Fifth Screenshot (after restarting the media sources)**
 
 **OBS**
+
 | Stream | Running Time|
 | ------------- | ------------- |
 | Participant (top-left) | 0:22:14.898 |
@@ -190,6 +200,7 @@ After 19 minutes approximately, we can see how the streams become desynchronized
 | Screenshare (bottom-right) | 0:22:14.997 |
 
 **gst-play**
+
 | Stream | Running Time|
 | ------------- | ------------- |
 | Participant (top-left) | 0:22:15.365 |
@@ -239,6 +250,7 @@ Here we show some examples with _VLC_ and _gst-play_ playing multiple streams at
 |*Example of multiple streams with gst-play (288 ms of difference)*|
 
 ### Findings
+
 * The results we shared above may vary between different executions, depending on factors like player, network condition, BDK virtual machine CPU consumption.
 * Using SRT and _OBS Studio_, we couldn't achieve the results we achieved with _gst-play_. We don't know how OBS is using ffmpeg, but we had to increase the latency of the streams and had to disable/enable the media sources in OBS to restart the streams to try to keep them synchronized.
-* From the different tests and comparisons between _OBS_ and _gst-play_, we can observe that when we restart the streams, they recover their current running time. This indicates that the pipelines are synchronized, but the players/tools have issues to play them synchronized. 
+* From the different tests and comparisons between _OBS_ and _gst-play_, we can observe that when we restart the streams, they recover their current running time. This indicates that the pipelines are synchronized, but the players/tools have issues to play them synchronized.

@@ -5,9 +5,11 @@ using Application.Exceptions;
 using BotService.Application.Core;
 using BotService.Infrastructure.Common.Logging;
 using BotService.Infrastructure.Core;
+using BotService.Infrastructure.Extensions;
 using Domain.Enums;
 using Gst;
 using Gst.App;
+using Gst.Audio;
 using Microsoft.Extensions.Logging;
 using static Domain.Constants.Constants;
 using DateTime = System.DateTime;
@@ -22,8 +24,11 @@ namespace BotService.Infrastructure.Pipelines
         private readonly AppSink _videoAppSink, _audioAppSink;
         private readonly MediaInjectionSettings _injectionSettings;
         private readonly Bus _bus;
+        private IStreamVolume _streamVolumeHandler;
 
         private PipelineBusObserver pipelineBusObserver;
+
+        private Action _onBufferReceived;
 
         public MediaInjectionPipeline(
             MediaInjectionSettings injectionSettings,
@@ -43,6 +48,7 @@ namespace BotService.Infrastructure.Pipelines
                 throw new StartStreamInjectionException("Could not create all the pipeline elements");
             }
 
+            AddBufferProbeToSrc(source);
             decodebin.PadAdded += HandlePadAdded;
             _videoProcessingBin = CreateVideoProcessingBin();
             _audioProcessingBin = CreateAudioProcessingBin();
@@ -86,6 +92,16 @@ namespace BotService.Infrastructure.Pipelines
             _logger.LogInformation("[Media Injection] Stopped injection");
         }
 
+        public void SetBufferReceivedHandler(Action onBufferReceived)
+        {
+            _onBufferReceived += onBufferReceived;
+        }
+
+        public void RemoveBufferReceivedHandler(Action onBufferReceived)
+        {
+            _onBufferReceived -= onBufferReceived;
+        }
+
         public void SetNewAudioSampleHandler(NewSampleHandler newAudioSampleHandler)
         {
             _audioAppSink.NewSample += newAudioSampleHandler;
@@ -112,6 +128,11 @@ namespace BotService.Infrastructure.Pipelines
             pipelineBusObserver = observer as PipelineBusObserver;
 
             return new PipelineBusObserverUnsuscriber(pipelineBusObserver);
+        }
+
+        public void SetVolume(StreamVolume streamVolume)
+        {
+            _streamVolumeHandler.SetVolume(streamVolume.Format.ToStreamVolumeFormat(), streamVolume.Value);
         }
 
         private static void SetSrtParameters(Element srtSrc, SrtSettings srtSettings)
@@ -233,6 +254,22 @@ namespace BotService.Infrastructure.Pipelines
             return element;
         }
 
+        private void AddBufferProbeToSrc(Element srcElement)
+        {
+            var srcPad = srcElement.GetStaticPad("src");
+            srcPad.AddProbe(PadProbeType.Buffer, BufferProbeCallback);
+        }
+
+        private PadProbeReturn BufferProbeCallback(Pad pad, PadProbeInfo info)
+        {
+            if (_onBufferReceived != null)
+            {
+                _onBufferReceived();
+            }
+
+            return PadProbeReturn.Ok;
+        }
+
         private Bin CreateVideoProcessingBin()
         {
             var videoBin = new Bin("videoprocessingbin");
@@ -264,21 +301,30 @@ namespace BotService.Infrastructure.Pipelines
         {
             var audioBin = new Bin("AudioProcessingBin");
             var queue = ElementFactory.Make("queue");
-            var audioConvert = ElementFactory.Make("audioconvert");
-            var audioResample = ElementFactory.Make("audioresample");
+            var outputAudioConvert = ElementFactory.Make("audioconvert", "output_audio_convert");
+            var outputAudioResample = ElementFactory.Make("audioresample", "output_audio_resample");
             var audioBufferSplit = ElementFactory.Make("audiobuffersplit"); // delivers buffers with 20ms of audio
-            var capsFilter = ElementFactory.Make("capsfilter");
-            var caps = Caps.FromString("audio/x-raw, format=S16LE, channels=1, rate=16000"); // set capabilities needed for injection
+            var outputCapsFilter = ElementFactory.Make("capsfilter", "output_audio_caps_filter");
+            var outputCaps = Caps.FromString("audio/x-raw, format=S16LE, channels=1, rate=16000"); // set capabilities needed for injection
+            var volume = ElementFactory.Make("volume");
+            var volumeAudioConvert = ElementFactory.Make("audioconvert", "volume_audio_convert");
+            var volumeAudioResample = ElementFactory.Make("audioresample", "volume_audio_resample");
+            var volumeCapsFilter = ElementFactory.Make("capsfilter", "volume_audio_caps_filter");
+            var volumeCaps = Caps.FromString("audio/x-raw, format=S16LE, channels=1, rate=16000, layout=interleaved"); // set capabilities needed for injection
+            _streamVolumeHandler = StreamVolumeAdapter.GetObject(volume);
 
             audioBufferSplit.SetProperty("strict-buffer-size", new GLib.Value(true));
             audioBufferSplit.SetProperty("discont-wait", new GLib.Value(20000000)); // waits 20ms before introducing discontinuities
-            capsFilter.SetProperty("caps", new GLib.Value(caps));
-            audioBin.Add(queue, audioConvert, audioResample, audioBufferSplit, capsFilter);
+            outputCapsFilter.SetProperty("caps", new GLib.Value(outputCaps));
+            volumeCapsFilter.SetProperty("caps", new GLib.Value(volumeCaps));
+            volume.SetProperty("volume", new GLib.Value(1));
+
+            audioBin.Add(queue, volumeAudioConvert, volumeAudioResample, volumeCapsFilter, volume, outputAudioConvert, outputAudioResample, audioBufferSplit, outputCapsFilter);
 
             // Add sink and src bin pads to be connected with others elements
-            AddBinPads(audioBin, queue, capsFilter);
+            AddBinPads(audioBin, queue, outputCapsFilter);
 
-            if (!Element.Link(queue, audioConvert, audioResample, audioBufferSplit, capsFilter))
+            if (!Element.Link(queue, volumeAudioConvert, volumeAudioResample, volumeCapsFilter, volume, outputAudioConvert, outputAudioResample, audioBufferSplit, outputCapsFilter))
             {
                 _logger.LogError("Could not link audio processing elements for stream id: {streamId}", _injectionSettings.StreamId);
 

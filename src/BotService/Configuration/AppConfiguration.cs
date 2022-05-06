@@ -8,6 +8,10 @@ namespace BotService.Configuration
     {
         public string BuildVersion { get; set; }
 
+        public string KeyVaultName { get; set; }
+
+        public string KeyVaultEnv { get; set; }
+
         public GraphClientConfiguration GraphClientConfiguration { get; set; } = new GraphClientConfiguration();
 
         public AzStorageConfiguration StorageConfiguration { get; set; } = new AzStorageConfiguration();

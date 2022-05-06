@@ -35,6 +35,7 @@ The solution supports multiple extractions at a time, allowing to stream any com
 To provide the best possible experience during a meeting, Microsoft Teams automatically changes the frame size and frame rate of each participant stream based on the network conditions of the participant. However, this can cause issues with using those streams in streaming services of video production solutions. To avoid these issues **Broadcast Development Kit** automatically upscales the video feed to **1080p at 30FPS**. This reduces the complexity of having to work with a variable frame size and frame rate.
 
 Extraction of any of those streams can be done with the following configurations:
+
 - SRT in "caller" mode (you have a SRT listener waiting to receive a connection from this solution).
 - SRT in "listener" mode (the solution will wait for a SRT caller to connect and get the content).
 - RTMP / RTMPS in "push" mode (you have a RTMP URL you want to push the stream to).
@@ -47,6 +48,7 @@ A feed with audio and video can be injected to the Microsoft Teams meeting. Insi
 **Broadcast Development Kit** supports receiving video and audio in several resolutions and frame rates. It will automatically transform the video feed to **1080p and 30FPS** before injecting it into the Microsoft Teams call.
 
 Injection is supported in the following configurations:
+
 - SRT in "caller" mode (you have an SRT listener waiting for a client to connect).
 - SRT in "listener" mode (the solution will wait for a SRT caller to connect and send the content)
 - RTMP / RTMPS in "pull" mode (you have an RTMP server waiting for a client to connect and pull the content)
@@ -76,7 +78,7 @@ If you have media content that can be streamed through SRT or RTMP such as live 
 
 There are some known issues in the current version of this solution:
 
-- When injecting content into a meeting using an RTMPS source in pull mode (i.e. you give BDK an RTMPS URL to pull the content from it), if the source stops transmitting content while the injection is still active, then an exception is thrown in the Gstreamer pipeline once the injection is stopped in the BDK. This exception causes the Bot Service running in the VM to crash, and you will need to restart the service manually or restart the VM. This issue only occurs when using RTMPS in pull mode. Other combinations (e.g. SRT, RTMP, push mode, etc.) do not present this issue.
+- When injecting content into a meeting using an RTMPS source in pull mode (i.e. you give BDK an RTMPS URL to pull the content from it), if the source stops transmitting content while the injection is still active, then an exception is thrown in the GStreamer pipeline once the injection is stopped in the BDK. This exception causes the Bot Service running in the VM to crash, and you will need to restart the service manually or restart the VM. This issue only occurs when using RTMPS in pull mode. Other combinations (e.g. SRT, RTMP, push mode, etc.) do not present this issue.
 
 This solution currently has some limitations:
 
@@ -99,12 +101,14 @@ This solution currently has some limitations:
 This section will guide you through the process of configuring the solution to run it locally and/or in azure.
 
 ### How to run the solution
+
 Please follow these documents to build and configure this solution:
-- [Prerequisites](docs/prerequisites/README.md)
+
 - [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
 - [How to run the solution in Azure](docs/how-to-run-the-solution-in-azure/README.md)
 
 You can find how to use the APIs in this solution in the following document:
+
 - [How to use the Management API](docs/how-to-use-the-solution/README.md)
 
 ### Adding an UI
@@ -117,10 +121,11 @@ This solution doesn't include any UI that can be used to operate the application
 ### Exploring the repository
 
 The repository is structured in the following directories:
+
 - **src**: Contains the source code of the application.
-    - **BotService**: Contains the core component that connects to the meeting and extracts and injects media feeds from and to the meeting.
-    - **ManagementApi**: Contains the main API that is used to interact with the service.
-    - **OrchestratorFunction**: Contains the Azure function in charge of managing the status of the VMs.
+  - **BotService**: Contains the core component that connects to the meeting and extracts and injects media feeds from and to the meeting.
+  - **ManagementApi**: Contains the main API that is used to interact with the service.
+  - **OrchestratorFunction**: Contains the Azure function in charge of managing the status of the VMs.
 - **docs**: Contains the documentation on the solution.
 
 ### Architecture
@@ -150,7 +155,7 @@ Any use of third-party trademarks or logos are subject to those third-party's po
 
 ## Acknowledgments
 
-This project was implemented using the samples in the [Microsoft Graph Communications API and Samples](https://github.com/microsoftgraph/microsoft-graph-comms-samples) repository as a base. 
+This project was implemented using the samples in the [Microsoft Graph Communications API and Samples](https://github.com/microsoftgraph/microsoft-graph-comms-samples) repository as a base.
 
 The architecture used in the solution was inspired by the samples in [Azure-Samples/PartitionedRepository](https://github.com/Azure-Samples/PartitionedRepository) and [ShawnShiSS/clean-architecture-azure-cosmos-db](https://github.com/ShawnShiSS/clean-architecture-azure-cosmos-db).
 

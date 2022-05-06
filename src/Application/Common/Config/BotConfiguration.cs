@@ -56,6 +56,10 @@ namespace Application.Common.Config
 
         public string CertificateThumbprint { get; set; }
 
+        public string CertificateName { get; set; }
+
         public string CertificatePassword { get; set; }
+
+        public int SecondsWithoutParticipantsBeforeRemove { get; set; } = 300;
     }
 }

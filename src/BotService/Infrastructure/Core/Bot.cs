@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Application.Common.Config;
 using Application.Common.Models;
+using Application.Common.Models.Api;
 using Application.Interfaces.Common;
 using Application.Service.Commands;
 using BotService.Application.Core;
@@ -156,6 +157,18 @@ namespace BotService.Infrastructure.Core
             callHandler.StopInjection();
         }
 
+        public void DisplayInjection()
+        {
+            var callHandler = CallHandlers.First().Value;
+            callHandler.DisplayInjection();
+        }
+
+        public void HideInjection()
+        {
+            var callHandler = CallHandlers.First().Value;
+            callHandler.HideInjection();
+        }
+
         public StartStreamExtractionResponse StartExtraction(StartStreamExtractionBody streamBody)
         {
             var callHandler = CallHandlers.First().Value;
@@ -166,6 +179,18 @@ namespace BotService.Infrastructure.Core
         {
             var callHandler = CallHandlers.First().Value;
             callHandler.StopExtraction(streamBody);
+        }
+
+        public void SetInjectionVolume(SetInjectionVolumeRequest injectionVolumeRequest)
+        {
+            var injectionVolume = new StreamVolume
+            {
+                Format = injectionVolumeRequest.Format,
+                Value = injectionVolumeRequest.Value,
+            };
+
+            var callHandler = CallHandlers.First().Value;
+            callHandler.SetInjectionVolume(injectionVolume);
         }
 
         public void Dispose()

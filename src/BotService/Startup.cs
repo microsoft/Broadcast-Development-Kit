@@ -14,12 +14,10 @@ using BotService.Infrastructure.Common.Logging;
 using BotService.Infrastructure.Core;
 using BotService.Infrastructure.Pipelines;
 using BotService.Infrastructure.Services;
-using FluentValidation;
 using Infrastructure.Core.Common;
 using Infrastructure.Core.CosmosDbData.Extensions;
 using Infrastructure.Core.CosmosDbData.Repository;
 using Infrastructure.Core.Services;
-using MediatR;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -88,9 +86,8 @@ namespace BotService
             }
 
             services.AddApplication();
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            services.AddAutoMapper(typeof(Startup));
 
             // register CosmosDB client and data repositories
             services.AddCosmosDb(

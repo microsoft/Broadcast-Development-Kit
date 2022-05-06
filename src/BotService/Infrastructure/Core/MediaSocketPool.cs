@@ -17,24 +17,20 @@ namespace BotService.Infrastructure.Core
         // The Media Platform provides a separate socket for screen share, so we want to keep it separated from the rest.
         private readonly IVideoSocket _vbssSocket;
 
-        // We are only configuring the first socket with the capability to send video, so we keep it apart.
-        private readonly IVideoSocket _injectionSocket;
-
         // These will be used to subscribe to the video feed of each participant.
         private readonly List<IVideoSocket> _freeParticipantSockets;
         private readonly List<IVideoSocket> _takenParticipantSockets;
 
         private bool _isVbssSocketAvailable = true;
-        private bool _isInjectionSocketAvailable = true;
 
         public MediaSocketPool(ICall call)
         {
             var mediaSession = call.GetLocalMediaSession();
 
             // Unfortunately, we cannot filter the video sockets by their properties after they are configured. However, we know that the first socket we create is the one supporting injection.
-            _injectionSocket = mediaSession.VideoSocket;
+            InjectionSocket = mediaSession.VideoSocket;
             _vbssSocket = mediaSession.VbssSocket;
-            _freeParticipantSockets = new List<IVideoSocket>(mediaSession.VideoSockets.Except(new[] { _injectionSocket }));
+            _freeParticipantSockets = new List<IVideoSocket>(mediaSession.VideoSockets.Except(new[] { InjectionSocket }));
             _takenParticipantSockets = new List<IVideoSocket>();
 
             MainAudioSocket = mediaSession.AudioSocket;
@@ -42,6 +38,9 @@ namespace BotService.Infrastructure.Core
 
         // We have one audio socket for the call, with the audio form all the participants mixed.
         public IAudioSocket MainAudioSocket { get; private set; }
+
+        // We are only configuring the first socket with the capability to send video, so we keep it apart.
+        public IVideoSocket InjectionSocket { get; private set; }
 
         public IVideoSocket GetScreenShareSocket()
         {
@@ -77,21 +76,6 @@ namespace BotService.Infrastructure.Core
             }
         }
 
-        public IVideoSocket GetInjectionVideoSocket()
-        {
-            lock (_lockObject)
-            {
-                if (!_isInjectionSocketAvailable)
-                {
-                    return null;
-                }
-
-                _isInjectionSocketAvailable = false;
-
-                return _injectionSocket;
-            }
-        }
-
         public void ReleaseSocket(IVideoSocket socket)
         {
             lock (_lockObject)
@@ -101,12 +85,6 @@ namespace BotService.Infrastructure.Core
                     // Is this the screens share socket?
                     _vbssSocket.Unsubscribe();
                     _isVbssSocketAvailable = true;
-                }
-                else if (_injectionSocket == socket)
-                {
-                    // Is this the injection video socket?
-                    _injectionSocket.Unsubscribe(); // Just in case
-                    _isInjectionSocketAvailable = true;
                 }
                 else if (_takenParticipantSockets.Contains(socket))
                 {

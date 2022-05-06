@@ -356,3 +356,5 @@ src/BotService/cache
 src/ManagementApi/appsettings.**.json
 src/BotService/appsettings.**.json
 **/local.settings.json
+src/BotService/.config/dotnet-tools.json
+src/BotService/appsettings.json

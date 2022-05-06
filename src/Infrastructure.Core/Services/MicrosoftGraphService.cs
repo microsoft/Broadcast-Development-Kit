@@ -14,9 +14,9 @@ namespace Infrastructure.Core.Services
 {
     public class MicrosoftGraphService : IGraphService
     {
-        private readonly IGraphServiceClient _graphServiceClient;
+        private readonly GraphServiceClient _graphServiceClient;
 
-        public MicrosoftGraphService(IGraphServiceClient graphServiceClient)
+        public MicrosoftGraphService(GraphServiceClient graphServiceClient)
         {
             _graphServiceClient = graphServiceClient;
         }

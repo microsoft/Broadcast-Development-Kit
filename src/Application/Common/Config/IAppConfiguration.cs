@@ -8,6 +8,10 @@ namespace Application.Common.Config
     {
         string BuildVersion { get; set; }
 
+        string KeyVaultName { get; set; }
+
+        string KeyVaultEnv { get; set; }
+
         GraphClientConfiguration GraphClientConfiguration { get; }
 
         AzStorageConfiguration StorageConfiguration { get; }

@@ -5,6 +5,7 @@ using System.IO;
 using Application.Exceptions;
 using BotService.Application.Core;
 using BotService.Infrastructure.Common.Logging;
+using BotService.Infrastructure.Core;
 using Domain.Enums;
 using Gst;
 using Gst.App;
@@ -89,11 +90,26 @@ namespace BotService.Infrastructure.Pipelines
             _logger.LogInformation("[Slate Media Injection] Stopped injection");
         }
 
+        public void SetVolume(StreamVolume streamVolume)
+        {
+            throw new NotSupportedException();
+        }
+
         public IDisposable Subscribe(IObserver<BusEventPayload> observer)
         {
             _pipelineBusObserver = observer as PipelineBusObserver;
 
             return new PipelineBusObserverUnsuscriber(_pipelineBusObserver);
+        }
+
+        public void SetBufferReceivedHandler(Action onBufferReceived)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void RemoveBufferReceivedHandler(Action onBufferReceived)
+        {
+            throw new NotSupportedException();
         }
 
         public void SetNewVideoSampleHandler(NewSampleHandler newVideoSampleHandler)

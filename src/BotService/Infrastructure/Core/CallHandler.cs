@@ -33,6 +33,8 @@ namespace BotService.Infrastructure.Core
         private const int DefaultRtmpPort = 1940;
         private const int DefaultRtmpsPort = 2940;
 
+        private readonly Timer _callWithoutParticipantsTimer;
+
         private readonly ILogger _logger;
         private readonly object _subscriptionLock = new object();
 
@@ -60,6 +62,9 @@ namespace BotService.Infrastructure.Core
 
         private uint _currentPrimarySpeaker = DominantSpeakerChangedEventArgs.None;
         private string _primarySpeakerId;
+
+        // if the injection should be displayed when receiving content, change with the display/hide endpoint
+        private bool _isInjectionDisplayed;
 
         public CallHandler(
             ICall statefulCall,
@@ -89,6 +94,14 @@ namespace BotService.Infrastructure.Core
 
             _mediaSocketPool = new MediaSocketPool(statefulCall);
             _mediaSocketPool.MainAudioSocket.DominantSpeakerChanged += OnDominantSpeakerChanged;
+
+            _callWithoutParticipantsTimer = new Timer(TimeSpan.FromSeconds(_config.SecondsWithoutParticipantsBeforeRemove).TotalMilliseconds)
+            {
+                Enabled = false,
+                AutoReset = false,
+            };
+
+            _callWithoutParticipantsTimer.Elapsed += OnCallWithoutParticipantsTimeElapsed;
         }
 
         /// <summary>
@@ -143,37 +156,69 @@ namespace BotService.Infrastructure.Core
 
         public void StartInjection(StartStreamInjectionBody startStreamInjectionBody)
         {
-            StopSlateInjection();
-
-            var videoSocket = _mediaSocketPool.GetInjectionVideoSocket();
-            if (videoSocket == null)
+            if (_mediaInjector != null)
             {
-                _logger.LogWarning("[Call Handler] There are no more video sockets available in the media session");
-
-                throw new StartStreamInjectionException("There are no more video sockets available for this operation");
+                StopInjection();
             }
+
+            var videoSocket = _mediaSocketPool.InjectionSocket;
 
             var injectionSettings = GetInjectionSettings(startStreamInjectionBody);
 
             _mediaInjector = _mediaHandlerFactory.CreateInjector(videoSocket, _mediaSocketPool.MainAudioSocket);
+            _mediaInjector.SwitchContentStatus(shouldInject: false);
+            _mediaInjector.SetOnStreamStateChanged(OnUpdateInjectionStreamState);
+            _isInjectionDisplayed = true;
+
             _mediaInjector.Start(injectionSettings);
         }
 
-        public void StopActiveStreams()
+        public void StopInjection()
         {
             if (_mediaInjector != null)
             {
                 _mediaInjector.Stop();
-                _mediaSocketPool.ReleaseSocket(_mediaInjector.VideoSocket);
                 _mediaInjector = null;
             }
 
             if (_mediaSlateInjector != null)
             {
-                _mediaSlateInjector.Stop();
-                _mediaSocketPool.ReleaseSocket(_mediaSlateInjector.VideoSocket);
-                _mediaSlateInjector = null;
+                _mediaSlateInjector.SwitchContentStatus(shouldInject: true);
             }
+        }
+
+        public void DisplayInjection(bool updateValue = true)
+        {
+            if (_mediaInjector != null && _mediaInjector.SourceConnected)
+            {
+                _mediaSlateInjector.SwitchContentStatus(shouldInject: false);
+                _mediaInjector.SwitchContentStatus(shouldInject: true);
+            }
+
+            if (updateValue)
+            {
+                _isInjectionDisplayed = true;
+            }
+        }
+
+        public void HideInjection(bool updateValue = true)
+        {
+            if (_mediaInjector != null)
+            {
+                _mediaInjector.SwitchContentStatus(shouldInject: false);
+                _mediaSlateInjector.SwitchContentStatus(shouldInject: true);
+            }
+
+            if (updateValue)
+            {
+                _isInjectionDisplayed = false;
+            }
+        }
+
+        public void StopActiveStreams()
+        {
+            StopInjection();
+            StopSlateInjection();
 
             if (_currentMediaExtractors.Count > 0)
             {
@@ -201,16 +246,12 @@ namespace BotService.Infrastructure.Core
             }
         }
 
-        public void StopInjection()
+        public void SetInjectionVolume(StreamVolume streamVolume)
         {
             if (_mediaInjector != null)
             {
-                _mediaInjector.Stop();
-                _mediaSocketPool.ReleaseSocket(_mediaInjector.VideoSocket);
-                _mediaInjector = null;
+                _mediaInjector.SetVolume(streamVolume);
             }
-
-            StartSlateInjection();
         }
 
         /// <inheritdoc/>
@@ -220,6 +261,11 @@ namespace BotService.Infrastructure.Core
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
+            StopActiveStreams();
+
+            _callWithoutParticipantsTimer.Elapsed -= OnCallWithoutParticipantsTimeElapsed;
+            _callWithoutParticipantsTimer.Stop();
+            _callWithoutParticipantsTimer.Dispose();
 
             _clockProvider.ResetBaseTime();
             _mediaSocketPool.MainAudioSocket.DominantSpeakerChanged -= OnDominantSpeakerChanged;
@@ -282,6 +328,11 @@ namespace BotService.Infrastructure.Core
                 CallId = streamInjectionBody.CallId,
                 StreamId = streamInjectionBody.StreamId,
                 ProtocolSettings = protocolSettings,
+                StreamVolume = new StreamVolume
+                {
+                    Format = streamInjectionBody.StreamVolume.Format,
+                    Value = streamInjectionBody.StreamVolume.Value,
+                },
             };
 
             return injectionSettings;
@@ -689,7 +740,7 @@ namespace BotService.Infrastructure.Core
                 CallId = Call.Id,
                 StreamId = Call.Id,
             };
-            var videoSocket = _mediaSocketPool.GetInjectionVideoSocket();
+            var videoSocket = _mediaSocketPool.InjectionSocket;
 
             _mediaSlateInjector = _mediaHandlerFactory.CreateSlateInjector(videoSocket);
             _mediaSlateInjector.Start(injectionSettings);
@@ -700,7 +751,6 @@ namespace BotService.Infrastructure.Core
             if (_mediaSlateInjector != null)
             {
                 _mediaSlateInjector.Stop();
-                _mediaSocketPool.ReleaseSocket(_mediaSlateInjector.VideoSocket);
                 _mediaSlateInjector = null;
             }
         }
@@ -769,6 +819,11 @@ namespace BotService.Infrastructure.Core
                     else
                     {
                         _logger.LogInformation("[CallHandler] Participant with graph id {id} is not an user/guest/live-bot.", participant.Id);
+
+                        if (_config.AadAppId == participant.Resource.Info.Identity.Application.Id)
+                        {
+                            participant.OnUpdated += OnBotUpdated;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -802,6 +857,8 @@ namespace BotService.Infrastructure.Core
                     _logger.LogError(ex, "[CallHandler] Error while trying to remove participant with graph id {id}.", participant.Id);
                 }
             }
+
+            CheckParticipantsInCall(args.AddedResources);
         }
 
         /// <summary>
@@ -829,6 +886,68 @@ namespace BotService.Infrastructure.Core
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[CallHandler] Error OnParticipantUpdated - Call {callId} - Participant Graph Id {participantId}", callId, sender.Id);
+            }
+        }
+
+        /// <summary>
+        /// Event fired when the state of an injection changed.
+        /// </summary>
+        private async void OnUpdateInjectionStreamState()
+        {
+            try
+            {
+                var callId = Call.ScenarioId.ToString();
+
+                if (_mediaInjector != null)
+                {
+                    StreamState state;
+
+                    if (_mediaInjector.SourceConnected)
+                    {
+                        state = StreamState.Receiving;
+
+                        // we only want to change the pipeline if the feed is not hidden
+                        if (_isInjectionDisplayed)
+                        {
+                            DisplayInjection(updateValue: false);
+                        }
+                    }
+                    else
+                    {
+                        state = StreamState.NotReceiving;
+
+                        if (_isInjectionDisplayed)
+                        {
+                            HideInjection(updateValue: false);
+                        }
+                    }
+
+                    await _mediatorService.UpdateStreamStateAsync(callId, state);
+                    _logger.LogInformation("[CallHandler] Stream Injection state changed to: {state}", state);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[CallHandler] Error OnUpdateInjectionStreamState - Call {callId}", Call.ScenarioId);
+            }
+        }
+
+        /// <summary>
+        /// Event fired when a Bot status is updated.
+        /// </summary>
+        /// <param name="sender">Paticipant object.</param>
+        /// <param name="args">Event args containing the old values and the new values.</param>
+        private async void OnBotUpdated(IParticipant sender, ResourceEventArgs<Participant> args)
+        {
+            var callId = Call.ScenarioId.ToString();
+            try
+            {
+                var isMuted = sender.Resource.IsMuted.HasValue && sender.Resource.IsMuted.Value;
+                await _mediatorService.UpdateBotStatusAsync(callId, isMuted);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[CallHandler] Error OnBotIsMuted - Call {callId} - Participant Graph Id {participantId}", callId, sender.Id);
             }
         }
 
@@ -878,6 +997,46 @@ namespace BotService.Infrastructure.Core
                 _logger.LogError(ex, "[CallHandler] Error OnDominantSpeakerChanged - Call {callId}", callId);
             }
         }
+
+        private void CheckParticipantsInCall(ICollection<IParticipant> addedResources)
+        {
+            // Prev state used to avoid logg messages when timer is already running
+            var isTimerPrevStateEnabled = _callWithoutParticipantsTimer.Enabled;
+
+            // A participant can be added and removed in the same message, if that happens we need to restart the timer
+            if (addedResources.Any(x => x.IsGuestUser() || x.IsUser()))
+            {
+                isTimerPrevStateEnabled = false;
+                _callWithoutParticipantsTimer.Enabled = false;
+            }
+
+            var hasParticipants = Call.Participants.Any(x => x.IsGuestUser() || x.IsUser());
+
+            _callWithoutParticipantsTimer.Enabled = !hasParticipants;
+
+            if (!hasParticipants && !isTimerPrevStateEnabled)
+            {
+                var callId = Call.ScenarioId.ToString();
+                _logger.LogInformation("[CallHandler] CheckParticipantsInCall - Call {callId} - There are no participants in the Call, the bot will be removed after {seconds} seconds", callId, _config.SecondsWithoutParticipantsBeforeRemove);
+            }
+        }
+
+        private async void OnCallWithoutParticipantsTimeElapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                var callId = Call.ScenarioId.ToString();
+                _logger.LogInformation("[CallHandler] OnCallWithoutParticipantsTimeElapsed - Call {callId} - Removing the bot from the Call after {seconds} seconds without participants", callId, _config.SecondsWithoutParticipantsBeforeRemove);
+
+                StopActiveStreams();
+                await Call.DeleteAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[CallHandler] Error OnCallWithoutParticipantsTimeElapsed - Call {callId}", Call.ScenarioId);
+            }
+        }
+
         #endregion
     }
 }

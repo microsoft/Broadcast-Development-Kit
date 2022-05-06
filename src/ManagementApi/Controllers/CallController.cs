@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Application.Call.Commands;
 using Application.Call.Queries;
 using Application.Common.Models;
+using Application.Common.Models.Api;
 using Application.Stream.Commands;
 using Domain.Enums;
 using MediatR;
@@ -162,6 +163,34 @@ namespace ManagementApi.Controllers
         }
 
         [HttpPost]
+        [Route("{callId}/injection/hide")]
+        public async Task<ActionResult> HideInjectionAsync([FromRoute] string callId)
+        {
+            var command = new RequestHideInjection.RequestHideInjectionCommand
+            {
+                CallId = callId,
+            };
+
+            var response = await _mediator.Send(command);
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("{callId}/injection/display")]
+        public async Task<ActionResult> DisplayInjectionAsync([FromRoute] string callId)
+        {
+            var command = new RequestDisplayInjection.RequestDisplayInjectionCommand
+            {
+                CallId = callId,
+            };
+
+            var response = await _mediator.Send(command);
+
+            return Ok(response);
+        }
+
+        [HttpPost]
         [Route("{callId}/mute")]
         public async Task<ActionResult> MuteAsync([FromRoute] string callId)
         {
@@ -169,8 +198,10 @@ namespace ManagementApi.Controllers
             {
                 CallId = callId,
             };
-            var response = await _mediator.Send(command);
-            return Ok(response);
+
+            await _mediator.Send(command);
+
+            return NoContent();
         }
 
         [HttpPost]
@@ -181,8 +212,10 @@ namespace ManagementApi.Controllers
             {
                 CallId = callId,
             };
-            var response = await _mediator.Send(command);
-            return Ok(response);
+
+            await _mediator.Send(command);
+
+            return NoContent();
         }
 
         [HttpPost]
@@ -225,6 +258,21 @@ namespace ManagementApi.Controllers
 
             var response = await _mediator.Send(command);
             return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("{callId}/injection/set-volume")]
+        public async Task<IActionResult> SetInjectionVolumeAsync([FromRoute] string callId, SetInjectionVolumeRequest injectionVolume)
+        {
+            var command = new RequestSetInjectionVolume.RequestSetInjectionVolumeCommand
+            {
+                Format = injectionVolume.Format,
+                Value = injectionVolume.Value,
+                CallId = callId,
+            };
+
+            await _mediator.Send(command);
+            return NoContent();
         }
     }
 }

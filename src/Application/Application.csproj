@@ -6,6 +6,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>8.0</LangVersion>
 		<Copyright>Copyright (c) Microsoft Corporation.</Copyright>
+		<Configurations>Debug;Release</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -21,13 +22,13 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
 		<PackageReference Include="Microsoft.Azure.Management.Compute.Fluent" Version="1.36.1" />
 		<PackageReference Include="Microsoft.Azure.Management.Fluent" Version="1.36.1" />
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.5" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5" />
-		<PackageReference Include="Microsoft.Graph" Version="3.8.0" />
+		<PackageReference Include="Microsoft.Graph" Version="4.25.0" />
 		<PackageReference Include="SonarAnalyzer.CSharp" Version="8.24.0.32949">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

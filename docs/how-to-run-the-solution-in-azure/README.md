@@ -1,77 +1,86 @@
-# How to Run the Solution in Azure
+# How to run the solution in Azure
 
-## Introduction
+## Prerequisites
 
-This document describes the resources that must be created and configured to run the solution in Azure. This includes:
+Before configuring the solution to run it locally and/or in azure you must have the following prerequisites:
 
-- App Registrations for authentication in different components in Azure AD tenant:
-    - [App Registrations](app_registrations.md#app-registrations):
-        - [Bot Service API](app_registrations.md#how-to-setup-bot-service-api-application-registration).
-        - [Bot Service Client](app_registrations.md#how-to-setup-bot-service-client-application-registration).
-        - [Management API](app_registrations.md#how-to-setup-management-api-application-registration).
-        - [Azure SDK Service Principal](azure_sdk_service_principal.md).
-    - [Security Group](security_group.md).
-- Resource groups used to deploy and configure the solution: 
-    - Architecture resource group:
-        - [Application Insights](application_insights.md).
-        - [Storage account](storage_account.md).
-        - [Cosmos DB](cosmos_db.md).
-        - [App Service Plan](service_plan.md).
-        - [Web App](web_app_and_app_service_plan.md).
-        - [Function App](function_app_and_app_service_plan.md).
-    - Virtual Machine resource group:
-        - [Virtual Machine](virtual_machine.md).
-        - [Event Grid](configure_event_grid.md).
-- Components Deployment:
-    - [Deploy the Bot Service into the Virtual Machine](deploy_bot_service.md).
-    - [Deploy the Web App into the Azure App Service](deploy_web_app.md).
-    - [Deploy the Function App into the Azure Function App Service](deploy_function_app.md).
-- Testing the environment:
-    - [How to configure/register the Service](add_service.md).
-    - [How to test the Management API](test_web_app.md)
-    - [How to test the Orchestrator Function](test_function_app.md)
+- A **domain name** - This domain name will be used to host the solution's core components.
+- An **SSL wildcard certificate** - A valid wildcard certificate for the domain mentioned in the previous point. This is required to establish a TLS/TCP control channel between the bot's media platform and the calling clouds. The certificate must be in .pem and .pfx formats.
+- An **Office 365 tenant with Microsoft Teams** enabled - If the organization is already using Microsoft Teams for their meetings, then you already have an Office 365 tenant configured.
+  - Note that you need the create an app registration in this tenant with permissions to join meetings and send and receive audio and video in those meetings. These permissions will need to be approved by your Office 365 tenant administrator.
+  - If your organization doesn't want to provide the necessary permissions for the solution to connect to the meetings, or you just want to test this solution in an isolated tenant, you can obtain a new testing tenant using Office 365's [Developer Program](https://developer.microsoft.com/en-us/microsoft-365/dev-program).
+- If you plan to deploy this solution to the cloud then you will need an **Azure subscription** to create the required resources to host the solution. Also, Azure AD needs to be used to created several app registrations for authentication and authorization.
 
-## General prerequisites
+## Provision Azure resources
 
-Before deploying the solution in Azure, please make sure you have the all the prerequisites listed in [Prerequisites](..\prerequisites\README.md).
+Before provisioning main Azure resources, you must create a resource group for them ([How to create a resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#create-resource-groups)) and then create the following resources under that resource group.
 
-Also, if you haven't already, make sure you have setup your [Azure Bot](..\prerequisites\azure_bot.md) too.
+1. [Application Insights](application-insights.md#application-insights)
+2. [App Service Plan](app-service-plan.md#app-service-plan)
+3. [Web App](web-app.md#web-app)
+4. [Function App](function-app.md#function-app)
+5. [Virtual Machine](virtual-machine.md#virtual-machine)
+6. [Azure Key Vault](azure-key-vault.md#azure-key-vault)
+7. [Cosmos DB](cosmos-db.md#cosmos-db)
+8. [Storage Account](storage-account.md#storage-account)
 
-## App Registrations for authentication in different components in Azure AD tenant
-To secure and connect several of the resources used for the solution, we need to create several app registrations, each with its own permissions and settings. Several of the following instructions include creating application credentials. We recommend creating a Key Vault resource in Azure to store these credentials securely. We also recommend keeping track of the application IDs generated for each app registration to simplify the configuration of the applications during the project.  
+## Setup DNS for the Virtual Machine
 
-- [App Registrations](app_registrations.md#app-registrations).
-- [Security Group](security_group.md).
+After creating and configuring the virtual machine, you must add a record to your DNS provider/server with the static IP of the virtual machine, and take note of the record name, you will use it later.
 
-## Resources used to deploy and configure the solution:
+If you don't have a DNS provider, you can use [Azure DNS](https://azure.microsoft.com/services/dns/). To create an Azure DNS Zone, please review the following [Microsoft Documentation](https://docs.microsoft.com/en-us/azure/dns/dns-getstarted-portal).
 
-### Resource Groups 
-To prepare the cloud environment, we need to create multiple resources which must be separated according to the different components of the solution. For that, it is necessary to create two **resource groups**, both in the same **region** (e.g., **West US 2**). 
+If you chose Azure DNS, you will have to visit your domain name registrar to replace the name server records with the Azure DNS name servers. More info, [host your domain in Azure DNS](https://docs.microsoft.com/en-us/azure/dns/dns-delegate-domain-azure-dns#delegate-the-domain).
 
-- **`resource-group-name`-bot**: This group will contain the rest of the resources related to the APIs, functions, database, and web UI used to operate the solution.
+## Configure authentication resources
 
-- **`resource-group-name`-bot-vm**: This group will be used to contain the resources related to the virtual machine that will host the core components of the application in Azure. 
+To configure authentication in the solution, secure and connect several of the solution's resources, you to create app registrations for the corresponding components, and a security group.
 
-> NOTE: It is suggested that `resource-group-name` be replaced by a name in line with the project.
+### App Registrations
+  
+While creating/configuring the application registrations, you must create client secrets and use the Azure Key Vault created in previous steps to store them. We also recommend keeping track of the application IDs generated for each app registration to simplify the configuration of the applications during the project.
 
-To create the resource groups, check the [Create resource groups](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#create-resource-groups) documentation.
+> **NOTE**: If you are using a O365 Developer tenant for Microsoft Teams and a separate Azure subscription tenant to create the Azure resources, the Azure SDK app registration must be created in the Azure subscription tenant, while the rest can be created in the developer tenant.
 
-### Architecture resource group
+- [How to create/configure Bot Service API app registration](bot-service-api-app-registration.md#bot-service-api-app-registration)
+- [How to create/configure Bot Service Client app registration](bot-service-client-app-registration.md#bot-service-client-app-registration)
+- [How to create/configure Management API app registration](management-api-app-registration.md#management-api-app-registration)
+- [How to create/configure Azure SDK app registration](azure-sdk-app-registration.md#azure-sdk-app-registration)
 
-The following resources are used to manage the application and the bot. All these resources should be created in the `resource-group-name`-bot resource group:
+### Security Group
 
-- [Application Insights](application_insights.md).
-- [Storage account](storage_account.md).
-- [Cosmos DB](cosmos_db.md#cosmos-db-database).
-- [Web App and App service plan](web_app_and_app_service_plan.md).
-- [Function App and App service plan](function_app_and_app_service_plan.md).
+If you want to restrict the access to the solution to certain users, you must create a security group and assign the corresponding users to it. If don't, you can skip this step.
 
+- [How to create/configure the security group](security-group.md#security-group)
 
-### Virtual Machine resource group
+## Azure Bot
 
-The following resources form the core part of the solution, which is charge of connecting to the call and extract and inject the media feeds from the Teams Meeting call. 
-All these resources should be created in the `resource-group-name`-bot-vm resource group. 
-The app registration that was created to manage the state of the VM must be given access to this resource group with the Contributor role. This can be done in the **Access control (IAM)** menu of the resource group.
+In order to configure the solution and add calling capabilities to the bot, you must create an Azure Bot resource. To do so, before creating the Azure Bot, you need to create an app registration with the required permissions the Azure Bot will use to authenticate against the Microsoft Graph API and get access to the different resources.
 
-- [Virtual Machine](virtual_machine.md).
-- [Event Grid](configure_event_grid.md##how-to-configure-event-grid).
+- [How to create/configure Azure Bot app registration](../common/azure-bot-app-registration.md#azure-bot-app-registration)
+- [How to create/configure Azure Bot](../common/azure-bot.md#azure-bot)
+
+## Deployments
+
+After provisioning and configuring the Azure resources, you are able to start deploying the different backend components. In this section will list the `How to` documents to deploy them.
+
+- [How to deploy the Bot Service into the virtual machine](bot-service-deploy.md#bot-service-deploy)
+- [How to deploy the Management API into the Azure App Service](management-api-deploy.md#management-api-deploy)
+- [How to deploy the Function App into the Azure Function App Service](function-app-deploy.md#function-app-deploy.md)
+
+## Configure Event Grid/Event Grid handler
+
+To keep the state of the bot service virtual machine consistent is Cosmos DB, we we must configure an event grid subscription to execute an Azure Function that updates its register in Cosmos DB, every time that it is being started/stopped from an external event, e.g.: A user starts/stops the virtual machine from Azure Portal or has scheduled auto-shutdown. To do so, please review the following document:
+
+- [How to configure event grid](event-grid.md#event-grid)
+
+## Register the service in Cosmos DB
+
+In order to start using the Azure environment once all the components have been deployed and configured, it is necessary to configure/register a service into the Cosmos DB.
+
+- [How to register the service](register-service.md)
+
+## Test the environment
+
+- [Quick test the Management API](test-web-app.md#how-to-test-the-management-api)
+- [Quick test the Azure Function](test-function-app.md#how-to-test-the-orchestrator-function)
