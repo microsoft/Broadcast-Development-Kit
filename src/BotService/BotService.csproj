@@ -91,8 +91,8 @@
 		</None>
 	</ItemGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="echo Configuration: $(Configuration)&#xD;&#xA;copy appSettings.$(Configuration).json appSettings.json" />
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="echo Current configuration: $(Configuration) ...&#xD;&#xA;echo Validating that appSettings.$(Configuration).json exists ...&#xD;&#xA;if EXIST &quot;$(ProjectDir)appSettings.$(Configuration).json&quot; (&#xD;&#xA;  echo Replacing appSettings.json with appSettings.$(Configuration).json settings ...&#xD;&#xA;  copy $(ProjectDir)appSettings.$(Configuration).json $(OutDir)appSettings.json&#xD;&#xA;)&#xD;&#xA;if not EXIST &quot;$(ProjectDir)appSettings.$(Configuration).json&quot; (&#xD;&#xA;  echo appSettings.$(Configuration).json does not exist, keeping appSettings.json as is&#xD;&#xA;)" />
 	</Target>
 
 </Project>
