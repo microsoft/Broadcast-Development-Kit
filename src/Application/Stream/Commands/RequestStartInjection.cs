@@ -2,12 +2,14 @@
 // Licensed under the MIT license.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Models;
 using Application.Exceptions;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
+using Application.Stream.Specifications;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Entities.Parts;
@@ -101,8 +103,22 @@ namespace Application.Stream.Commands
                 var entity = _mapper.Map<Domain.Entities.Stream>(request.Body);
                 entity.StartingAt = DateTime.UtcNow;
                 entity.State = StreamState.Starting;
+                entity.Details.VideoFeedOn = true;
 
-                await _streamRepository.AddItemAsync(entity);
+                var streamsSpecification = new StreamsGetFromCallSpecification(request.Body.CallId);
+                var streams = await _streamRepository.GetItemsAsync(streamsSpecification);
+
+                var stream = streams.FirstOrDefault();
+
+                if (stream != null)
+                {
+                    entity.Id = stream.Id;
+                    await _streamRepository.UpdateItemAsync(entity.Id, entity);
+                }
+                else
+                {
+                    await _streamRepository.AddItemAsync(entity);
+                }
 
                 request.Body.StreamId = entity.Id;
 

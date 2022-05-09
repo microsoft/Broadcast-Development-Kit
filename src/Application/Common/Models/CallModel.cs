@@ -34,6 +34,8 @@ namespace Application.Common.Models
 
         public string GraphId { get; set; }
 
+        public bool IsBotMuted { get; set; }
+
         public List<ParticipantStreamModel> Streams { get; set; } = new List<ParticipantStreamModel>();
 
         public StreamModel InjectionStream { get; set; }

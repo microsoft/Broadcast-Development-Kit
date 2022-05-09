@@ -10,28 +10,18 @@ namespace Infrastructure.Core.Common
         private const string Development = "development";
         private const string Production = "production";
         private const string Local = "local";
-        private const string BroadcasterEnvironmentVariableKey = "BROADCASTER_ENVIRONMENT";
         private const string AspNetCoreEnvironmentVariableKey = "ASPNETCORE_ENVIRONMENT";
         private const string AzureFunctionEnvironmentVariableKey = "AZURE_FUNCTIONS_ENVIRONMENT";
 
         public HostEnvironment(bool isAzureFunction = false)
         {
-            var broadcasterEnvironment = Environment.GetEnvironmentVariable(BroadcasterEnvironmentVariableKey);
+            var environment = isAzureFunction ?
+                Environment.GetEnvironmentVariable(AzureFunctionEnvironmentVariableKey) :
+                Environment.GetEnvironmentVariable(AspNetCoreEnvironmentVariableKey);
 
-            if (string.IsNullOrEmpty(broadcasterEnvironment))
+            if (!string.IsNullOrEmpty(environment))
             {
-                var environment = isAzureFunction ?
-                    Environment.GetEnvironmentVariable(AzureFunctionEnvironmentVariableKey) :
-                    Environment.GetEnvironmentVariable(AspNetCoreEnvironmentVariableKey);
-
-                if (!string.IsNullOrEmpty(environment))
-                {
-                    EnvironmentName = environment;
-                }
-            }
-            else
-            {
-                EnvironmentName = broadcasterEnvironment;
+                EnvironmentName = environment;
             }
         }
 

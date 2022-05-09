@@ -10,7 +10,7 @@ namespace Application.Stream.Specifications
         public StreamGetActiveFromCallSpecification(string callId)
         {
             Query
-                .Where(x => x.CallId == callId && (x.State == StreamState.Starting || x.State == StreamState.Started))
+                .Where(x => x.CallId == callId && (x.State == StreamState.Starting || x.State == StreamState.Ready || x.State == StreamState.Receiving || x.State == StreamState.NotReceiving))
                 .OrderByDescending(x => x.StartingAt);
         }
     }

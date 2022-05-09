@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 using Application.Common.Models;
 using AutoMapper;
-using static Application.Service.Commands.RequestStartServiceInfrastructure;
 using static Application.Service.Commands.DoStartServiceInfrastructure;
-using static Application.Service.Commands.RequestStopServiceInfrastructure;
 using static Application.Service.Commands.DoStopServiceInfrastructure;
+using static Application.Service.Commands.RequestStartServiceInfrastructure;
+using static Application.Service.Commands.RequestStopServiceInfrastructure;
 
 namespace Application.Service
 {

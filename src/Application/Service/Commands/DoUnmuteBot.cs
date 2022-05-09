@@ -3,6 +3,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Interfaces.Common;
+using Application.Interfaces.Persistance;
+using Domain.Exceptions;
 using MediatR;
 
 namespace Application.Service.Commands
@@ -11,29 +13,42 @@ namespace Application.Service.Commands
     {
         public class DoUnmuteBotCommand : IRequest<DoUnmuteBotCommandResponse>
         {
+            public string CallId { get; set; }
         }
 
         public class DoUnmuteBotCommandResponse
         {
-            public string Id { get; set; }
         }
 
         public class DoUnmuteBotCommandHandler : IRequestHandler<DoUnmuteBotCommand, DoUnmuteBotCommandResponse>
         {
             private readonly IBot _bot;
+            private readonly ICallRepository _callRepository;
 
-            public DoUnmuteBotCommandHandler(IBot bot)
+            public DoUnmuteBotCommandHandler(
+                IBot bot,
+                ICallRepository callRepository)
             {
                 _bot = bot;
+                _callRepository = callRepository;
             }
 
             public async Task<DoUnmuteBotCommandResponse> Handle(DoUnmuteBotCommand request, CancellationToken cancellationToken)
             {
-                var response = new DoUnmuteBotCommandResponse();
+                var call = await _callRepository.GetItemAsync(request.CallId);
+
+                if (call == null)
+                {
+                    throw new EntityNotFoundException(nameof(Call), request.CallId);
+                }
 
                 await _bot.UnmuteBotAsync();
 
-                return response;
+                call.IsBotMuted = false;
+
+                await _callRepository.UpdateItemAsync(call.Id, call);
+
+                return null;
             }
         }
     }

@@ -35,6 +35,8 @@ namespace Domain.Entities
 
         public string ServiceId { get; set; }
 
+        public bool IsBotMuted { get; set; }
+
         public Dictionary<string, string> PublicContext { get; set; } = new Dictionary<string, string>();
 
         public Dictionary<string, string> PrivateContext { get; set; } = new Dictionary<string, string>();

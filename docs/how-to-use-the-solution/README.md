@@ -1,38 +1,45 @@
 # How to use the Management API
 
 ## Getting Started
+
 This document contains the instructions to operate the Broadcast Development Kit (BDK) using Postman. This includes:
 
+- [How to use the Management API](#how-to-use-the-management-api)
   - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Authorization](#authorization)
     - [Client credential flow](#client-credential-flow)
       - [Create an App registration](#create-an-app-registration)
-        - [API permissions](#api-permissions)
-      - [How to generate an access token](#how-to-generate-an-access-token-with-client-credential-grant-type)
+      - [API permissions](#api-permissions)
+      - [How to generate an access token with client credential grant type](#how-to-generate-an-access-token-with-client-credential-grant-type)
     - [Implicit grant flow](#implicit-grant-flow)
-      - [How to generate an access token](#how-to-generate-an-access-token-with-implicit-grant-type)
+      - [How to generate an access token with implicit grant type](#how-to-generate-an-access-token-with-implicit-grant-type)
   - [Call Flow](#call-flow)
+  - [Swagger](#swagger)
+    - [Postman](#postman)
   - [Operations](#operations)
     - [Start the service](#start-the-service)
     - [Join the bot into a meeting](#join-the-bot-into-a-meeting)
     - [Start an extraction](#start-an-extraction)
-    - [Start an Injection](#start-an-injection)
+    - [Start an injection](#start-an-injection)
     - [Generate RTMP stream key](#generate-rtmp-stream-key)
     - [Disconnect Call](#disconnect-call)
     - [Stop service](#stop-service)
   
 ## Prerequisites
+
 - Download and Install [Postman](https://www.postman.com/)
 
 ## Authorization
-As endpoints in the solution are securitized in order to make requests to the API it is necessary to generate an access token and use it in the header of the requests, otherwise, the API will respond to requests with HTTP error code 401 (Unauthorized).
 
-In this section we describe how to generate an access token with the App registration used in the SPA for the [implicit grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) or by creating a new App registration for the [client credential flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow).
+BDK Management API endpoints are secured. To be able to make API requests, it is necessary to include a valid bearer token in the requests' headers.
+
+In this section we will describe how to generate an access token with the App registration used in the SPA (if you have already configured the [Web UI for the Broadcast Development Kit](https://github.com/microsoft/Broadcast-Development-Kit-Web-UI) for the [implicit grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow) or by creating a new App registration for the [client credential flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow).
 
 ### Client credential flow
 
 #### Create an App registration
+
 Create a new App registration to be able to configure it and thus be able to obtain the `access token`. Review the following Microsoft [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) that will explain how to do it, and consider the following settings:
 
 - ***Name:*** Meaningful name.
@@ -41,6 +48,7 @@ Create a new App registration to be able to configure it and thus be able to obt
 Once you've registered the App registration you must [add a client secret](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-a-client-secret), copy the value and save it together with the application client id in a secure place, we will need them for future steps.
 
 #### API permissions
+
 From the App registration created view, go to the **API permissions** option that is in the `Manage` menu, click the **Add a permission** button and then ensure the **APIs my organization uses**  tab is selected. Search for the App Registration created for the [Management API](../how-to-run-the-solution-in-azure/app_registrations.md#how-to-setup-management-api-app-registration) and click on the search result.
 
 ![Search API permissions](./images/search_api_permissions.png)
@@ -54,6 +62,7 @@ Then inside App registration created, select **AccessAll** and click on **Add pe
 ![Add permissions](./images/added_api_permission.png)
 
 #### How to generate an access token with client credential grant type
+
 Once the App registration is created, follow the steps below to generate the `access token` from **Postman**:
 
 1. Open **Postman** and create a new request.
@@ -69,13 +78,13 @@ Once the App registration is created, follow the steps below to generate the `ac
     | Placeholder | Description |
     |-------------|-------------|
     | Grant Type     |  Select the **Client Credentials** option.|
-    | accessTokenURL | https://login.microsoftonline.com/`{{tenantId}}`/oauth2/v2.0/token`|
+    | accessTokenURL | `https://login.microsoftonline.com/{{tenantId}}/oauth2/v2.0/token`|
     | tenantId |  Tenant Id of the subscription. |
     | clientId    |   Client Id of the App registration created. |
     | clientSecret    |   Client Secret of the App registration created. |
-    | scope   |     api://`{{clientIdManagementAPI}}`/.default |
-    | clientIdManagementAPI |  Client Id of the [App Registration](../how-to-run-the-solution-in-azure/app_registrations.md#how-to-setup-management-api-app-registration) of the ManagementApi. |
-    
+    | scope   |     `api://{{clientIdManagementAPI}}/.default` |
+    | clientIdManagementAPI |  Client Id of the [App Registration](../how-to-run-the-solution-in-azure/app_registrations.md#how-to-setup-management-api-app-registration) of the ManagementApi.|
+
 4. Next, to generate the token, click on the **Get New Access Token** button, a new window will be displayed, and then it will show the generated `access token`. To use this token, click on the button **Use Token**, this will use the `access token` in the created request.
 
     |![Management Access Tokens](./images/management_access_token.png)|
@@ -85,10 +94,11 @@ Once the App registration is created, follow the steps below to generate the `ac
 ### Implicit grant flow
 
 #### How to generate an access token with implicit grant type
+
 > NOTE: It is necessary to use the App registration of the SPA to generate the access token, please review the following [documentation](https://github.com/microsoft/Broadcast-Development-Kit-Web-UI/tree/main/docs/how-to-run-the-solution-in-azure#create-a-new-app-registration).
 
 To generate the access token with implicit grant type, the following steps are suggested:
- 
+
 1. Open **Postman** and create a new request.
 
 2. In the **Authorization** tab, select the type **OAuth2**.
@@ -102,9 +112,9 @@ To generate the access token with implicit grant type, the following steps are s
     | Placeholder | Description |
     |-------------|-------------|
     | Grant Type     |  Select the **Implicit** option.|
-    | callbackUrl     |  https://{{spaRedirectUrl}}|
+    | callbackUrl     |  `https://{{spaRedirectUrl}}`|
     | spaRedirectUrl     | [Spa redirect URL](../how-to-run-the-solution-in-azure#configure-the-app-registration) configured. |
-    | authUrl | https://login.microsoftonline.com/`{{tenantId}}`/oauth2/v2.0/authorize`|
+    | authUrl | `https://login.microsoftonline.com/{{tenantId}}/oauth2/v2.0/authorize`|
     | tenantId |  Tenant Id of the subscription. |
     | clientId    |   Client Id of the App registration created. |
     | scope   |     api://`{{clientIdManagementAPI}}`/access_as_producer |
@@ -117,23 +127,36 @@ To generate the access token with implicit grant type, the following steps are s
     |*Management Access Tokens*|
 
 ## Call Flow
+
 The life cycle of a call follows these steps:
 
-1. First, we need to start the service (i.e. the VM) that host the bot using the `Start Service` endpoint. 
+1. First, we need to start the service (i.e. the VM) that host the bot using the `Start Service` endpoint.
 2. After requesting the provisioning of the service, we must poll the `Get Service State` endpoint several times until the service is `Provisioned`.
-3. Once the service is provisioned, to invite the bot into a meeting we must use the `Initialize Call` endpoint. The request will return a call with state equals to `0` (Establishing). 
-4. Then, we must poll the `Get Call Details` endpoint until the state of the call is `1` (Established) and the Participants are available. 
+3. Once the service is provisioned, to invite the bot into a meeting we must use the `Initialize Call` endpoint. The request will return a call with state equals to `0` (Establishing).
+4. Then, we must poll the `Get Call Details` endpoint until the state of the call is `1` (Established) and the Participants are available.
 5. After that, we are able to start and stop the streams we want to capture.
 6. Once the service is not longer needed in the call and all streams are stopped, we can disconnect it using the `Delete Call` endpoint.
-7. After the bot usage is done, it can be terminated using the `Stop Service` endpoint. 
-8. To make sure that the VM has been stopped, we must poll the `Get Service State` endpoint several times until the service is `Deprovisioned`. 
+7. After the bot usage is done, it can be terminated using the `Stop Service` endpoint.
+8. To make sure that the VM has been stopped, we must poll the `Get Service State` endpoint several times until the service is `Deprovisioned`.
+
+## Swagger
+
+The REST endpoints exposed by the Management API are documented by using OpenAPI specification. To access Swagger UI go to <https://{{MANAGEMENT_API_URL}}/Swagger>
+
+![Managament API Swagger UI](images/management_api_swagger_ui.jpg "Management API Swagger UI")
+
+### Postman
+
+Optionally, you can import the OpenAPI specification in Postman by importing the following JSON <https://{{MANAGEMENT_API_URL}}/swagger/v1/swagger.json>
 
 ## Operations
-The following instructions are the steps necessary to start the service, join the bot into the meeting, start an extraction or injection, disconnect the call and stop the service. 
+
+The following instructions are the steps necessary to start the service, join the bot into the meeting, start an extraction or injection, disconnect the call and stop the service.
 
 It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-us/office/schedule-a-meeting-in-teams-943507a9-8583-4c58-b5d2-8ec8265e04e5) in Microsoft Teams to join the bot in it and also to have already configured the access token in Postman in order to follow the instructions.
 
 ### Start the service
+
 1. **Get service state**: We need to verify the state of the service before join the bot into the meeting, check if the service is available or not. If it is not we need to start it.
 
     **Method**: `GET`  
@@ -144,10 +167,9 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | appServiceUrl | AppService Url |
     | serviceId | Service Id (the default id is `00000000-0000-0000-0000-000000000000`)|
 
+    **Response:**
 
-    **Response:** 
-
-    ``` json 
+    ``` json
     {
         "id": "serviceId",
         "resource": {
@@ -174,6 +196,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
             }
         }
     ```
+
     If the provisioningDetails is deprovisioned we need to start the service by calling the start endpoint.
 
 2. **Start Service**:
@@ -216,10 +239,11 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
         }
     }
     ```
-    
+
     After calling the start endpoint the service will start provisioning, it is necessary to check the status until the provisioningDetails changes to `Provisioned`
 
 ### Join the bot into a meeting
+
 1. **Initialize Call:** To join the bot into the meeting we will call the initialize-call endpoint with the Teams meeting URL. The service needs to be `Provisioned` to join the bot to the call.
 
     **Method**: `POST`  
@@ -232,7 +256,8 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     **Headers**: Verify the `Content-type` key has as value `application/json`  
     **Body**: `raw`
 
-    Complete the body in Postman with the following: 
+    Complete the body in Postman with the following:
+
     ```json
     { 
         "MeetingUrl": "{{teamsMeetingUrl}}" 
@@ -250,6 +275,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     |*Steps to get the Teams meeting URL*|
 
     **Response:**
+
     ```json
     {
         "id": "callId",
@@ -276,9 +302,10 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
         }
     }
     ```
-    The returned status is equals `0` (Establishing) means that the bot is joining the call. To be able to start a stream, the call state has to be in `1` (Established). You can use the `Get Call Details` operation to verify the status of the call. The returned `Id` value must to be copied to be used in the following steps. 
 
-2. **Get call details:** The call details endpoind will retrieve call and participants information. If the state of the call is `1` (Established), it means that the bot is joined in the call.
+    The returned status is equals `0` (Establishing) means that the bot is joining the call. To be able to start a stream, the call state has to be in `1` (Established). You can use the `Get Call Details` operation to verify the status of the call. The returned `Id` value must to be copied to be used in the following steps.
+
+2. **Get call details:** The call details endpoint will retrieve call and participants information. If the state of the call is `1` (Established), it means that the bot is joined in the call.
 
     **Method**: `GET`  
     **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}`  
@@ -288,6 +315,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | callId | Call Id obtained as response in the previous step|
 
     **Response:**
+
     ```json
     {
         "id": "callId",
@@ -424,6 +452,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     The list of the participants joined to the call is listed in the streams property of the response.
 
 ### Start an extraction
+
 1. **Start extraction stream**: To start the extraction of a participant it is necessary to check if the `isSharingVideo` property of the participant is true. In previous step request response we can see that participant 2 is sharing video.
 
     **Method**: `POST`  
@@ -436,9 +465,10 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     **Headers**: Verify the `Content-type` key has as value `application/json`  
     **Body**: `raw`
 
-    #### Body for RTMP
+    **Body for RTMP**
 
-    Complete the body in Postman with the following: 
+    Complete the body in Postman with the following:
+
     ```json
     {  
         "participantId": "{{participantId}}",  
@@ -465,9 +495,10 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | timeOverlay | `true` or `false` |
     | enableSsl | Enable SSL: `true` or `false` it is in `Pull` mode, use `false` in `Push` mode|
 
-    #### Body for SRT
+    **Body for SRT**
 
-    Complete the body in Postman with the following: 
+    Complete the body in Postman with the following:
+
     ```json
     {  
         "participantId": "{{participantId}}",  
@@ -495,8 +526,8 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | timeOverlay | `true` or `false` |
     | keyLength | Allowed values: `0`, `16`, `24`, `32`|
     | latency | Latency for SRT (eg: `750`)|
-    
-    #### Table of Availables ResourceTypes
+
+    **Table of Available ResourceTypes**
 
     |ResourceType | Value |
     |-------------|-------------|
@@ -547,12 +578,13 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
 2. **Stop extraction stream:**
 
     **Method**: `POST`  
-    **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/stream/stop-extraction` 
+    **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/stream/stop-extraction`
 
     **Headers**: Verify the `Content-type` key has as value `application/json`  
     **Body**: `raw`
 
-    Complete the body in Postman with the following: 
+    Complete the body in Postman with the following:
+
     ```json
     { 
         "participantId": "{{participantId}}",
@@ -560,6 +592,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
         "resourceType": 2,
     } 
     ```
+
     | Placeholder | Description |
     |-------------|-------------|
     | participantId | Participant Id |
@@ -567,6 +600,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | resourceType |Select a value from ResourceType [table](#table-of-availables-resourcetypes) |
 
     **Response:**
+
     ```json
     {
         "id": "participant2Id",
@@ -600,8 +634,9 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     }
     ```
 
-### Start an Injection
-1. **Start injection stream**: 
+### Start an injection
+
+1. **Start injection stream**:
 
     **Method**: `POST`  
     **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/stream/start-injection`  
@@ -613,7 +648,8 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     **Headers**: Verify the `Content-type` key has as value `application/json`  
     **Body**: `raw`
 
-    #### Body for RTMP
+    **Body for RTMP**
+
     ```json
     {
         "protocol": 1,
@@ -630,7 +666,8 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | streamUrl | RTMP in `Pull` mode, `null` for `Push` mode |
     | enableSsl | Enable SSL: `true` or `false` used when mode is `Push`|
 
-    #### Body for SRT
+    **Body for SRT**
+
     ```json
     {
         "protocol": 0,
@@ -650,7 +687,6 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | streamKey | Use a passphrase or `null`|
     | latency | Latency (eg: `750`)|
     | keyLength | Allowed values: `0`, `16`, `24`, `32`|
-
 
     **Response**:
 
@@ -675,9 +711,38 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
         }
     }
     ```
+
     The id of the response should be copied for later use when stopping the injection.
 
-2. **Stop injection stream**: 
+2. Optionally, you can use the following operations to control the injection:
+   - Hide:
+
+        **Method**: `POST`  
+        **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/injection/hide`
+
+   - Display:
+
+        **Method**: `POST`  
+        **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/injection/display`
+
+   - Mute:
+
+        **Method**: `POST`  
+        **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/mute`
+
+   - Un-mute:
+
+        **Method**: `POST`  
+        **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/unmute`
+
+   - Set Volume:
+
+        **Method**: `POST`  
+        **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/injection/set-volume`
+
+        > **Note:** Check OpenAPI specification for information about request body
+
+3. **Stop injection stream**:
 
     **Method**: `POST`  
     **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/stream/{{streamId}}/stop-injection`  
@@ -688,6 +753,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | streamId | Obtained Stream Id when started the injection |
 
     **Response**
+
     ```json
     {
         "id": "streamId",
@@ -709,21 +775,23 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
         }
     }
     ```
+
 ### Generate RTMP stream key
+
 1. **Generate RTMP stream key:** This endpoint updates the streamKey in the privateContext of the call, used key for RTMP injections and extractions. Only need to use this endpoint if you want to change the RMTP key of the current meeting, each meeting has its own RTMP stream key.
 
     **Method**: `POST`  
     **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}/generate-stream-key`  
-    
 
     | Placeholder | Description |
     |-------------|-------------|
     | callId      | Call Id     |
-    
+
     **Headers**: Verify the `Content-type` key has as value `application/json`  
     **Body**: `raw`  
 
     **Response**
+
     ```json
     {
         "callId": "callId",
@@ -731,13 +799,15 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     }
     ```
 
-### Disconnect Call:
+### Disconnect Call
+
 1. **Disconnect the bot from the call**:  
-   
-    **Method**: `DELETE`  
-    **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}` 
+
+    **Method**: `DELETE`
+    **Endpoint**: `https://{{appServiceUrl}}/api/call/{{callId}}`
 
     **Response:**
+
     ```json
     {
         "id": "callid",
@@ -766,10 +836,11 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     ```
 
 ### Stop service
+
 1. **Stop the service**:
 
     **Method**: `POST`  
-    **Endpoint**: `https://{{appServiceUrl}}/api/service/{{serviceId}}/stop` 
+    **Endpoint**: `https://{{appServiceUrl}}/api/service/{{serviceId}}/stop`
 
     | Placeholder | Description |
     |-------------|-------------|
@@ -777,6 +848,7 @@ It is necessary to have a [scheduled meeting](https://support.microsoft.com/en-u
     | serviceId | Service Id (the default id is `00000000-0000-0000-0000-000000000000`)|
 
     **Response:**
+
     ```json
     {
         "id": "serviceId",

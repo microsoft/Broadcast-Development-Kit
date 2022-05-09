@@ -122,7 +122,7 @@ namespace Infrastructure.Core.Common
 
             ErrorDetails details = new ErrorDetails
             {
-                Status = StatusCodes.Status500InternalServerError,
+                Status = (int)exception.StatusCode,
                 Title = exception.RequestDetails.Title,
                 Detail = exception.RequestDetails.Detail,
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
@@ -137,7 +137,7 @@ namespace Infrastructure.Core.Common
 
             return new ObjectResult(details)
             {
-                StatusCode = StatusCodes.Status500InternalServerError,
+                StatusCode = (int)exception.StatusCode,
                 DeclaredType = !isProductionEnvironment ? details.GetType() : default,
             };
         }
@@ -150,7 +150,7 @@ namespace Infrastructure.Core.Common
 
             ErrorDetails details = new ErrorDetails
             {
-                Status = StatusCodes.Status500InternalServerError,
+                Status = (int)exception.StatusCode,
                 Title = "An error ocurred while trying to communicate with Graph API",
                 Detail = exception.Error.Message,
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
@@ -165,7 +165,7 @@ namespace Infrastructure.Core.Common
 
             return new ObjectResult(details)
             {
-                StatusCode = StatusCodes.Status500InternalServerError,
+                StatusCode = (int)exception.StatusCode,
                 DeclaredType = !isProductionEnvironment ? details.GetType() : default,
             };
         }

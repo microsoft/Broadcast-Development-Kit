@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Application.Call.Commands;
 using Application.Participant.Commands;
 using Application.Service.Commands;
+using Application.Stream.Commands;
+using Domain.Enums;
 using Microsoft.Graph.Communications.Calls;
 
 namespace BotService.Infrastructure.Services
@@ -25,5 +27,9 @@ namespace BotService.Infrastructure.Services
         Task<SetCallAsTerminated.SetCallAsTerminatedCommandResponse> SetCallAsTerminatedAsync(string callId);
 
         Task<UpdateParticipantMeetingStatus.UpdateParticipantMeetingStatusCommandResponse> UpdateParticipantMeetingStatusAsync(string callId, IParticipant participant);
+
+        Task<UpdateStreamState.UpdateStreamStateCommandResponse> UpdateStreamStateAsync(string callId, StreamState state);
+
+        Task<UpdateBotStatus.UpdateBotStatusResponse> UpdateBotStatusAsync(string callId, bool isMuted);
     }
 }

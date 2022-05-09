@@ -5,9 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Interfaces.Persistance;
 using Application.Service.Specifications;
+using Domain.Enums;
 using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
+using Microsoft.Azure.Management.Compute.Fluent;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Service.Commands
@@ -54,20 +56,35 @@ namespace Application.Service.Commands
 
                 var services = await _serviceRepository.GetItemsAsync(specification);
 
-                var entity = services.FirstOrDefault();
+                var service = services.FirstOrDefault();
 
-                if (entity == null)
+                if (service == null)
                 {
                     _logger.LogError("[Bot Service API] There is no service configured with virtual machine {virtualMachineName} registered", request.VirtualMachineName);
                     throw new EntityNotFoundException($"[Bot Service API]There is no service configured with virtual machine {request.VirtualMachineName} registered");
                 }
 
-                entity.CallId = null;
-                entity.State = Domain.Enums.ServiceState.Unavailable;
+                service.CallId = null;
+                service.State = Domain.Enums.ServiceState.Unavailable;
 
-                await _serviceRepository.UpdateItemAsync(entity.Id, entity);
+                /*
+                 * NOTE:
+                 * This command is executed when the bot service (windows service) is stopped.
+                 * Because sometimes the bot's virtual machine is shutted down from Azure Portal,
+                 * and the Azure function that updates the state of the infrastructure (VM) is
+                 * not executed, we force the state update from this command.
+                 *
+                 * Most of the times, the state will be upadated by the Azure function triggered by
+                 * event grid.
+                 */
 
-                response.Id = entity.Id;
+                service.Infrastructure.ProvisioningDetails.State = ProvisioningStateType.Deprovisioned;
+                service.Infrastructure.ProvisioningDetails.Message = $"Deprovisioned service {service.Name}.";
+                service.Infrastructure.PowerState = PowerState.Deallocated.Value;
+
+                await _serviceRepository.UpdateItemAsync(service.Id, service);
+
+                response.Id = service.Id;
 
                 return response;
             }

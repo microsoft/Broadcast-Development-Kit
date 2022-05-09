@@ -1,19 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 using System.Net.Http;
-using System.Reflection;
 using Application;
 using Application.Common.Config;
 using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
 using BotService.Infrastructure.Common;
-using FluentValidation;
 using Infrastructure.Core.Common;
 using Infrastructure.Core.CosmosDbData.Extensions;
 using Infrastructure.Core.CosmosDbData.Repository;
 using Infrastructure.Core.Services;
 using ManagementApi.Filters;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -25,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 
 namespace ManagementApi
 {
@@ -100,8 +98,6 @@ namespace ManagementApi
             services.AddSingleton<IAppConfiguration>(appConfiguration);
 
             services.AddApplication();
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             // register CosmosDB client and data repositories
             services.AddCosmosDb(
@@ -129,7 +125,7 @@ namespace ManagementApi
             services.AddScoped<IAzVirtualMachineService, AzVirtualMachineService>();
 
             services.AddTransient<IAuthenticationProvider, GraphAuthenticationProvider>();
-            services.AddTransient<IGraphServiceClient, GraphServiceClient>();
+            services.AddTransient<GraphServiceClient>();
             services.AddTransient<IGraphService, MicrosoftGraphService>();
 
             services.AddTransient<IMeetingUrlHelper, MeetingUrlHelper>();
@@ -170,18 +166,48 @@ namespace ManagementApi
                     });
                 });
             }
+
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "BDK Management API",
+                    Version = "v1",
+                    Description = "API to support operations to extract and inject media streams from the meeting (e.g. participants, screen share, etc.) and use them as sources for producing live content.",
+                });
+
+                options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT",
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                });
+                var secScheme = new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearerAuth" },
+                };
+                var secReq = new OpenApiSecurityRequirement();
+                secReq.Add(secScheme, new string[] { });
+                options.AddSecurityRequirement(secReq);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
-            IHostEnvironment env)
+            IHostEnvironment env,
+            IAppConfiguration appConfiguration)
         {
             if (env.IsLocal())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseCors(_myAllowSpecificOrigins);
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.ConfigureExceptionHandler(_logger, env.IsProduction());
             app.UseRouting();
@@ -196,7 +222,14 @@ namespace ManagementApi
                 }
                 else
                 {
-                    endpoints.MapControllers().WithMetadata(new AuthorizeAttribute("Producer"));
+                    if (string.IsNullOrEmpty(appConfiguration.AzureAdConfiguration.GroupId))
+                    {
+                        endpoints.MapControllers().WithMetadata(new AuthorizeAttribute());
+                    }
+                    else
+                    {
+                        endpoints.MapControllers().WithMetadata(new AuthorizeAttribute("Producer"));
+                    }
                 }
             });
         }

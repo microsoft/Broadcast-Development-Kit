@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Timers;
 using BotService.Application.Core;
 using BotService.Infrastructure.Common.Logging;
 using BotService.Infrastructure.Pipelines;
@@ -30,6 +31,8 @@ namespace BotService.Infrastructure.Core
         private readonly object _updateReferenceAudioLock = new object();
         private readonly object _updateReferenceVideoLock = new object();
 
+        private readonly System.Timers.Timer _pipelineWithoutBufferTimer;
+
         private IMediaInjectionPipeline _pipeline;
         private IDisposable _unsubscribeObserver;
         private bool _disposed = false;
@@ -51,6 +54,12 @@ namespace BotService.Infrastructure.Core
         private long _referenceVideoTimestamp;
         private bool _isVideoReady = false;
 
+        private bool _shouldInjectContent = false;
+
+        private MediaInjectionSettings _injectionSettings;
+
+        private Action _onStreamStateChanged;
+
         public MediaInjector(IVideoSocket videoSocket, IAudioSocket audioSocket, ILoggerFactory loggerFactory, PipelineBusObserver pipelineBusObserver)
         {
             VideoSocket = videoSocket;
@@ -59,16 +68,32 @@ namespace BotService.Infrastructure.Core
 
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<MediaInjector>();
+
+            _pipelineWithoutBufferTimer = new System.Timers.Timer(TimeSpan.FromMilliseconds(1000).TotalMilliseconds)
+            {
+                Enabled = false,
+                AutoReset = false,
+            };
+
+            _pipelineWithoutBufferTimer.Elapsed += OnPipelineWithoutBufferTimeElapsed;
         }
 
         public IVideoSocket VideoSocket { get; protected set; }
 
+        public bool SourceConnected { get; protected set; } = false;
+
         public void Start(MediaInjectionSettings injectionSettings)
         {
+            if (_injectionSettings == null)
+            {
+              _injectionSettings = injectionSettings;
+            }
+
             // Stop previous injection if it was not stoped
             StopPreviousInjectionStarted();
 
             _pipeline = new MediaInjectionPipeline(injectionSettings, _loggerFactory);
+            _pipeline.SetBufferReceivedHandler(OnBufferReceived);
             _pipeline.SetNewAudioSampleHandler(NewAudioSample);
             _pipeline.SetNewVideoSampleHandler(NewVideoSample);
             _unsubscribeObserver = _pipeline.Subscribe(_pipelineBusObserver);
@@ -76,8 +101,18 @@ namespace BotService.Infrastructure.Core
             _pipeline.Play();
         }
 
+        public void Restart()
+        {
+            if (_injectionSettings != null)
+            {
+                Start(_injectionSettings);
+            }
+        }
+
         public void Stop()
         {
+            _pipeline.RemoveBufferReceivedHandler(OnBufferReceived);
+            _pipelineWithoutBufferTimer.Stop();
             _pipeline.RemoveNewAudioSampleHandler(NewAudioSample);
             _pipeline.RemoveNewVideoSampleHandler(NewVideoSample);
             _pipeline.Stop();
@@ -89,10 +124,33 @@ namespace BotService.Infrastructure.Core
             _unsubscribeObserver?.Dispose();
         }
 
+        public void SetVolume(StreamVolume streamVolume)
+        {
+            if (_pipeline != null)
+            {
+                _injectionSettings.StreamVolume = streamVolume;
+                _pipeline.SetVolume(streamVolume);
+            }
+        }
+
+        public void SwitchContentStatus(bool shouldInject)
+        {
+            _shouldInjectContent = shouldInject;
+        }
+
         public void Dispose()
         {
+            _pipelineWithoutBufferTimer.Elapsed -= OnPipelineWithoutBufferTimeElapsed;
+            _pipelineWithoutBufferTimer.Stop();
+            _pipelineWithoutBufferTimer.Dispose();
+
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public void SetOnStreamStateChanged(Action onStreamStateChanged)
+        {
+            _onStreamStateChanged = onStreamStateChanged;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -142,6 +200,28 @@ namespace BotService.Infrastructure.Core
             return false;
         }
 
+        private void OnBufferReceived()
+        {
+            if (!SourceConnected)
+            {
+                SourceConnected = true;
+                _onStreamStateChanged();
+            }
+
+            _pipelineWithoutBufferTimer.Stop();
+            _pipelineWithoutBufferTimer.Start();
+        }
+
+        private void OnPipelineWithoutBufferTimeElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (SourceConnected)
+            {
+                SourceConnected = false;
+                _onStreamStateChanged();
+                Restart();
+            }
+        }
+
         private void NewVideoSample(object sender, GLib.SignalArgs args)
         {
             var sink = (AppSink)sender;
@@ -149,79 +229,82 @@ namespace BotService.Infrastructure.Core
 
             if (sample != null)
             {
-                Interlocked.Increment(ref _videoReceivedFrames);
-
-                ulong pipelineTime = 0;
-                if (TryGetPipelineTime(sink, ref pipelineTime))
+                if (_shouldInjectContent)
                 {
-                    Gst.Buffer buffer = sample.Buffer;
-                    ulong adjustedBufferPts = buffer.Pts + sink.Latency;
+                    Interlocked.Increment(ref _videoReceivedFrames);
 
-                    // If this is the first sample we got in this injection, then we take the current pipeline PTS as a reference for the following samples.
-                    // To avoid adding overhead with the lock statement fist we do a dirty read.
-                    if (!_isVideoReady)
+                    ulong pipelineTime = 0;
+                    if (TryGetPipelineTime(sink, ref pipelineTime))
                     {
-                        lock (_updateReferenceVideoLock)
-                        {
-                            // Now that we are inside the lock statement we need to check the condition again.
-                            if (!_isVideoReady)
-                            {
-                                _referenceVideoPts = pipelineTime;
-                                _referenceVideoTimestamp = MediaPlatform.GetCurrentTimestamp();
-                                _isVideoReady = true;
+                        Gst.Buffer buffer = sample.Buffer;
+                        ulong adjustedBufferPts = buffer.Pts + sink.Latency;
 
-                                _logger.LogInformation($"[Injection] Video - Setting reference at pipeline PTS: {_referenceVideoPts}(ns) and platform timestamp: {_referenceVideoTimestamp}(100-ns).");
-                                _logger.LogInformation($"[Injection] Video - Current pipeline latency: {sink.Latency}");
+                        // If this is the first sample we got in this injection, then we take the current pipeline PTS as a reference for the following samples.
+                        // To avoid adding overhead with the lock statement fist we do a dirty read.
+                        if (!_isVideoReady)
+                        {
+                            lock (_updateReferenceVideoLock)
+                            {
+                                // Now that we are inside the lock statement we need to check the condition again.
+                                if (!_isVideoReady)
+                                {
+                                    _referenceVideoPts = pipelineTime;
+                                    _referenceVideoTimestamp = MediaPlatform.GetCurrentTimestamp();
+                                    _isVideoReady = true;
+
+                                    _logger.LogInformation($"[Injection] Video - Setting reference at pipeline PTS: {_referenceVideoPts}(ns) and platform timestamp: {_referenceVideoTimestamp}(100-ns).");
+                                    _logger.LogInformation($"[Injection] Video - Current pipeline latency: {sink.Latency}");
+                                }
                             }
                         }
-                    }
 
-                    // If the frame is too late we will simply discard it
-                    if (adjustedBufferPts + VideoSampleLength >= pipelineTime)
-                    {
-                        // The Media Platform uses timestamps in units of 100-ns, while GStreamer uses timestamps in units of 1-ns.
-                        long timestamp = _referenceVideoTimestamp + ((long)(adjustedBufferPts - _referenceVideoPts) / 100);
-                        long platformTimestamp = MediaPlatform.GetCurrentTimestamp();
-                        long timestampDrift = platformTimestamp - timestamp;
-
-                        if (_videoReceivedFrames % VideoSamplesPerSecond == 0)
+                        // If the frame is too late we will simply discard it
+                        if (adjustedBufferPts + VideoSampleLength >= pipelineTime)
                         {
-                            _logger.LogInformation($"[Injection] Video - Frames Received: {_videoReceivedFrames - 1} Accepted: {_videoAcceptedFrames} Dropped: {_videoDroppedFrames}");
-                            _logger.LogInformation($"[Injection] Video - Buffer #{_videoReceivedFrames - 1} check - Pipeline time: {pipelineTime}(ns) Buffer PTS: {buffer.Pts}(ns) Latency: {sink.Latency}(ns) Platform diff: {timestampDrift}(100-ns)");
+                            // The Media Platform uses timestamps in units of 100-ns, while GStreamer uses timestamps in units of 1-ns.
+                            long timestamp = _referenceVideoTimestamp + ((long)(adjustedBufferPts - _referenceVideoPts) / 100);
+                            long platformTimestamp = MediaPlatform.GetCurrentTimestamp();
+                            long timestampDrift = platformTimestamp - timestamp;
+
+                            if (_videoReceivedFrames % VideoSamplesPerSecond == 0)
+                            {
+                                _logger.LogInformation($"[Injection] Video - Frames Received: {_videoReceivedFrames - 1} Accepted: {_videoAcceptedFrames} Dropped: {_videoDroppedFrames}");
+                                _logger.LogInformation($"[Injection] Video - Buffer #{_videoReceivedFrames - 1} check - Pipeline time: {pipelineTime}(ns) Buffer PTS: {buffer.Pts}(ns) Latency: {sink.Latency}(ns) Platform diff: {timestampDrift}(100-ns)");
+                            }
+                            else if (_videoReceivedFrames == 1)
+                            {
+                                _logger.LogInformation($"[Injection] Video - First video frame received with PTS: {buffer.Pts}(ns) and latency: {sink.Latency}(ns).");
+                            }
+
+                            // This method allocates unmanaged memory to copy the data in the buffer
+                            IntPtr contentPtr = CopyBufferContents(buffer, out int size);
+                            var videoSendBuffer = new VideoSendBuffer(contentPtr, size, VideoFormat.NV12_1920x1080_30Fps, timestamp);
+
+                            try
+                            {
+                                VideoSocket.Send(videoSendBuffer);
+                                Interlocked.Increment(ref _videoAcceptedFrames);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "[Injection] Video - Error sending buffer - Message: {message}", ex.InnerException?.Message ?? ex.Message);
+                                Interlocked.Increment(ref _videoDroppedFrames);
+                            }
                         }
-                        else if (_videoReceivedFrames == 1)
+                        else
                         {
-                            _logger.LogInformation($"[Injection] Video - First video frame received with PTS: {buffer.Pts}(ns) and latency: {sink.Latency}(ns).");
-                        }
-
-                        // This method allocates unmanaged memory to copy the data in the buffer
-                        IntPtr contentPtr = CopyBufferContents(buffer, out int size);
-                        var videoSendBuffer = new VideoSendBuffer(contentPtr, size, VideoFormat.NV12_1920x1080_30Fps, timestamp);
-
-                        try
-                        {
-                            VideoSocket.Send(videoSendBuffer);
-                            Interlocked.Increment(ref _videoAcceptedFrames);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "[Injection] Video - Error sending buffer - Message: {message}", ex.InnerException?.Message ?? ex.Message);
+                            _logger.LogInformation($"[Injection] Video - Frame arrived too late, discarding frame. Buffer PTS (with Latency): {adjustedBufferPts}(ns) Pipeline PTS: {pipelineTime}(ns)");
                             Interlocked.Increment(ref _videoDroppedFrames);
                         }
+
+                        // We need to dispose the sample after we are done with it
+                        buffer.Dispose();
                     }
                     else
                     {
-                        _logger.LogInformation($"[Injection] Video - Frame arrived too late, discarding frame. Buffer PTS (with Latency): {adjustedBufferPts}(ns) Pipeline PTS: {pipelineTime}(ns)");
+                        _logger.LogWarning($"[Injection] Video - Clock is null. Discarding frame.");
                         Interlocked.Increment(ref _videoDroppedFrames);
                     }
-
-                    // We need to dispose the sample after we are done with it
-                    buffer.Dispose();
-                }
-                else
-                {
-                    _logger.LogWarning($"[Injection] Video - Clock is null. Discarding frame.");
-                    Interlocked.Increment(ref _videoDroppedFrames);
                 }
 
                 sample.Dispose();
@@ -239,79 +322,82 @@ namespace BotService.Infrastructure.Core
 
             if (sample != null)
             {
-                Interlocked.Increment(ref _audioReceivedSamples);
-
-                ulong pipelineTime = 0;
-                if (TryGetPipelineTime(sink, ref pipelineTime))
+                if (_shouldInjectContent)
                 {
-                    Gst.Buffer buffer = sample.Buffer;
-                    ulong adjustedBufferPts = buffer.Pts + sink.Latency;
+                    Interlocked.Increment(ref _audioReceivedSamples);
 
-                    // If this is the first sample we got in this injection, then we take the current pipeline PTS as a reference for the following samples.
-                    // To avoid adding overhead with the lock statement fist we do a dirty read.
-                    if (!_isAudioReady)
+                    ulong pipelineTime = 0;
+                    if (TryGetPipelineTime(sink, ref pipelineTime))
                     {
-                        lock (_updateReferenceAudioLock)
-                        {
-                            // Now that we are inside the lock statement we need to check the condition again.
-                            if (!_isAudioReady)
-                            {
-                                _referenceAudioPts = pipelineTime;
-                                _referenceAudioTimestamp = MediaPlatform.GetCurrentTimestamp();
-                                _isAudioReady = true;
+                        Gst.Buffer buffer = sample.Buffer;
+                        ulong adjustedBufferPts = buffer.Pts + sink.Latency;
 
-                                _logger.LogInformation($"[Injection] Audio - Setting reference at pipeline PTS: {_referenceAudioPts}(ns) and platform timestamp: {_referenceAudioTimestamp}(100-ns).");
-                                _logger.LogInformation($"[Injection] Audio - Current pipeline latency: {sink.Latency}");
+                        // If this is the first sample we got in this injection, then we take the current pipeline PTS as a reference for the following samples.
+                        // To avoid adding overhead with the lock statement fist we do a dirty read.
+                        if (!_isAudioReady)
+                        {
+                            lock (_updateReferenceAudioLock)
+                            {
+                                // Now that we are inside the lock statement we need to check the condition again.
+                                if (!_isAudioReady)
+                                {
+                                    _referenceAudioPts = pipelineTime;
+                                    _referenceAudioTimestamp = MediaPlatform.GetCurrentTimestamp();
+                                    _isAudioReady = true;
+
+                                    _logger.LogInformation($"[Injection] Audio - Setting reference at pipeline PTS: {_referenceAudioPts}(ns) and platform timestamp: {_referenceAudioTimestamp}(100-ns).");
+                                    _logger.LogInformation($"[Injection] Audio - Current pipeline latency: {sink.Latency}");
+                                }
                             }
                         }
-                    }
 
-                    // If the audio sample is too late we will simply discard it
-                    if (adjustedBufferPts + AudioSampleLength >= pipelineTime)
-                    {
-                        // The Media Platform uses timestamps in units of 100-ns, while GStreamer uses timestamps in units of 1-ns.
-                        long timestamp = _referenceAudioTimestamp + ((long)(adjustedBufferPts - _referenceAudioPts) / 100);
-                        long platformTimestamp = MediaPlatform.GetCurrentTimestamp();
-                        long timestampDrift = platformTimestamp - timestamp;
-
-                        if (_audioReceivedSamples % AudioSamplesPerSecond == 0)
+                        // If the audio sample is too late we will simply discard it
+                        if (adjustedBufferPts + AudioSampleLength >= pipelineTime)
                         {
-                            _logger.LogInformation($"[Injection] Audio - Samples Received: {_audioReceivedSamples - 1} Accepted: {_audioAcceptedSamples} Dropped: {_audioDroppedSamples}");
-                            _logger.LogInformation($"[Injection] Audio - Buffer #{_audioReceivedSamples - 1} check - Pipeline time: {pipelineTime}(ns) Buffer PTS: {buffer.Pts}(ns) Latency: {sink.Latency}(ns) Platform diff: {timestampDrift}(100-ns)");
+                            // The Media Platform uses timestamps in units of 100-ns, while GStreamer uses timestamps in units of 1-ns.
+                            long timestamp = _referenceAudioTimestamp + ((long)(adjustedBufferPts - _referenceAudioPts) / 100);
+                            long platformTimestamp = MediaPlatform.GetCurrentTimestamp();
+                            long timestampDrift = platformTimestamp - timestamp;
+
+                            if (_audioReceivedSamples % AudioSamplesPerSecond == 0)
+                            {
+                                _logger.LogInformation($"[Injection] Audio - Samples Received: {_audioReceivedSamples - 1} Accepted: {_audioAcceptedSamples} Dropped: {_audioDroppedSamples}");
+                                _logger.LogInformation($"[Injection] Audio - Buffer #{_audioReceivedSamples - 1} check - Pipeline time: {pipelineTime}(ns) Buffer PTS: {buffer.Pts}(ns) Latency: {sink.Latency}(ns) Platform diff: {timestampDrift}(100-ns)");
+                            }
+                            else if (_audioReceivedSamples == 1)
+                            {
+                                _logger.LogInformation($"[Injection] Audio - First audio sample received with PTS: {buffer.Pts}(ns) and latency: {sink.Latency}(ns).");
+                            }
+
+                            // This method allocates unmanaged memory to copy the data in the buffer
+                            IntPtr contentPtr = CopyBufferContents(buffer, out int size);
+                            var audioSendBuffer = new AudioSendBuffer(contentPtr, size, AudioFormat.Pcm16K, timestamp);
+
+                            try
+                            {
+                                _audioSocket.Send(audioSendBuffer);
+                                Interlocked.Increment(ref _audioAcceptedSamples);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError("[Injection] Audio - Error sending buffer - Message: {message}", ex.InnerException.Message);
+                                Interlocked.Increment(ref _audioDroppedSamples);
+                            }
                         }
-                        else if (_audioReceivedSamples == 1)
+                        else
                         {
-                            _logger.LogInformation($"[Injection] Audio - First audio sample received with PTS: {buffer.Pts}(ns) and latency: {sink.Latency}(ns).");
-                        }
-
-                        // This method allocates unmanaged memory to copy the data in the buffer
-                        IntPtr contentPtr = CopyBufferContents(buffer, out int size);
-                        var audioSendBuffer = new AudioSendBuffer(contentPtr, size, AudioFormat.Pcm16K, timestamp);
-
-                        try
-                        {
-                            _audioSocket.Send(audioSendBuffer);
-                            Interlocked.Increment(ref _audioAcceptedSamples);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError("[Injection] Audio - Error sending buffer - Message: {message}", ex.InnerException.Message);
+                            _logger.LogInformation($"[Injection] Audio - Sample arrived too late, discarding sample. Buffer PTS (with Latency): {adjustedBufferPts}(ns) Pipeline PTS: {pipelineTime}(ns)");
                             Interlocked.Increment(ref _audioDroppedSamples);
                         }
+
+                        // We need to dispose the buffer after we are done with it
+                        buffer.Dispose();
                     }
                     else
                     {
-                        _logger.LogInformation($"[Injection] Audio - Sample arrived too late, discarding sample. Buffer PTS (with Latency): {adjustedBufferPts}(ns) Pipeline PTS: {pipelineTime}(ns)");
+                        _logger.LogWarning($"[Injection] Audio - Clock is null. Discarding sample.");
                         Interlocked.Increment(ref _audioDroppedSamples);
                     }
-
-                    // We need to dispose the buffer after we are done with it
-                    buffer.Dispose();
-                }
-                else
-                {
-                    _logger.LogWarning($"[Injection] Audio - Clock is null. Discarding sample.");
-                    Interlocked.Increment(ref _audioDroppedSamples);
                 }
 
                 sample.Dispose();

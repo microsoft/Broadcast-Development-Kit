@@ -4,6 +4,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Application.Common.Models.Api;
 using Application.Exceptions;
 using Application.Interfaces.Common;
 using Application.Service.Commands;
@@ -71,23 +72,23 @@ namespace Infrastructure.Core.Services
             return response;
         }
 
-        public async Task<HttpResponseMessage> MuteBotAsync()
+        public async Task<HttpResponseMessage> MuteBotAsync(string callId)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
-            var url = new Uri($"https://{_baseUrl}/api/bot/mute");
+            var url = new Uri($"https://{_baseUrl}/api/bot/call/{callId}/mute");
             var response = await client.PostAsync(url, null);
 
             return response;
         }
 
-        public async Task<HttpResponseMessage> UnmuteBotAsync()
+        public async Task<HttpResponseMessage> UnmuteBotAsync(string callId)
         {
             ValidateBaseUrl();
 
             var client = await GetClient();
-            var url = new Uri($"https://{_baseUrl}/api/bot/unmute");
+            var url = new Uri($"https://{_baseUrl}/api/bot/call/{callId}/unmute");
             var response = await client.PostAsync(url, null);
 
             return response;
@@ -100,6 +101,28 @@ namespace Infrastructure.Core.Services
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.CallId}/stream/{command.StreamId}/stop-injection");
             var response = await client.PostAsync<DoStopInjection.DoStopInjectionCommandResponse>(url, null, command);
+
+            return response;
+        }
+
+        public async Task<DoHideInjection.DoHideInjectionCommandResponse> HideInjectionAsync(DoHideInjection.DoHideInjectionCommand command)
+        {
+            ValidateBaseUrl();
+
+            var client = await GetClient();
+            var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.CallId}/injection/hide");
+            var response = await client.PostAsync<DoHideInjection.DoHideInjectionCommandResponse>(url, null, command);
+
+            return response;
+        }
+
+        public async Task<DoDisplayInjection.DoDisplayInjectionCommandResponse> DisplayInjectionAsync(DoDisplayInjection.DoDisplayInjectionCommand command)
+        {
+            ValidateBaseUrl();
+
+            var client = await GetClient();
+            var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.CallId}/injection/display");
+            var response = await client.PostAsync<DoDisplayInjection.DoDisplayInjectionCommandResponse>(url, null, command);
 
             return response;
         }
@@ -122,6 +145,17 @@ namespace Infrastructure.Core.Services
             var client = await GetClient();
             var url = new Uri($"https://{_baseUrl}/api/bot/call/{command.Body.CallId}/stream/stop-extraction");
             var response = await client.PostAsync<DoStopExtraction.DoStopExtractionCommandResponse>(url, null, command);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> SetInjectionVolumeAsync(string callId, SetInjectionVolumeRequest setInjectionVolumeRequest)
+        {
+            ValidateBaseUrl();
+
+            var client = await GetClient();
+            var url = new Uri($"https://{_baseUrl}/api/bot/call/{callId}/injection/set-volume");
+            var response = await client.PostAsync(url, null, setInjectionVolumeRequest);
 
             return response;
         }

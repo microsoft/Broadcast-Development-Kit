@@ -2,7 +2,9 @@
 // Licensed under the MIT license.
 using System.Threading.Tasks;
 using Application.Common.Models;
+using Application.Stream.Commands;
 using AutoMapper;
+using Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Graph.Communications.Calls;
@@ -10,6 +12,7 @@ using static Application.Call.Commands.SetCallAsEstablished;
 using static Application.Call.Commands.SetCallAsTerminated;
 using static Application.Participant.Commands.AddParticipantStream;
 using static Application.Participant.Commands.HandleParticipantLeave;
+using static Application.Participant.Commands.UpdateBotStatus;
 using static Application.Participant.Commands.UpdateParticipantMeetingStatus;
 using static Application.Service.Commands.RegisterService;
 using static Application.Service.Commands.SetBotServiceAsAvailable;
@@ -33,6 +36,21 @@ namespace BotService.Infrastructure.Services
 
             var command = mapper.Map<UpdateParticipantMeetingStatusCommand>(participant);
             command.CallId = callId;
+
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+            return await mediator.Send(command);
+        }
+
+        public async Task<UpdateStreamState.UpdateStreamStateCommandResponse> UpdateStreamStateAsync(string callId, StreamState state)
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+
+            var command = new UpdateStreamState.UpdateStreamStateCommand
+            {
+                CallId = callId,
+                StreamState = state,
+            };
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
@@ -130,6 +148,21 @@ namespace BotService.Infrastructure.Services
             var command = new UnregisterServiceCommand
             {
                 VirtualMachineName = virtualMachineName,
+            };
+
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+            return await mediator.Send(command);
+        }
+
+        public async Task<UpdateBotStatusResponse> UpdateBotStatusAsync(string callId, bool isMuted)
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+
+            var command = new UpdateBotStatusCommand()
+            {
+                CallId = callId,
+                IsBotMuted = isMuted,
             };
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();

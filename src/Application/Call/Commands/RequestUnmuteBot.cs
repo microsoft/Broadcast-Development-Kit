@@ -41,7 +41,7 @@ namespace Application.Call.Commands
                 var call = await _callRepository.GetItemAsync(request.CallId);
                 var service = await _serviceRepository.GetItemAsync(call.ServiceId);
                 _botServiceClient.SetBaseUrl(service.Infrastructure.Dns);
-                await _botServiceClient.UnmuteBotAsync();
+                await _botServiceClient.UnmuteBotAsync(request.CallId);
                 return null;
             }
         }

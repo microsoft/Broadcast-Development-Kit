@@ -84,7 +84,7 @@ namespace Application.Stream.Commands
                 {
                     StartStreamExtractionResponse startExtractionResponse = _bot.StartExtraction(request.Body);
 
-                    participant.State = StreamState.Started;
+                    participant.State = StreamState.Ready;
                     participant.Details.TimeOverlay = startExtractionResponse.TimeOverlay;
                     participant.Details.AudioFormat = startExtractionResponse.AudioFormat;
 

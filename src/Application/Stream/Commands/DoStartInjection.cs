@@ -102,7 +102,12 @@ namespace Application.Stream.Commands
                     entity.Error = null;
                     entity.Details.StreamUrl = _injectionUrlHelper.GetStreamUrl(request.Body, _configuration.BotConfiguration.ServiceDnsName);
                     entity.StartedAt = DateTime.UtcNow;
-                    entity.State = StreamState.Started;
+                    entity.State = StreamState.Ready;
+                    entity.Details.StreamVolume = new StreamVolume
+                    {
+                        Value = request.Body.StreamVolume.Value,
+                        Format = request.Body.StreamVolume.Format,
+                    };
 
                     await _streamRepository.UpdateItemAsync(entity.Id, entity);
                 }

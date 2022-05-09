@@ -7,6 +7,7 @@ using Application.Interfaces.Common;
 using Application.Interfaces.Persistance;
 using AutoMapper;
 using Domain.Enums;
+using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
 
@@ -58,15 +59,26 @@ namespace Application.Call.Commands
 
             public async Task<RequestEndCallCommandResponse> Handle(RequestEndCallCommand request, CancellationToken cancellationToken)
             {
-                RequestEndCallCommandResponse response = new RequestEndCallCommandResponse();
+                var response = new RequestEndCallCommandResponse();
 
-                Domain.Entities.Call entity = await _callRepository.GetItemAsync(request.CallId);
+                var entity = await _callRepository.GetItemAsync(request.CallId);
+
+                if (entity == null)
+                {
+                    throw new EntityNotFoundException(nameof(Domain.Entities.Call), request.CallId);
+                }
+
                 entity.State = CallState.Terminating;
 
                 await _callRepository.UpdateItemAsync(entity.Id, entity);
 
                 // Getting service base url
                 var service = await _serviceRepository.GetItemAsync(entity.ServiceId);
+
+                if (service == null)
+                {
+                    throw new EntityNotFoundException(nameof(Domain.Entities.Service), entity.ServiceId);
+                }
 
                 response.Resource = _mapper.Map<CallModel>(entity);
                 response.Id = entity.Id;

@@ -77,7 +77,15 @@ namespace Application.Stream
                 .ForPath(
                     dest => dest.KeyLength,
                     opts => opts.MapFrom(
-                        src => src.Details.KeyLength));
+                        src => src.Details.KeyLength))
+                .ForPath(
+                    dest => dest.VideoFeedOn,
+                    opts => opts.MapFrom(
+                        src => src.Details.VideoFeedOn))
+                .ForPath(
+                    dest => dest.StreamVolume,
+                    opts => opts.MapFrom(
+                        src => src.Details.StreamVolume));
         }
     }
 }

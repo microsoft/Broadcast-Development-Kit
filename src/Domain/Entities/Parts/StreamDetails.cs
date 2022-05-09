@@ -21,5 +21,9 @@ namespace Domain.Entities.Parts
         public dynamic Mode { get; set; }
 
         public bool EnableSsl { get; set; }
+
+        public StreamVolume StreamVolume { get; set; }
+
+        public bool VideoFeedOn { get; set; }
     }
 }

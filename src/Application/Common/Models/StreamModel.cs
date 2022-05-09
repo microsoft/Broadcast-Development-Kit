@@ -34,6 +34,10 @@ namespace Application.Common.Models
 
         public dynamic StreamMode { get; set; }
 
+        public StreamVolume StreamVolume { get; set; }
+
+        public bool VideoFeedOn { get; set; }
+
         public StreamErrorDetails Error { get; set; }
     }
 }

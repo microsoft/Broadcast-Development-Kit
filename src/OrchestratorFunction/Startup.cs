@@ -60,8 +60,6 @@ namespace BotOrchestrator
             builder.Services.AddLogging(x => x.SetMinimumLevel(LogLevel.Debug));
 
             builder.Services.AddApplication();
-            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
             builder.Services.AddTransient<IAzStorageHandler, AzStorageHandler>();
 

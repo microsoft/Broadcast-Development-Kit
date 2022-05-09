@@ -20,6 +20,10 @@ namespace BotOrchestrator
 
         public string BuildVersion { get; set; }
 
+        public string KeyVaultName { get; set; }
+
+        public string KeyVaultEnv { get; set; }
+
         public AzStorageConfiguration StorageConfiguration => _configuration.GetSection("StorageConfiguration").Get<AzStorageConfiguration>();
 
         public CosmosDbConfiguration CosmosDbConfiguration => _configuration.GetSection("CosmosDbConfiguration").Get<CosmosDbConfiguration>();
