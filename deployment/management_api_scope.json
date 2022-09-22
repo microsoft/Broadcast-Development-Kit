@@ -1,0 +1,12 @@
+[{
+    "adminConsentDescription": "Access Broadcaster for Teams as producer",
+    "adminConsentDisplayName": "Access Broadcaster for Teams as producer",
+    "id": "71baef92-70af-41e1-866f-a14b059616dc",
+    "isEnabled": true,
+    "lang": null,
+    "origin": "Application",
+    "type": "User",
+    "userConsentDescription": "Access Broadcaster for Teams as producer",
+    "userConsentDisplayName": "Access Broadcaster for Teams as producer",
+    "value": "access_as_producer"
+}]

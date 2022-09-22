@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using Application.Exceptions;
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
+using Azure.Security.KeyVault.Secrets;
 using BotService.Configuration;
 using Serilog;
 
@@ -14,21 +15,26 @@ namespace BotService.Infrastructure.Extensions
     {
         public static X509Certificate2 GetCertificate(AppConfiguration appConfiguration)
         {
-            try
+            if (!string.IsNullOrEmpty(appConfiguration.KeyVaultName) && !string.IsNullOrEmpty(appConfiguration.BotConfiguration.CertificateName))
             {
-                Log.Information("Getting certificate from store.");
-                return GetCertificateFromStore(appConfiguration.BotConfiguration.CertificateThumbprint);
-            }
-            catch (CertificateNotFoundException)
-            {
-                Log.Warning("No certificate was found in the machine. The service will attempt to download the certificate and install it in the machine.");
+                Log.Information("Getting certificate from key vault.");
+                var keyVaultCertificate = GetCertificateFromKeyVaultSecret(appConfiguration.KeyVaultName, appConfiguration.BotConfiguration.CertificateName);
+
+                try
+                {
+                    Log.Information("Getting certificate from store.");
+                    GetCertificateFromStore(appConfiguration.BotConfiguration.CertificateThumbprint);
+                    return keyVaultCertificate;
+                }
+                catch (CertificateNotFoundException)
+                {
+                    // TODO: Send this log to application insights
+                    Log.Information("Installing certificate.");
+                    return InstallCertificate(keyVaultCertificate);
+                }
             }
 
-            Log.Information("Getting certificate from key vault.");
-            var keyVaultCertificate = GetCertificateFromKeyVault(appConfiguration.KeyVaultName, appConfiguration.BotConfiguration.CertificateName);
-
-            Log.Information("Installing certificate.");
-            return InstallCertificate(keyVaultCertificate, appConfiguration.BotConfiguration.CertificatePassword);
+            return GetCertificateFromStore(appConfiguration.BotConfiguration.CertificateThumbprint);
         }
 
         private static X509Certificate2 GetCertificateFromStore(string thumbprint)
@@ -51,6 +57,22 @@ namespace BotService.Infrastructure.Extensions
             }
         }
 
+        private static X509Certificate2 GetCertificateFromKeyVaultSecret(string keyVaultName, string certificateName)
+        {
+            try
+            {
+                var secretClient = new SecretClient(vaultUri: new Uri($"https://{keyVaultName}.vault.azure.net/"), credential: new DefaultAzureCredential());
+                var secret = secretClient.GetSecret(certificateName);
+
+                return new X509Certificate2(Convert.FromBase64String(secret.Value.Value));
+            }
+            catch (Exception)
+            {
+                Log.Error($"An error has ocurred while trying to get the certificate {certificateName} from keyvault {keyVaultName}.");
+                throw;
+            }
+        }
+
         private static KeyVaultCertificateWithPolicy GetCertificateFromKeyVault(string keyVaultName, string certificateName)
         {
             try
@@ -65,6 +87,17 @@ namespace BotService.Infrastructure.Extensions
                 Log.Error($"An error has ocurred while trying to get the certificate {certificateName} from keyvault {keyVaultName}.");
                 throw;
             }
+        }
+
+        private static X509Certificate2 InstallCertificate(X509Certificate2 cert)
+        {
+            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+
+            store.Open(OpenFlags.ReadWrite);
+            store.Add(cert);
+            store.Close();
+
+            return cert;
         }
 
         private static X509Certificate2 InstallCertificate(KeyVaultCertificateWithPolicy keyVaultCertificate, string password)

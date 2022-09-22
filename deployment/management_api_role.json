@@ -1,0 +1,11 @@
+[
+    {
+    "allowedMemberTypes": [
+      "Application"
+    ],
+    "description": " Access to Management API.",
+    "displayName": "AccessAll",
+    "isEnabled": "true",
+    "value": "ManagementAPI.AccessAll"
+    }
+]

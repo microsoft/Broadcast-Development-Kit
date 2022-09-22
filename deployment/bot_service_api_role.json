@@ -1,0 +1,11 @@
+[
+	{
+		"allowedMemberTypes": [
+				"Application"
+			],
+		"description": "Access to BotService API.",
+		"displayName": "AccessAll",
+		"isEnabled": true,
+		"value": "BotService.AccessAll"
+	}
+]

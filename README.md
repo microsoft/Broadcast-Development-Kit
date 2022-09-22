@@ -106,6 +106,7 @@ Please follow these documents to build and configure this solution:
 
 - [How to run the solution locally](docs/how-to-run-the-solution-locally/README.md)
 - [How to run the solution in Azure](docs/how-to-run-the-solution-in-azure/README.md)
+- [How to run the solution in Azure (scripts)](docs/how-to-run-the-solution-in-azure-scripts/README.md)
 
 You can find how to use the APIs in this solution in the following document:
 
