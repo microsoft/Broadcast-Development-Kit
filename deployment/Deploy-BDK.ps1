@@ -11,8 +11,6 @@ if(-not (Test-Path -Path $config)){
 
 $configuration = Get-Content $config | ConvertFrom-Json
 
-Write-Host "Config" $configuration
-
 $managementApiSrc = "..\\src\\ManagementApi"
 $managementApiPublishOutput = "bin\\output"
 $managementApiCompressOutput = "..\\src\\ManagementApi\\bin\\output"
@@ -288,7 +286,9 @@ Write-Host "Completed`n" -ForegroundColor green
 Stop-OnPowershellError
 
 Write-Host "`n17/28 Creating DNS record.." -ForegroundColor white -BackgroundColor black
-Add-DNSRecord `
+
+if ($configuration.dnsZone.dnsSubscriptionId){
+    Add-DNSRecord `
     -currentSubscriptionId $userCurrentSubscriptionId `
     -dnsSubscriptionId $configuration.dnsZone.dnsSubscriptionId `
     -zoneName $configuration.dnsZone.zoneName `
@@ -296,8 +296,12 @@ Add-DNSRecord `
     -dnsRecordName $configuration.dnsZone.dnsRecordName `
     -vmAdress $vmIpAdress
 
-Write-Host "Completed`n" -ForegroundColor green
-Stop-OnPowershellError
+    Write-Host "Completed`n" -ForegroundColor green
+    Stop-OnPowershellError
+} else {
+    Write-Host "Skipping this step..`n" -ForegroundColor green
+}
+
 
 Write-Host "`n18/28 Creating Eventgrid..." -ForegroundColor white -BackgroundColor black
 $eventGridResourcesCreated = az deployment group create --resource-group $vmResourceGroup --template-file "Biceps/eventgrid.bicep"  `
@@ -357,8 +361,8 @@ Stop-OnPowershellError
 
 Write-Host "`n23/28 Update VM service document in cosmos DB.." -ForegroundColor white -BackgroundColor black
 Add-ServiceCosmosDBDocument `
-    -dnsRecordName $configuration.dnsZone.dnsRecordName `
-    -dnsZoneName $configuration.dnsZone.zoneName `
+    -dnsRecordName "${configuration.dnsZone.dnsRecordName}" `
+    -dnsZoneName "${configuration.dnsZone.zoneName}" `
     -vmName $vmName `
     -subscriptionId $userCurrentSubscriptionId `
     -vmResourceGroup $vmResourceGroup `
@@ -381,8 +385,8 @@ Update-AppSettings `
     -publishOutputSrc $botserviceCompressOutput `
     -appinsightsinstrumentatioKey $appinsightInstrumentationKey `
     -keyvaultName $keyvaultName `
-    -dnsRecordName $configuration.dnsZone.dnsRecordName `
-    -dnsZoneName $configuration.dnsZone.zoneName `
+    -dnsRecordName "${configuration.dnsZone.dnsRecordName}" `
+    -dnsZoneName "${configuration.dnsZone.zoneName}" `
     -botServiceApiClientId $authBotServiceApiClientId `
     -botServiceAppRegistrationTenantId $authBotServiceApiTenantId `
     -vmName $vmName `

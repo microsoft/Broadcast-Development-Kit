@@ -25,7 +25,7 @@
         },
         "dnsZone": {
             "dnsSubscriptionId": "{{dnsSubscriptionId}}",
-            "resourceGroup": "{{resourceGroup}}",
+            "resourceGroup": "{{dnsResourceGroup}}",
             "zoneName": "{{zoneName}}",
             "dnsRecordName": "{{dnsRecordName}}"
         },
@@ -60,7 +60,7 @@
     {{managementApiAppName}} | Name for the App registration that will be created for Management API. If left empty, it is automatically generated based on the name parameter |
     {{sdkAppName}} |  Name for the App registration that will be created for Azure SDK. If left empty, it is automatically generated based on the name parameter |
     {{dnsSubscriptionId}} | Subscription Id where the DNS Zone is created |
-    {{resourceGroup}} | Resource group where the DNS Zone is created |
+    {{dnsResourceGroup}} | Resource group where the DNS Zone is created |
     {{zoneName}} | DNS Zone name |
     {{dnsRecordName}} | DNS record name that will be created for the VM |
     {{localCertPath}} | Path where a .Zip file with the pem certificates are located. Used for nginx. Should not contain folders inside  |
@@ -74,6 +74,19 @@
 
 2. Open a powershell console in the `deployment` path of the solution and [sign in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) using `az login`. Select the subscription where you want to deploy the resources.
 
-3. Run the deployBDK.ps1 script
+3. Run the Deploy-BDK.ps1 script
 
 4. Grant admin consent for the `API permitions` of the Azure Bot and Bot Service Client app registrations
+
+## If you left the dns fields empty, you should update the following settings
+
+1. Configure a domain name referencing to the virtual machine IP. eg: `sandbox.domain.co`
+2. Go to the Cosmos DB created after running the scripts, and update the `Infrastructure.Dns` property of the document created in the Service container, with the domain name assigned to the virtual machine.
+3. Login into the VM, open the `c:/BotService/appSettings.json` file and upload the following properties with the domain name assigned to the virtual machine.
+
+* `HttpServer.Endpoints.Https.Host`
+* `Settings.BotConfiguration.ServiceDnsName`
+* `Settings.BotConfiguration.ServiceCname`
+* `Settings.BotConfiguration.ServiceFqdn`
+
+4. Restart the VM
